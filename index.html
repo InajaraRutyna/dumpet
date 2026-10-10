@@ -78,12 +78,13 @@ const START=["hej","ja","nej","tak","jeg","du","er","okay"];
 // word-lights: [x, height above ground, word]
 const FAIRY=[[610,40,"våd"],[760,48,"sø"],[880,112,"måne"],[1250,118,"rumskib"],[1960,44,"mørk"],[2230,110,"lygte"],[2560,46,"skov"],[2880,46,"fremmed"],[2950,84,"hvorfor"],[3030,120,"hertil"],[3900,46,"grund"],[4100,112,"bro"],[4200,48,"trold"],[5450,46,"mose"],[5600,112,"tåge"],[5760,46,"vej"],[6300,48,"sove"],[7150,46,"marked"],[7230,112,"købe"],[7300,46,"brød"],[7360,110,"spise"],[7700,46,"se"],[8200,46,"seng"],[8300,112,"træt"],[9000,46,"sol"],[9160,46,"frø"]];
 const NAMES={m:"Mumle",r:"Ravnen",t:"Trolden",l:"Lygten",k:"Mosekonen",b:"Bagerkonen",y:"Lygtemanden",i:"Kromutter",f:"Frøen",g:"Grumme",c:"Barnet"};
-const VOICE={m:[1,1.12],r:[1.1,1.25],t:[.82,.55],l:[1,1],k:[.88,.85],b:[1,1.1],y:[.85,.75],i:[.97,1],f:[1.05,.8],g:[.9,.65],c:[1.08,1.5]};   // [speed, pitch] relative to the player's voice settings
+const VOICE={m:[1,1.05],r:[1.08,1.15],t:[.8,.6],l:[1,1],k:[.88,.9],b:[1,1.05],y:[.85,.8],i:[.97,1],f:[1.05,.85],g:[.9,.7],c:[1.05,1.25]};   // [speed, pitch] relative to the player's voice settings
 
 // ---------- STATE ----------
 const $=s=>document.querySelector(s),app=$("#app"),tip=$("#tip"),cv=$("#cv"),ctx=cv.getContext("2d");
-let S={v:1,beat:0,top:0,px:540,name:"",chips:START.slice(),got:[],peek:[],used:{},fors:8,til:{m:10,r:0,t:0},lit:0,stones:0,landed:0,done:0,sound:1,tilt:0,vp:.6,vr:.88,vn:""};
+let S={v:1,beat:0,top:0,px:540,name:"",chips:START.slice(),got:[],peek:[],used:{},fors:8,til:{m:10,r:0,t:0},lit:0,stones:0,landed:0,done:0,sound:1,tilt:0,vp:.42,vr:.82,vn:"",vset:2};
 try{const o=JSON.parse(localStorage.getItem("dumpet-f1")||"null");if(o&&o.v===1)S=Object.assign(S,o)}catch(e){}
+if(S.vset!==2){S.vp=.42;S.vr=.82;S.vset=2}
 S.til=Object.assign({m:10,r:0,t:0,k:0,b:0,y:0,i:0,f:0,g:0,c:0},S.til);
 const save=()=>{try{S.px=Math.round(W.px);localStorage.setItem("dumpet-f1",JSON.stringify(S))}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -94,7 +95,7 @@ const fog=s=>esc(s).split(/([A-Za-zÆØÅæøåé]+)/).map((x,i)=>{if(i%2===0)re
 let tipT;const toast=(t,ms)=>{tip.textContent=t;tip.hidden=false;clearTimeout(tipT);tipT=setTimeout(()=>tip.hidden=true,ms||2600)};
 document.addEventListener("click",e=>{audioStart();const w=e.target.closest("[data-w]");if(w){const k=w.dataset.w;toast(w.textContent+" = "+GLOSS[k]);if(w.classList.contains("fg")){w.className="w";if(!S.peek.includes(k))S.peek.push(k)}return}const s=e.target.closest("[data-say]");if(s)speak(s.dataset.say,s.dataset.who)});
 const daVoices=()=>{try{return speechSynthesis.getVoices().filter(x=>/^da/i.test(x.lang))}catch(e){return []}};
-function speak(t,who){try{const v=VOICE[who]||[1,1],u=new SpeechSynthesisUtterance(t);u.lang="da-DK";u.rate=Math.max(.5,Math.min(1.6,S.vr*v[0]));u.pitch=Math.max(.1,Math.min(2,S.vp*v[1]));const vs=daVoices(),dv=vs.find(x=>x.name===S.vn)||vs[0];if(dv)u.voice=dv;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function speak(t,who){try{const v=VOICE[who]||[1,1],u=new SpeechSynthesisUtterance(t);u.lang="da-DK";u.rate=Math.max(.5,Math.min(1.6,S.vr*v[0]));u.pitch=Math.max(.1,Math.min(2,S.vp*v[1]));const vs=daVoices(),dv=vs.find(x=>x.name===S.vn)||vs.find(x=>/(^|[^e])male|jeppe|magnus|mand/i.test(x.name))||vs[0];if(dv)u.voice=dv;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
 try{speechSynthesis.getVoices()}catch(e){}
 function hear(){return new Promise(res=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return res(null);let done=false;const fin=v=>{if(!done){done=true;res(v)}};
  try{const r=new SR();r.lang="da-DK";r.maxAlternatives=4;r.onresult=e=>fin([...e.results[0]].map(a=>a.transcript));r.onerror=e=>fin(e.error==="no-speech"?[]:null);r.onend=()=>fin([]);r.start();setTimeout(()=>{try{r.stop()}catch(e){}},9000)}catch(e){fin(null)}})}
