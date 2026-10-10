@@ -3,550 +3,393 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#06131a">
+<meta name="theme-color" content="#05040c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg">
 <title>Dumpet på Måne Syv</title>
 <style>
-:root{color-scheme:dark;--ink:#fff6d8;--dim:#9fc3c9;--gold:#ffd76a;--teal:#8ff0dc;--red:#ff7a7a;--black:#06131a;--panel:rgba(6,19,26,.93);--line:#2b6670}
+:root{color-scheme:dark;--ink:#e9edf8;--dim:#a79fd0;--gold:#ffd76a;--teal:#9ff3e0;--red:#ff8a8a;--black:#05040c;--panel:rgba(5,4,12,.92);--line:#3a2a5e}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0;overflow:hidden;background:var(--black);color:var(--ink);font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.4;overscroll-behavior:none;user-select:none;-webkit-user-select:none}
 canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
-#hud{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:12px;right:12px;display:flex;justify-content:space-between;font:700 13px Verdana,sans-serif;text-shadow:0 1px 3px #000;pointer-events:none}
+#hud{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:12px;right:12px;display:flex;gap:12px;align-items:flex-start;font:700 10px Verdana,sans-serif;letter-spacing:.1em;text-shadow:0 1px 3px #000}
+#hud>div{flex:1}#hud .bar{height:5px;background:rgba(233,237,248,.2);border-radius:3px;margin-top:4px;overflow:hidden}#hud .bar i{display:block;height:100%;transition:width .5s}
+#menu{flex:none;width:38px;height:38px;min-height:0;padding:0;text-align:center;border-radius:50%;font-size:16px;background:rgba(5,4,12,.4)}
 #pad{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;padding:0 14px;pointer-events:none}
-#pad button{pointer-events:auto;width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(255,246,216,.35);background:rgba(6,19,26,.35);color:var(--ink);font-size:24px;text-align:center;padding:0;min-height:0}
+#pad button{pointer-events:auto;width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(233,237,248,.3);background:rgba(5,4,12,.35);font-size:22px;text-align:center;padding:0;min-height:0}
 #pad div{display:flex;gap:10px}
-#act{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--gold);color:#221a05;border:0;border-radius:22px;padding:10px 18px;font:700 15px Georgia,serif;min-height:0}
-#app{position:fixed;left:0;right:0;bottom:0;max-height:64%;overflow-y:auto;background:var(--panel);border-top:1px solid var(--gold);border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;user-select:text;-webkit-user-select:text}
-#app.full{max-height:100%;top:0;border-radius:0;border:0}
-h1{font-size:2rem;line-height:1.05;margin:0;color:var(--gold);font-weight:400;letter-spacing:.02em}
-h2{font-size:1.35rem;margin:0;font-weight:400;color:var(--gold)}
+#app{position:fixed;left:0;right:0;bottom:0;max-height:62%;overflow-y:auto;background:var(--panel);border-top:1px solid rgba(255,215,106,.6);border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
+#app.full{max-height:100%;top:0;border-radius:0;border:0;padding-top:calc(18px + env(safe-area-inset-top,0px))}
+#app>*{flex-shrink:0}
+h1{font-size:2rem;line-height:1.05;margin:0;color:var(--gold);font-weight:400}
+h2{font-size:1.3rem;margin:0;font-weight:400;color:var(--gold)}
 p{margin:0}
-.lab{font:700 .68rem Verdana,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.lab{font:700 .66rem Verdana,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 .dim{color:var(--dim);font-size:.86rem}
-.log{display:flex;flex-direction:column;gap:9px}
 .nar{color:var(--dim);font-style:italic}
-.you{color:var(--ink);font-style:italic}.you:before{content:"You think: ";color:var(--dim)}
+.you{font-style:italic}.you:before{content:"You think: ";color:var(--dim)}
 .ali{font:.82rem ui-monospace,Menlo,monospace;color:var(--teal)}
-.dk{font-size:1.22rem}.dk b{font-weight:400;color:var(--gold);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;display:block}
-.term{font:.95rem ui-monospace,Menlo,monospace;color:var(--teal);border-left:2px solid var(--teal);padding-left:10px}
+.dk{font-size:1.25rem}.dk b{font-weight:400;color:var(--gold);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;display:block}
+.mine{font-size:1.15rem;color:var(--teal)}.mine b{font-weight:400;color:var(--dim);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;display:block}
 .w{border-bottom:1px dotted var(--dim)}
-.fg{color:#4f8791;letter-spacing:-.06em}
-.opts{display:flex;flex-direction:column;gap:8px}
+.fg{color:#6a6f96;border-bottom:1px dotted #6a6f96}
 .row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
-button{font:inherit;color:var(--ink);background:rgba(43,102,112,.28);border:1px solid var(--line);border-radius:14px;padding:10px 14px;min-height:46px;text-align:left;touch-action:manipulation}
-button b{display:block;color:var(--gold);font-weight:400;font-size:1.1rem}
-button small{color:var(--dim);font:.76rem Verdana,sans-serif;display:block}
+.opts{display:flex;flex-direction:column;gap:8px}
+button{font:inherit;color:var(--ink);background:rgba(58,42,94,.45);border:1px solid var(--line);border-radius:14px;padding:10px 14px;min-height:46px;text-align:left;touch-action:manipulation}
+button small{display:block;color:var(--dim);font:.76rem Verdana,sans-serif}
 button.go{background:var(--gold);color:#221a05;border-color:var(--gold);font-weight:700;text-align:center}
 button.ghost{background:transparent;text-align:center}
 button.mini{min-height:0;padding:1px 8px;font-size:.75rem;border-radius:8px;display:inline;vertical-align:middle}
 button:disabled{opacity:.4}
-.meter{height:8px;background:#0b2630;border-radius:4px;overflow:hidden}.meter i{display:block;height:100%;background:var(--red);transition:width .35s}
-.meter.me i{background:var(--teal)}.meter.time{height:12px}.meter.time i{background:var(--gold);transition:none}
-.hud2{display:flex;gap:10px;align-items:center;font:700 12px Verdana,sans-serif}
-.tiles{display:flex;flex-wrap:wrap;gap:6px;min-height:46px}
-.tile{min-height:44px;padding:4px 9px 3px;text-align:center;line-height:1.1;font-size:1rem;border-radius:12px}
-.tile i{display:block;font:normal .56rem Verdana,sans-serif;letter-spacing:.08em;color:var(--dim)}
-.tile small{font-size:.64rem}
-.tile.used{opacity:.22}
-.t-S{border-color:#7fb4ff}.t-V{border-color:var(--red)}.t-A{border-color:var(--teal)}.t-op{border-color:var(--gold);background:rgba(255,215,106,.16)}.t-inf{border-color:#c69bff}.t-N{border-color:#9fe07a}.t-sted,.t-tid{border-color:#ffb27a}
-.slot{border:1px dashed var(--line);border-radius:12px;padding:6px}
-input[type=text]{font:inherit;color:var(--ink);background:#0b2630;border:1px solid var(--line);border-radius:12px;padding:10px;width:100%;user-select:text;-webkit-user-select:text}
-.fb{border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:5px;border:1px solid var(--teal);background:rgba(143,240,220,.1)}.fb.no{border-color:var(--red);background:rgba(255,122,122,.1)}
-.formula{font:.8rem ui-monospace,Menlo,monospace;color:var(--gold)}
-.big{font-size:1.2rem}
-.parry{display:grid;grid-template-columns:1fr 1fr;gap:8px}.parry button{text-align:center;min-height:64px}.parry .U{grid-column:1/3}
-.parry button:before{display:block;color:var(--gold)}.parry .U:before{content:"↑"}.parry .L:before{content:"←"}.parry .R:before{content:"→"}
-#tip{position:fixed;left:50%;transform:translateX(-50%);top:calc(40px + env(safe-area-inset-top,0px));max-width:88%;padding:8px 16px;border-radius:20px;background:var(--gold);color:#221a05;font-weight:700;text-align:center;z-index:9}
-.pop{animation:pop .25s}@keyframes pop{from{opacity:.2;transform:translateY(6px)}to{opacity:1;transform:none}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;min-height:44px}
+.chip{min-height:40px;padding:6px 12px;border-radius:20px;border-color:rgba(159,243,224,.5);background:rgba(159,243,224,.08);text-align:center}
+.chip.new{border-color:var(--gold);box-shadow:0 0 10px rgba(255,215,106,.5)}
+.slot{border:1px dashed var(--line);border-radius:14px;padding:6px;background:rgba(0,0,0,.3)}
+.meter{height:10px;background:#1a1238;border-radius:5px;overflow:hidden}.meter i{display:block;height:100%;background:var(--gold)}
+input[type=text]{font:inherit;color:var(--ink);background:#120e26;border:1px solid var(--line);border-radius:12px;padding:10px;width:100%;user-select:text;-webkit-user-select:text}
+#tip{position:fixed;left:50%;transform:translateX(-50%);top:calc(58px + env(safe-area-inset-top,0px));max-width:88%;padding:8px 16px;border-radius:20px;background:var(--gold);color:#221a05;font-weight:700;text-align:center;z-index:9}
+.pop{animation:pop .3s}@keyframes pop{from{opacity:.1;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.pop{animation:none}}
-#app>*{flex-shrink:0}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
-<div id="hud"><span id="hp"></span><span id="wk"></span></div>
+<div id="hud"><div>FORSTAND<div class="bar"><i id="fo" style="background:var(--gold)"></i></div></div><div id="tl">TILLID<div class="bar"><i id="ti" style="background:var(--teal)"></i></div></div><button id="menu" aria-label="menu">☰</button></div>
 <div id="pad"><div><button id="bl" aria-label="walk left">◀</button><button id="br" aria-label="walk right">▶</button></div><button id="bj" aria-label="jump">▲</button></div>
-<button id="act" hidden></button>
 <div id="app" hidden></div>
 <div id="tip" hidden></div>
 <script>
 "use strict";
 /* ============================================================
-   DUMPET PÅ MÅNE SYV — a silhouette side-scroller where magic
-   is Danish grammar. Original story and characters.
-   Sections: language data · grammar checker · story · world &
-   drawing · dialogue · encounters. New chapters add data, not engine.
+   DUMPET PÅ MÅNE SYV — a dark fairy-tale side-scroller for
+   learning Danish. Original story, characters, art and sound.
+   Sections: words · state · sound · world art · talking · story.
    ============================================================ */
-// ---------- RUNES: the typed lexicon. t = grammatical type ----------
-const RUNES={
- jeg:{w:"jeg",t:"S",en:"I"},vi:{w:"vi",t:"S",en:"we"},rum:{w:"rumvæsnerne",t:"S",en:"the aliens"},
- kom:{w:"kom",t:"VDIR",en:"came"},fly:{w:"flyttede",t:"VDIR",en:"moved"},lan:{w:"landede",t:"VLOC",en:"landed"},boe:{w:"boede",t:"VLOC",en:"lived"},
- vil:{w:"ville",t:"VMOD",en:"wanted to"},kun:{w:"kunne",t:"VMOD",en:"could"},
- ikk:{w:"ikke",t:"ADV",en:"not"},ger:{w:"gerne",t:"ADV",en:"gladly"},alt:{w:"altid",t:"ADV",en:"always"},
- hertil:{w:"hertil",t:"DIR",en:"to here"},her:{w:"her",t:"LOC",en:"here"},
- igar:{w:"i går",t:"FRONT",en:"yesterday"},inat:{w:"i nat",t:"FRONT",en:"last night"},
- forat:{w:"for at",t:"FORAT",en:"in order to"},pga:{w:"på grund af",t:"PGA",en:"because of"},fordi:{w:"fordi",t:"FORDI",en:"because"},
- fin:{w:"finde",t:"INFT",en:"find"},lae:{w:"lære",t:"INFT",en:"learn"},faa:{w:"få",t:"INFT",en:"get"},pro:{w:"prøve",t:"INFT",en:"try"},hav:{w:"have",t:"INFT",en:"have"},
- stu:{w:"studere",t:"INFI",en:"study"},arb:{w:"arbejde",t:"INFI",en:"work"},try:{w:"trylle",t:"INFI",en:"do magic"},
- mad:{w:"mad",t:"NP",en:"food"},magi:{w:"magi",t:"NP",en:"magic"},haevn:{w:"hævn",t:"NP",en:"revenge"},job:{w:"et job",t:"NP",en:"a job"},nyt:{w:"noget nyt",t:"NP",en:"something new"},regn:{w:"regnen",t:"NP",en:"the rain"},skib:{w:"et rumskib",t:"NP",en:"a spaceship"},
- mig:{w:"mig",t:"NP",en:"me"},dig:{w:"dig",t:"NP",en:"you"},ham:{w:"ham",t:"NP",en:"him"}
-};
-const TAG={S:"S",VDIR:"V",VLOC:"V",VMOD:"V",ADV:"A",DIR:"sted",LOC:"sted",FRONT:"tid",FORAT:"op",PGA:"op",FORDI:"op",INFT:"inf",INFI:"inf",NP:"N"};
-const START_DECK=["jeg","jeg","kom","hertil","lan","her","forat","fin","mad","lae","magi","ikk","pga","skib","regn","faa","haevn","arb"];
 
-// ---------- the grammar: a small recursive-descent type checker ----------
-function parse(T){
- let i=0,e;const f={ops:[],front:false,adv:0,subAdv:false};
- const bad=m=>({ok:false,err:m});
- const isV=t=>t==="VDIR"||t==="VLOC"||t==="VMOD";
- const infp=msg=>{if(T[i]==="INFI"){i++;return null}if(T[i]==="INFT"){i++;if(T[i]==="NP"){i++;return null}return "That infinitive is transitive: it needs an object (N) after it."}return msg};
- const comp=v=>{
-  if(v==="VDIR"){if(T[i]==="DIR"){i++;return null}return T[i]==="LOC"?"kom / flyttede describe movement, so they take hertil (to here), not her (here).":"kom / flyttede need a destination: hertil."}
-  if(v==="VLOC"){if(T[i]==="LOC"){i++;return null}return T[i]==="DIR"?"landede / boede describe a location, so they take her (here), not hertil (to here).":"landede / boede need a place: her."}
-  return infp("ville / kunne must be followed by an infinitive.")};
- if(!T.length)return bad("An empty sentence casts nothing.");
- if(T[i]==="FRONT"){f.front=true;i++;if(!isV(T[i]))return bad("V2 rule: the verb is always second. After a fronted time rune comes the VERB, then the subject.");const v=T[i++];if(T[i]!=="S")return bad("V2 rule: after the verb comes the subject.");i++;if(T[i]==="ADV"){i++;f.adv++}if(e=comp(v))return bad(e)}
- else{if(T[i]!=="S")return bad("A main clause starts with a subject (S) or a fronted time rune.");i++;if(T[i]==="ADV")return bad("Main clause order is S – V – A: the adverb comes AFTER the verb.");if(!isV(T[i]))return bad("After the subject comes a finite verb (V).");const v=T[i++];if(T[i]==="ADV"){i++;f.adv++}if(e=comp(v))return bad(e)}
- while(i<T.length){const op=T[i++];
-  if(op==="FORAT"){if(e=infp("for at : INF → purpose. It expects an infinitive, not that."))return bad(e);f.ops.push("FORAT")}
-  else if(op==="PGA"){if(T[i]!=="NP")return bad(T[i]==="S"?"på grund af takes an object form (mig, dig, ham), never a subject form.":"på grund af : N → cause. It expects a noun or object pronoun.");i++;f.ops.push("PGA")}
-  else if(op==="FORDI"){if(T[i]!=="S")return bad("fordi : CLAUSE → reason. A clause starts with its subject.");i++;if(T[i]==="ADV"){i++;f.subAdv=true}if(!isV(T[i]))return bad("fordi-clause order is S – (A) – V: subject, optional adverb, then the verb.");const v=T[i++];if(T[i]==="ADV")return bad("fordi-clause: the adverb comes BEFORE the verb (S – A – V). The mirror image of a main clause.");if(e=comp(v))return bad(e);f.ops.push("FORDI")}
-  else return bad("Unexpected rune. Shape of a spell: main clause, then operators (for at / på grund af / fordi) with their arguments.")}
- return {ok:true,f};
-}
-const RULES={
- MAIN:["Main clause","S – V – (A) – …   e.g. jeg kom ikke hertil"],
- PLACE:["her vs hertil","Movement verbs (kom, flyttede) take hertil. Location verbs (landede, boede) take her."],
- FORAT:["for at : INF → purpose","for at + infinitive. ×1.5"],
- PGA:["på grund af : N → cause","på grund af + noun or object pronoun (mig, dig, ham). ×1.5"],
- FORDI:["fordi : CLAUSE → reason","fordi + S – (A) – V. ×2"],
- SAV:["Subordinate order S – A – V","Inside a fordi-clause the adverb jumps in FRONT of the verb: fordi jeg ikke kunne … ×1.25"],
- V2:["V2 inversion","Front a time rune and the verb stays second: i går kom jeg hertil. ×1.5"],
- CHAIN:["Operator chaining","Operators compose. Two or more in one sentence multiply together."]
-};
-const OPM={FORAT:1.5,PGA:1.5,FORDI:2},OPN={FORAT:"for at",PGA:"på grund af",FORDI:"fordi",FRONT:"V2"};
+// ---------- WORDS: every Danish word used, with its meaning ----------
+const GLOSS={hov:"hey!",hvad:"what",laver:"are (you) doing",du:"you",i:"in",min:"my",sø:"lake",er:"am / are / is",okay:"okay",godt:"good",men:"but",helt:"completely",våd:"wet",nej:"no",ja:"yes",stakkels:"poor (you)",dig:"you (object)",og:"and",se:"look",ordene:"the words",flyver:"are flying",fang:"catch",dem:"them",først:"first",jeg:"I",hedder:"am called",velkommen:"welcome",til:"to",måne:"moon",syv:"seven",hvor:"where",kommer:"come",fra:"from",nå:"oh!",kom:"came / come!",med:"with / by",et:"a",en:"a",rumskib:"spaceship",sig:"say",det:"it / that",selv:"yourself",de:"they",smider:"throw",altid:"always",ting:"things",vi:"we",går:"walk / go",tågeby:"Fog Town",der:"there",varmt:"warm",tørt:"dry",uha:"yikes",her:"here",mørkt:"dark",mørk:"dark",lygterne:"the lanterns",lygte:"lantern",sover:"are asleep",lys:"light",den:"this one / it",lidt:"a little",sur:"grumpy",prøv:"try",at:"to",sige:"say",tak:"thanks / please",endnu:"yet another",fremmed:"stranger",hvorfor:"why",hertil:"(to) here",hun:"she",på:"on (på grund af = because of)",grund:"reason (på grund af = because of)",af:"of",selvfølgelig:"of course",falder:"fall",ned:"down",himlen:"the sky",hele:"hele tiden = all the time",tiden:"hele tiden = all the time",så:"so",søen:"the lake",mener:"mean",ha:"ha",kan:"can",tale:"speak",næsten:"almost",pas:"pas på = watch out",ved:"by / near",broen:"the bridge",bro:"bridge",bor:"lives",trold:"troll",han:"he",stiller:"stiller spørgsmål = asks questions",spørgsmål:"questions",stop:"stop",ingen:"nobody",over:"across",uden:"without",god:"good",langsomt:"slowly",for:"too",hel:"whole",sætning:"sentence",én:"one",to:"two",sten:"stone",skoven:"the forest",skov:"forest",nu:"now",ikke:"not",dum:"stupid",som:"as",ser:"ser ud = look / seem",ud:"ser ud = look / seem",rigtigt:"right",gå:"go",bare:"just",hils:"say hello",siger:"are (you) saying",igen:"again",kra:"caw",gav:"made (gav mening = made sense)",mening:"sense",mig:"me",hej:"hi",mumle:"Mumle"};
+const BASE="i og er du jeg min ja nej hej tak okay en et det ha kra mumle tågeby stop".split(" ");   // survival words you arrive with
+const START=["hej","ja","nej","tak","jeg","du","er","okay"];
+// word-lights: [x, height above ground, word]
+const FAIRY=[[610,40,"våd"],[760,48,"sø"],[880,112,"måne"],[1250,118,"rumskib"],[1960,44,"mørk"],[2230,110,"lygte"],[2560,46,"skov"],[2880,46,"fremmed"],[2950,84,"hvorfor"],[3030,120,"hertil"],[3900,46,"grund"],[4100,112,"bro"],[4200,48,"trold"]];
+const NAMES={m:"Mumle",r:"Ravnen",t:"Trolden",l:"Lygten"};
+const VOICE={m:[1,1.5],r:[1.15,1.9],t:[.72,.4],l:[1,1]};
 
-
-const GLOSS={hej:"hi",du:"you",er:"are / is",våd:"wet",jeg:"I",kom:"came",hertil:"(to) here",på:"on (på grund af = because of)",grund:"på grund af = because of",af:"of",et:"a",rumskib:"spaceship",ja:"yes",de:"they",smider:"throw",altid:"always",ting:"things",min:"my",sø:"lake",hvad:"what",og:"and",så:"then",verbum:"verb",tak:"thanks / please",fordi:"because",mangler:"are missing",hedder:"am called",her:"here",magi:"magic",lavet:"made",sprog:"language",rigtig:"correct",forkert:"wrong",grammatik:"grammar",stærk:"strong",ingen:"no / none",pas:"pas på = watch out",en:"a",tågeflue:"fog fly",ikke:"not",dårligt:"bad",med:"with / along",til:"to",men:"but",vagten:"the guard",spørger:"asks",alle:"everyone",hvorfor:"why",bzzz:"bzzz",taler:"talk",som:"like",baby:"baby",giv:"give",mig:"me",dine:"your",ord:"words",fremmed:"stranger",log:"log",vi:"we",fandt:"found",menneske:"human",jorden:"Earth",tog:"took",det:"it",kunne:"could",tale:"speak",sproget:"the language",satte:"satte af = dropped off",måne:"moon",nummer:"number",syv:"seven",projekt:"project",måner:"moons",skal:"must / shall",ét:"one",kæreste:"girlfriend / boyfriend",bor:"lives",i:"in",udlandet:"abroad",hun:"she",flyttede:"moved",sit:"her own",job:"job",derfor:"that's why",sur:"grumpy",stop:"stop",din:"your",forstår:"understand",hvem:"who",har:"has",læst:"read",dagbog:"diary",for:"for (for at = in order to)",at:"to",få:"get",hævn:"revenge",over:"over / on",siger:"say",vis:"show",velkommen:"welcome",fremmede:"strangers",fortælle:"tell",uden:"without",god:"good",bliver:"become",frøer:"frogs",frø:"frog",kommer:"come(s)",ind:"in",regnen:"the rain",ville:"wanted to",finde:"find",mad:"food",lære:"learn",arbejde:"work",dum:"stupid",byen:"the town",gerne:"gladly",vil:"want to",rumvæsnerne:"the aliens",syntes:"thought",var:"was",lærer:"am learning",dansk:"Danish",trylle:"do magic",studere:"study",mumle:"Mumle",tågeby:"Fog Town",ham:"him",han:"he",går:"i går = yesterday",nu:"now",dig:"you (object)",kan:"can",se:"see",går_:"",fundet:"found",fjern:"remove",drone:"drone",nej:"no",igen:"again",prøv:"try",godt:"good",meget:"very",sumpen:"the marsh",husk:"remember",verbet:"the verb",først:"first",tid:"time",ud:"out",herfra:"from here",intet:"nothing",tyv:"thief",min_:"",mine:"my (plural)",runer:"runes"};
-
-
-Object.assign(GLOSS,{forstår:"understand",sø:"lake",kvæk:"ribbit",lygte:"lantern",lys:"light",mørke:"darkness",køber:"buy",sælger:"sell",gamle:"old",ven:"friend",farvel:"goodbye",langsomt:"slowly",noget:"something",nyt:"new",prøve:"try",have:"have",landede:"landed",boede:"lived",trylle:"do magic",mening:"sense",giver:"gives",av:"ouch",grund:"reason (på grund af = because of)",lygtemanden:"the Lantern Man",følg:"follow",lyset:"the light",ordene:"the words",flyver:"fly",natten:"the night",samler:"collect",dem:"them",en_:""});
-// words the character already knows on arrival (bare survival Danish)
-const BASE="hej du er jeg ja nej tak og en et i på til med min din det de vi han hun hvad hvem ikke her kom har kan vil skal som så men for at af mig dig god dansk alle nu igen mumle tågeby grumme hedder bor taler stop log baby bzzz kvæk prøv nummer syv måne ind var ud mad magi av ha".split(" ");
-// word-lights floating in the world: [x, height above ground, word]
-const WISPS=[[560,40,"våd"],[840,45,"smider"],[900,95,"ting"],[990,40,"sprog"],[1060,100,"lavet"],[1120,45,"grammatik"],[1180,95,"stærk"],[1420,45,"vagten"],[1500,100,"spørger"],[1580,45,"hvorfor"],[2080,45,"fremmed"],[2200,100,"menneske"],[2290,45,"fandt"],[2360,100,"sproget"],[2420,45,"tog"],[3500,50,"lys"],[3600,100,"mørke"],[3680,45,"ord"],[4180,45,"kæreste"],[4260,100,"udlandet"],[4340,45,"dagbog"],[4400,100,"derfor"],[4440,45,"sur"],[5080,45,"uden"],[5160,100,"frøer"],[5240,45,"bliver"],[5300,100,"fortælle"],[5360,45,"velkommen"]];
-
-const PARRY=[
- {d:"Du taler som en baby!",o:["You talk like a baby!","You look like a baby!","You are a baby thief!"],sp:1},
- {d:"Giv mig dine ord!",o:["Give me your words!","Give me your food!","I give you my word!"],sp:1},
- {d:"Hvorfor kom du hertil?",o:["Why did you come here?","When did you come here?","How did you get here?"],sp:1},
- {d:"Du bliver til en frø!",o:["You'll turn into a frog!","You are a good frog!","You stay with the frog!"],sp:1},
- {d:"Ingen kommer ind uden en god grund.",o:["Nobody gets in without a good reason.","Everyone gets in for a good reason.","Nobody leaves without a reason."],sp:1},
- {d:"Jeg er sur på grund af regnen.",o:["I'm grumpy because of the rain.","I'm happy in spite of the rain.","I'm wet because it rains."],sp:1},
- {d:"Du kunne ikke finde arbejde på Jorden!",o:["You couldn't find work on Earth!","You didn't want to work on Earth!","You can find work on Earth!"],sp:1},
- {d:"Rumvæsnerne ville ikke have dig!",o:["The aliens didn't want you!","The aliens couldn't find you!","The aliens want you back!"],sp:1},
- {d:"Jeg kom hertil ___ et rumskib.",o:["på grund af","for at","fordi"]},
- {d:"Jeg vil ind i byen ___ finde mad.",o:["for at","fordi","på grund af"]},
- {d:"De tog mig ikke med, ___ jeg var dum.",o:["fordi","for at","på grund af"]},
- {d:"Mumle flyttede hertil ___ studere magi.",o:["for at","på grund af","fordi"]},
- {d:"Vagten er sur ___ regnen.",o:["på grund af","fordi","for at"]},
- {d:"Jeg lærer dansk, ___ jeg gerne vil trylle.",o:["fordi","for at","på grund af"]},
- {d:"Hun kom til byen på grund af ___.",o:["ham","han","at arbejde"]},
- {d:"… fordi jeg ___ finde arbejde.",o:["ikke kunne","kunne ikke","ikke kan at"]},
- {d:"I går ___ hertil.",o:["kom jeg","jeg kom","jeg kommer"]},
- {d:"Jeg landede ___ i nat.",o:["her","hertil","herfra"]}
-];
-
-const FOES={
- fly:{n:"Tågeflue",hp:22,dmg:4,xp:15,cr:10,say:"Bzzz! Du taler som en baby!",note:"No defences. Good for experiments."},
- drone:{n:"Sumpdrone",hp:48,dmg:6,xp:30,cr:20,weak:"FORAT",say:"Fremmed fundet. Fjern fremmed.",note:"Weak to for at (purpose)."},
- thief:{n:"Runetyv",hp:60,dmg:6,xp:40,cr:30,weak:"PGA",say:"Giv mig dine ord, fremmed!",note:"Weak to på grund af (cause)."},
- grumme:{n:"Portvagten Grumme",hp:170,dmg:8,xp:120,cr:80,weak:"FORDI",armour:1,boss:1,say:"Ingen kommer ind uden en god grund!",note:"A sentence with no operator gives no reason: 1 damage. Weak to fordi."}
-};
-const SIGILS={
- sub:["Subordinator","fordi multiplies ×3 instead of ×2. Sentences with no operator deal half.",60],
- inv:["Inverter","A sentence with V2 inversion also heals you for 5.",60],
- breath:["Long Breath","Each word adds +2 base damage instead of +1.",90],
- glass:["Glass Rune","All damage ×1.3. Your parry window is 2 seconds shorter.",90]
-};
-
-const WHO={a1:{n:"OFFICER:",en:1},a2:{n:"AIDE:",en:1},m:{n:"Mumle"},g:{n:"Grumme"},r:{n:"Runetyv"},l:{n:"Lygtemanden"}};
-// ---------- STORY (Chapter 1). n = narration, y = your thoughts (English), others speak Danish ----------
-const SC={
- p1:{L:[["n","You were asleep. Then you were on a ship. Nobody asked."],["a1","Subject 4471. Human. Occupation: mathematician."],["a2","Does it speak the moon language?"],["a1","It speaks English and something called Python."],["a2","So, no. Useless for the project. Drop it on Seven."],["y","I have a doctorate."],["a2","We know. We read it. Airlock."]],next:()=>{W.drop=1;closeSheet()}},
- p2:{L:[["n","Something small drags you out of the lake by the collar. It has a hat, a fishing rod and very little patience."],["m","Hej. Du er våd."],["y","Danish. An entire universe, and it's Danish. I caught 'hej'. And 'du er'. The rest was noise."],["n","You try English. It tilts its head, the way people do at a dog that has started reciting poetry."],["m","Hvad? Jeg forstår ikke."]],
-  ask:"Say something. Anything.",ch:[
-  {t:"Jeg … kom … rumskib.",say:[["m","Et rumskib! Ja, de smider altid ting i min sø."],["y","'Rumskib' landed. The rest of his answer did not. This is going to be a long moon."]],to:"p3"},
-  {t:"English? Do you speak English?",bad:1,say:[["m","Hvad? Jeg forstår ikke."],["n","Nobody here has ever heard of English. You are a dialect of one."]]},
-  {t:"Hvad?",bad:1,say:[["m","Du. Er. Våd."],["n","Slower and louder. So that part is universal."]]}]},
- p3:{L:[["m","Jeg hedder Mumle. Her er magi lavet af sprog."],["m","Rigtig grammatik – stærk magi. Forkert grammatik – ingen magi."],["y","Magic. Made of. Grammar? If the words I'm missing are what I think they are, this is a formal system with consequences."],["n","He presses a handful of warm stones into your palm. Each one hums with a word and a type: S, V, A, and operators that take arguments."],["n","Small lights drift over the shore. He points at one, then at his mouth, then at your ear."],["y","Word-lights. Catch one and the fog in a sentence clears. Fine. I've had worse onboarding."]],next:()=>{S.flags.met=1;save();closeSheet();bark("m","Kom med!")}},
- f1:{L:[["m","Pas på! En tågeflue!"],["n","A shape unhooks itself from the fog. It has wings, opinions, and no respect for beginners."]],next:()=>startBattle("fly",{tut:1,ent:"fly",after:"f2"})},
- f2:{L:[["m","Ikke dårligt. Kom med til Tågeby."],["m","Men vagten spørger alle: Hvorfor kom du hertil?"],["n","He explains, with gestures, what happens to strangers who have no good reason. The gesture is a frog."]],next:()=>{S.flags.tut=1;save();closeSheet()}},
- t1:{L:[["n","A relay dish, half sunk in the marsh. It catches the ship's chatter and turns it into Danish. Of course it does."],["t","Log 4471: Vi fandt et menneske på Jorden. Vi tog det ikke med, fordi det ikke kunne tale sproget. Vi satte det af på måne nummer syv."]],
-  ask:"Why didn't they take the human?",ch:[
-  {t:"Fordi det ikke kunne tale sproget.",to:"t2"},
-  {t:"På grund af et rumskib.",bad:1,say:[["n","You reread it. Slowly. The ship is how, not why."]]},
-  {t:"For at finde et menneske.",bad:1,say:[["n","That's why they came. Not why they left without you."]]}]},
- t2:{L:[["y","fordi. A new operator, and a strange one: its argument is a whole clause, and inside the clause the order flips. 'det ikke kunne', not 'det kunne ikke'."],["n","The runes settle somewhere behind your eyes. Then the dish crackles, untranslated for once."],["a1","And the human?"],["a2","Still alive. It's talking to a moss."],["a1","Give it a week."],["t","Projekt: Alle måner skal tale ét sprog."],["y","One language for every moon. Someone chose Danish. On purpose. I would like a word with that someone. Several, once I've learned them."]],next:()=>{gain(["fordi","vil","kun","ger","rum","hav","mig","pro","nyt"]);S.flags.term=1;save();closeSheet();toast("New runes: fordi, ville, kunne, gerne …",3500)}},
- l1:{L:[["n","A tall figure stands in the reeds, holding a lantern that lights nothing but itself. Word-lights circle it like moths."],["l","God aften, fremmed. Jeg er Lygtemanden."],["l","Ordene flyver i natten. Jeg samler dem. Du samler dem også."],["y","He collects the lights. So do I, apparently. Colleague or competitor?"],["l","Jeg sælger gamle runer. Du køber. Vi er venner."],["n","'Venner' sounds like friends. It also sounds like a sales technique."]],next:()=>{S.flags.lant=1;save();shop()}},
- d1:{L:[["n","A hole in the hillside, lined with stolen signposts. Something inside is sorting words by size."],["r","Giv mig dine ord, fremmed!"]],next:()=>startBattle("thief",{ent:"thief",after:"d2"})},
- d2:{L:[["n","The thief dissolves into loose vowels. In its hoard: a damp notebook with a spear doodled on the cover."],["t","Min kæreste bor i udlandet. Hun flyttede på grund af sit job. Derfor er jeg altid sur. – Grumme"]],
-  ask:"Why did Grumme's girlfriend move?",ch:[
-  {t:"På grund af sit job.",to:"d3"},
-  {t:"Fordi Grumme altid er sur.",bad:1,say:[["n","Tempting, but cause and effect are backwards. Derfor: that is WHY he is grumpy."]]},
-  {t:"For at bo i Tågeby.",bad:1,say:[["n","Udlandet means abroad. She went the other way."]]}]},
- d3:{L:[["y","The gate guard keeps a diary. The gate guard is sad."],["n","You file this under 'leverage', feel slightly bad, and refile it under 'empathy'. It stays in the same pocket either way."]],next:()=>{gain(["dig","ham","job","alt","fly","stu"]);S.flags.diary=1;save();closeSheet();toast("New runes: dig, ham, et job, altid, flyttede, studere",3500)}},
- g1:{L:[["n","The gate of Tågeby. A sign, in letters the size of your head:"],["t","VELKOMMEN TIL TÅGEBY. Alle fremmede skal fortælle vagten, hvorfor de kom hertil. Fremmede uden en god grund bliver til frøer."],["n","The pond beside the gate is extremely full."],["g","Stop! Hvorfor kom du hertil?"]],
-  ask:"Answer the guard",ch:[
-  {t:"Du er sur på grund af din kæreste. Det forstår jeg.",need:"diary",say:[["g","… Hvem har læst min dagbog?"],["n","He blinks. Twice. The spear lowers an inch."]],set:"soft",to:()=>startBattle("grumme",{hpMul:.75,ent:"grumme",after:"e1"})},
-  {t:"Jeg kom hertil for at få hævn.",say:[["g","Hævn? Over hvem? Mig?"],["n","Technically true. Tactically poor."]],set:"angry",to:()=>startBattle("grumme",{dmgAdd:2,xpMul:1.5,ent:"grumme",after:"e1"})},
-  {t:"Jeg kom hertil på grund af et rumskib.",say:[["g","Det siger de alle. Vis mig din magi!"]],to:()=>startBattle("grumme",{ent:"grumme",after:"e1"})}]},
- e1:{L:[["n","The gate opens. Tågeby smells of rain, woodsmoke and irregular verbs."],["m","Velkommen til Tågeby."],["n","Far above, something with too many lights adjusts its orbit."],["a1","It got through the gate."],["a2","…Log it."],["a1","And the Captain?"],["a2","Don't tell the Captain."],["n","End of Chapter 1. The marsh still has things in it, and the guard will spar with you whenever you like."]],next:()=>{S.flags.ch1=1;save();closeSheet()}},
- frog:{L:[["n","You are, briefly, a frog."],["n","Mumle fixes it. He does not let it go."],["m","Kvæk, kvæk. Prøv igen."]],next:()=>{S.hp=maxHp();W.px=1700;save();closeSheet()}}
-};
-
-// ============================================================ STATE & HELPERS
+// ---------- STATE ----------
 const $=s=>document.querySelector(s),app=$("#app"),tip=$("#tip"),cv=$("#cv"),ctx=cv.getContext("2d");
-let S={flags:{},hp:30,lvl:1,xp:0,cr:0,deck:START_DECK.slice(),sig:[],own:[],rules:{},known:[],got:[],hunts:0,motion:true,casts:0,px:330};
-try{const o=JSON.parse(localStorage.getItem("dumpet-w1")||"null");if(o)S=Object.assign(S,o)}catch(e){}
-const save=()=>{try{S.px=W?Math.round(W.px):S.px;localStorage.setItem("dumpet-w1",JSON.stringify(S))}catch(e){}};
-const maxHp=()=>25+5*S.lvl;
+let S={v:1,beat:0,top:0,px:540,name:"",chips:START.slice(),got:[],peek:[],used:{},fors:8,til:{m:10,r:0,t:0},lit:0,stones:0,landed:0,done:0,sound:1,tilt:0};
+try{const o=JSON.parse(localStorage.getItem("dumpet-f1")||"null");if(o&&o.v===1)S=Object.assign(S,o)}catch(e){}
+const save=()=>{try{S.px=Math.round(W.px);localStorage.setItem("dumpet-f1",JSON.stringify(S))}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const knows=w=>BASE.includes(w)||S.known.includes(w)||S.deck.some(id=>RUNES[id].w.split(" ").includes(w));
-// Danish as the character perceives it: unknown words are fog
-const fog=s=>esc(s).split(/([A-Za-zÆØÅæøåé]+)/).map((x,i)=>{if(i%2===0)return x;const l=x.toLowerCase();if(!knows(l))return `<span class="fg">${"▒".repeat(x.length)}</span>`;return GLOSS[l]?`<span class="w" data-w="${l}">${x}</span>`:x}).join("");
-const fogPlain=s=>s.split(/([A-Za-zÆØÅæøåé]+)/).map((x,i)=>i%2&&!knows(x.toLowerCase())?"▒".repeat(x.length):x).join("");
-const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const norm=s=>s.toLowerCase().replace(/[.,!?;:"'’…()–-]/g," ").replace(/\s+/g," ").trim();
-const gain=ids=>{ids.forEach(id=>{if(!S.deck.includes(id))S.deck.push(id)});save()};
-let tipT;const toast=(t,ms)=>{tip.textContent=t;tip.hidden=false;clearTimeout(tipT);tipT=setTimeout(()=>tip.hidden=true,ms||2400)};
-document.addEventListener("click",e=>{const w=e.target.closest(".w[data-w]");if(w){toast(w.textContent+" = "+GLOSS[w.dataset.w]);return}const s=e.target.closest("[data-say]");if(s)speak(s.dataset.say)});
-function speak(t,rate){try{const u=new SpeechSynthesisUtterance(t.replace(/___/g," … "));u.lang="da-DK";u.rate=rate||.9;const v=speechSynthesis.getVoices().find(v=>/^da/i.test(v.lang));if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+const knows=w=>BASE.includes(w)||S.chips.includes(w)||S.peek.includes(w)||w===S.name.toLowerCase();
+// Danish as you perceive it: words you haven't met are dimmed. Tap any word for its meaning.
+const fog=s=>esc(s).split(/([A-Za-zÆØÅæøåé]+)/).map((x,i)=>{if(i%2===0)return x;const l=x.toLowerCase();if(!GLOSS[l])return x;return `<span class="${knows(l)?"w":"fg"}" data-w="${l}">${x}</span>`}).join("");
+let tipT;const toast=(t,ms)=>{tip.textContent=t;tip.hidden=false;clearTimeout(tipT);tipT=setTimeout(()=>tip.hidden=true,ms||2600)};
+document.addEventListener("click",e=>{audioStart();const w=e.target.closest("[data-w]");if(w){const k=w.dataset.w;toast(w.textContent+" = "+GLOSS[k]);if(w.classList.contains("fg")){w.className="w";if(!S.peek.includes(k))S.peek.push(k)}return}const s=e.target.closest("[data-say]");if(s)speak(s.dataset.say,s.dataset.who)});
+function speak(t,who){try{const v=VOICE[who]||[.95,1],u=new SpeechSynthesisUtterance(t);u.lang="da-DK";u.rate=v[0];u.pitch=v[1];const dv=speechSynthesis.getVoices().find(x=>/^da/i.test(x.lang));if(dv)u.voice=dv;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
 try{speechSynthesis.getVoices()}catch(e){}
 function hear(){return new Promise(res=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return res(null);let done=false;const fin=v=>{if(!done){done=true;res(v)}};
  try{const r=new SR();r.lang="da-DK";r.maxAlternatives=4;r.onresult=e=>fin([...e.results[0]].map(a=>a.transcript));r.onerror=e=>fin(e.error==="no-speech"?[]:null);r.onend=()=>fin([]);r.start();setTimeout(()=>{try{r.stop()}catch(e){}},9000)}catch(e){fin(null)}})}
-const heardScore=(alts,target)=>{const tw=norm(target).split(" ");return Math.max(0,...alts.map(a=>{const aw=norm(a).split(" ");return tw.filter(w=>aw.includes(w)).length/tw.length}))};
-// the bottom sheet: all dialogue and spell-building happens here, over the live world
-function ui(h,full){app.hidden=false;app.classList.toggle("full",!!full);app.innerHTML=h;app.scrollTop=0;$("#pad").hidden=true;$("#act").hidden=true}
-function closeSheet(){app.hidden=true;app.innerHTML="";$("#pad").hidden=false;W.foe=null}
+function ui(h,full){app.hidden=false;app.classList.toggle("full",!!full);app.innerHTML=h;app.scrollTop=0;$("#pad").hidden=true}
+function closeSheet(){app.hidden=true;app.innerHTML="";$("#pad").hidden=false;W.talk=null}
 const sheetOpen=()=>!app.hidden;
+function grant(...ws){const fresh=ws.filter(w=>!S.chips.includes(w));S.chips.push(...fresh);W.fresh=fresh;return fresh}
+function bump(f,who,t){if(f)S.fors=Math.max(0,Math.min(100,S.fors+f));if(who&&t&&S.til[who]!=null)S.til[who]=Math.max(0,Math.min(30,S.til[who]+t));hud()}
+function hud(){$("#fo").style.width=S.fors+"%";const who=W.talk&&S.til[W.talk]!=null?W.talk:"m";$("#tl").firstChild.textContent="TILLID · "+NAMES[who].toUpperCase();$("#ti").style.width=(100*S.til[who]/30)+"%"}
 
-// ============================================================ WORLD
-const W={px:S.px,py:0,vy:0,dir:1,walk:0,cam:0,t:0,L:false,R:false,foe:null,fx:{beam:0,hit:0,hurt:0},bub:null,drop:0,dropT:0,len:5950,base:.72};
-const ENT=[ // things in the world, left to right
- {id:"mumle",x:640,scene:"p2",done:()=>S.flags.met},
- {id:"fly",x:1300,scene:"f1",block:1,done:()=>S.flags.tut},
- {id:"hut",x:1750,tap:"Enter Mumle's hut",run:()=>hut()},
- {id:"dish",x:2520,scene:"t1",done:()=>S.flags.term},
- {id:"reeds",x:3150,tap:"Search the reeds",run:()=>startBattle(S.hunts%2?"drone":"fly",{hunt:1,ent:"reeds"})},
- {id:"lant",x:3800,scene:"l1",done:()=>S.flags.lant,tap:"Trade with Lygtemanden",run:()=>shop()},
- {id:"thief",x:4560,scene:"d1",block:1,done:()=>S.flags.diary},
- {id:"grumme",x:5560,scene:"g1",block:1,done:()=>S.flags.ch1,tap:"Spar with Grumme",run:()=>startBattle("grumme",{ent:"grumme"})}
-];
+// ---------- SOUND: everything is synthesised here, nothing is recorded ----------
+const A={c:null};
+function audioStart(){
+ if(A.c||!S.sound)return;const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=A.c=new C();
+ A.out=c.createGain();A.out.gain.value=.8;A.out.connect(c.destination);
+ const b=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+ const noise=(type,f,q)=>{const s=c.createBufferSource();s.buffer=b;s.loop=true;const fl=c.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=c.createGain();g.gain.value=0;s.connect(fl);fl.connect(g);g.connect(A.out);s.start();return {fl,g}};
+ A.wind=noise("bandpass",500,.7);A.water=noise("lowpass",380,.4);A.rumble=noise("lowpass",75,1.2);
+ A.dg=c.createGain();A.dg.gain.value=0;const lp=c.createBiquadFilter();lp.type="lowpass";lp.frequency.value=520;A.dg.connect(lp);lp.connect(A.out);
+ A.osc=[0,1,2].map(i=>{const o=c.createOscillator();o.type=i?"sine":"triangle";o.frequency.value=73.4;o.detune.value=(i-1)*6;o.connect(A.dg);o.start();return o});
+ A.nb=0;A.nc=0;A.nk=0;A.no=8;A.ch=0;
+}
+function tone(f,dur,vol,type,delay,slide){if(!A.c||!S.sound)return;const c=A.c,t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(A.out);o.start(t);o.stop(t+dur+.05)}
+const sfx={catch:()=>[880,1175,1568].forEach((f,i)=>tone(f,.5,.07,"sine",i*.09)),ok:()=>[392,494,587].forEach(f=>tone(f,1.2,.05,"triangle")),bad:()=>tone(120,.35,.09,"sawtooth",0,70),lamp:()=>[1568,2093,2637,3136].forEach((f,i)=>tone(f,.9,.035,"sine",i*.06)),stone:()=>{tone(55,1.4,.22,"sine",0,38);tone(82,.5,.1,"triangle")},caw:()=>{tone(640,.16,.05,"sawtooth",0,380);tone(600,.2,.05,"sawtooth",.22,340)}};
+const CHORDS=[[73.4,110,174.6],[58.3,87.3,138.6],[65.4,98,155.6],[55,82.4,130.8]],BELL=[293.7,349.2,392,440,523.3,587.3,698.5];
+function audioTick(t){
+ if(!A.c)return;const now=A.c.currentTime,set=(p,v)=>p.setTargetAtTime(S.sound?v:0,now,.6),px=W.px;
+ const forest=px>1850&&px<3800,lake=Math.max(0,1-Math.abs(px-420)/700),rav=Math.max(0,1-Math.abs(px-4510)/500);
+ set(A.wind.g.gain,(forest?.035:.07)+.03*Math.sin(t*.4));A.wind.fl.frequency.setTargetAtTime(420+260*Math.sin(t*.23)+120*Math.sin(t*.61),now,.5);
+ set(A.water.g.gain,.09*lake+.06*rav);set(A.rumble.g.gain,.3*W.trollUp);set(A.dg.gain,.05);
+ if(t>A.ch){A.ch=t+13;const ch=CHORDS[Math.floor(t/13)%4];A.osc.forEach((o,i)=>o.frequency.setTargetAtTime(ch[i],now,2))}
+ if(t>A.nb){A.nb=t+2.5+Math.random()*4;tone(BELL[Math.floor(Math.random()*BELL.length)]*(forest?.5:1),2.8,.035,"sine")}
+ if(forest&&t>A.nk){A.nk=t+.28+Math.random()*.5;if(Math.random()<.6)tone(4100+Math.random()*500,.05,.008,"sine")}
+ if(forest&&t>A.no){A.no=t+11+Math.random()*10;tone(370,.5,.03,"sine");tone(311,.7,.03,"sine",.6)}
+ if(t>A.nc&&Math.abs(px-3080)<420){A.nc=t+7+Math.random()*8;sfx.caw()}
+}
+
+// ---------- WORLD ----------
+const W={px:S.px,py:0,vy:0,dir:1,walk:0,cam:0,t:0,L:false,R:false,base:.72,talk:null,busy:false,drop:0,dropT:0,bub:null,trollUp:0,spark:[],pulse:{},len:5300,lastHint:0,fresh:[]};
 let VW=360,VH=640,DPR=1;
-function resize(){DPR=Math.min(2,window.devicePixelRatio||1);VW=window.innerWidth;VH=window.innerHeight;cv.width=VW*DPR;cv.height=VH*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
-window.addEventListener("resize",resize);resize();
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);VW=innerWidth;VH=innerHeight;cv.width=VW*DPR;cv.height=VH*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);W.dk=null}
+addEventListener("resize",resize);resize();
 let seed=11;const sr=()=>(seed=(seed*16807)%2147483647)/2147483647;
-const FAR=Array.from({length:40},(_,i)=>({x:i*190+sr()*80,h:90+sr()*150,w:120+sr()*140}));
-const MID=Array.from({length:90},(_,i)=>({x:i*90+sr()*60,h:80+sr()*130,w:26+sr()*26}));
-const FG=Array.from({length:18},(_,i)=>({x:300+i*520+sr()*200,w:10+sr()*14,lean:sr()*.3-.15}));
-const TUFT=Array.from({length:220},()=>({x:sr()*6000,h:5+sr()*12}));
-const FLY=Array.from({length:46},()=>({x:sr()*6000,y:40+sr()*220,p:sr()*6}));
-const ground=x=>(x<470?10:0)+10*Math.sin(x/190)+6*Math.sin(x/61);   // offset below the base line
-const BLK="#06131a";
-function glow(x,y,r,col,a){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col);g.addColorStop(1,"rgba(0,0,0,0)");ctx.globalAlpha=a==null?1:a;ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.globalAlpha=1}
-function eyes(x,y,gap,col,r){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x-gap,y,r||2,0,7);ctx.arc(x+gap,y,r||2,0,7);ctx.fill();glow(x,y,10,col,.35)}
-
+// pre-drawn gnarled trees
+function makeTree(sd,col,sc){const c=document.createElement("canvas");c.width=360*sc;c.height=420*sc;const x=c.getContext("2d");let s=sd;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+ (function tr(a,b,len,ang,w,d){if(d===0||len<4)return;const bend=(r()-.5)*.9,ex=a+Math.cos(ang)*len,ey=b+Math.sin(ang)*len;x.strokeStyle=col;x.lineWidth=w;x.lineCap="round";x.beginPath();x.moveTo(a,b);x.quadraticCurveTo(a+Math.cos(ang+bend)*len*.5,b+Math.sin(ang+bend)*len*.5,ex,ey);x.stroke();const n=d>4?2:2+(r()>.6?1:0);for(let i=0;i<n;i++)tr(ex,ey,len*(.62+r()*.2),ang+(r()-.5)*1.5,w*.62,d-1)})(180*sc,420*sc,95*sc,-1.57+(r()-.5)*.3,13*sc,7);return c}
+const TMID=[3,17,29,41,57].map(s=>makeTree(s,"#0f0d24",.8)),TNEAR=[5,13,23,77,91].map(s=>makeTree(s,"#05040c",1)),TFG=[7,19].map(s=>makeTree(s,"#020208",1.5));
+const MIDT=Array.from({length:60},(_,i)=>({x:i*150+sr()*90,k:i%5}));
+const NEART=[];for(let x=1820;x<3850;x+=150+sr()*90)NEART.push({x,k:Math.floor(sr()*5)});[980,1500,3990,4960].forEach((x,i)=>NEART.push({x,k:i}));
+const FGT=Array.from({length:9},(_,i)=>({x:500+i*900+sr()*300,k:i%2}));
+const FIRS=Array.from({length:150},(_,i)=>({x:i*42+sr()*20,h:30+sr()*60}));
+const TUFT=Array.from({length:260},()=>({x:470+sr()*4900,h:5+sr()*12}));
+const SHROOM=Array.from({length:26},()=>({x:1850+sr()*2000,s:.7+sr()*.9,c:sr()>.5?"232,120,220":"159,243,224"}));
+const STARS=Array.from({length:110},()=>({x:sr(),y:sr()*.5,a:.2+sr()*.7}));
+const LAMPS=[2080,2400,2720];
+const RAV=[4390,4640];   // the ravine under the bridge
+const inRav=x=>x>RAV[0]&&x<RAV[1];
+const ground=x=>inRav(x)?170:(x<470?10:0)+9*Math.sin(x/190)+5*Math.sin(x/61);
+const walkY=x=>inRav(x)?0:ground(x);
+// three lights: dusk at the lake, night in the forest, moonlit ravine
+const PAL=[{at:0,sky:[[27,16,48],[91,31,74],[200,67,62],[246,160,74]],far:[74,24,56],mist:[255,150,90],water:[168,72,63],orb:[.3,.80,50,255,193,90],stars:.3},
+ {at:2100,sky:[[3,3,10],[10,12,30],[20,30,48],[30,60,62]],far:[12,16,34],mist:[90,150,140],water:[30,60,70],orb:[.7,.2,22,214,226,255],stars:.9},
+ {at:4300,sky:[[5,4,15],[26,18,56],[58,42,94],[79,122,120]],far:[29,24,56],mist:[140,200,190],water:[47,90,102],orb:[.38,.42,70,233,237,248],stars:1}];
+const mix=(a,b,k)=>Array.isArray(a)?a.map((v,i)=>mix(v,b[i],k)):a+(b-a)*k;
+function palette(x){let i=0;while(i<PAL.length-2&&x>PAL[i+1].at)i++;const a=PAL[i],b=PAL[i+1],k=Math.max(0,Math.min(1,(x-(b.at-500))/500));const o={};for(const key of ["sky","far","mist","water","orb","stars"])o[key]=mix(a[key],b[key],k);return o}
+const rgb=(c,a)=>`rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a==null?1:a})`;
+const BLK="#05040c";
+function glow(x,y,r,col,a,c){c=c||ctx;const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col);g.addColorStop(1,"rgba(0,0,0,0)");c.globalAlpha=a==null?1:a;c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.globalAlpha=1}
+function eyes(x,y,gap,col,r){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x-gap,y,r||2,0,7);ctx.arc(x+gap,y,r||2,0,7);ctx.fill();glow(x,y,12,col,.35)}
 function drawHero(x,y,t){
  ctx.save();ctx.translate(x,y);ctx.scale(W.dir,1);const mv=W.walk>.1,ph=t*11,bob=mv?Math.abs(Math.sin(ph))*2.2:Math.sin(t*2)*.8,air=W.py>2;
- glow(17,-78-bob,46,"rgba(255,215,106,.9)",.55+.15*Math.sin(t*5)+W.fx.beam);
- ctx.strokeStyle=BLK;ctx.fillStyle=BLK;ctx.lineCap="round";ctx.lineWidth=5;
- const sw=air?9:mv?Math.sin(ph)*9:2;ctx.beginPath();ctx.moveTo(-2,-24);ctx.lineTo(-2+sw,0);ctx.moveTo(2,-24);ctx.lineTo(2-sw,0);ctx.stroke();
- const sway=Math.sin(t*3)*2+(mv?-3:0);ctx.beginPath();ctx.moveTo(-8,-50-bob);ctx.lineTo(9,-50-bob);ctx.lineTo(12,-16);ctx.quadraticCurveTo(0,-10,-14+sway,-14);ctx.closePath();ctx.fill();
- ctx.beginPath();ctx.arc(1,-60-bob,9.5,0,7);ctx.fill();
- ctx.beginPath();ctx.moveTo(-8,-62-bob);ctx.quadraticCurveTo(-16+sway*.6,-52-bob,-11+sway,-40-bob);ctx.lineTo(-5,-48-bob);ctx.closePath();ctx.fill();
- ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(17,-4);ctx.lineTo(17,-70-bob);ctx.moveTo(6,-44-bob);ctx.lineTo(17,-36-bob);ctx.stroke();
- ctx.fillStyle="#ffd76a";ctx.beginPath();ctx.moveTo(17,-88-bob);ctx.lineTo(23,-78-bob);ctx.lineTo(17,-68-bob);ctx.lineTo(11,-78-bob);ctx.closePath();ctx.fill();
- ctx.restore();
+ glow(19,-84-bob,48,"rgba(255,215,106,.9)",.55+.12*Math.sin(t*5));ctx.fillStyle=BLK;ctx.strokeStyle=BLK;ctx.lineCap="round";ctx.lineWidth=5;
+ const sw=air?9:mv?Math.sin(ph)*9:2;ctx.beginPath();ctx.moveTo(-2,-22);ctx.lineTo(-2+sw,0);ctx.moveTo(3,-22);ctx.lineTo(3-sw,0);ctx.stroke();
+ const sway=Math.sin(t*3)*2+(mv?-4:0);
+ ctx.beginPath();ctx.moveTo(-13+sway,-6);ctx.quadraticCurveTo(-16,-40-bob,-8,-56-bob);ctx.quadraticCurveTo(-2,-78-bob,4,-74-bob);ctx.quadraticCurveTo(12,-70-bob,10,-56-bob);ctx.quadraticCurveTo(18,-30,14,-8);ctx.closePath();ctx.fill();
+ ctx.beginPath();ctx.moveTo(-9,-60-bob);ctx.quadraticCurveTo(-22+sway,-40,-24+sway*1.5,-10);ctx.lineTo(-10,-14);ctx.closePath();ctx.fill();
+ ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(19,0);ctx.lineTo(19,-76-bob);ctx.moveTo(8,-48-bob);ctx.lineTo(19,-42-bob);ctx.stroke();
+ ctx.fillStyle="#ffd76a";ctx.beginPath();ctx.moveTo(19,-94-bob);ctx.lineTo(25,-84-bob);ctx.lineTo(19,-74-bob);ctx.lineTo(13,-84-bob);ctx.closePath();ctx.fill();ctx.restore();
 }
-function drawMumle(x,y,t,hop){const b=hop?Math.abs(Math.sin(t*9))*7:Math.sin(t*2.4)*1.5;ctx.fillStyle=BLK;ctx.beginPath();ctx.arc(x,y-14-b,15,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(x,y-52-b);ctx.lineTo(x+13,y-24-b);ctx.lineTo(x-13,y-24-b);ctx.closePath();ctx.fill();eyes(x,y-17-b,5,"#8ff0dc",2.4);glow(x,y-52-b,6,"rgba(255,215,106,.9)",.8)}
-function drawFly(x,y,t){const yy=y-70+Math.sin(t*3)*10,f=Math.sin(t*30)*10;ctx.fillStyle=BLK;ctx.beginPath();ctx.ellipse(x,yy,14,18,0,0,7);ctx.fill();ctx.globalAlpha=.55;ctx.beginPath();ctx.ellipse(x-18,yy-10+f*.3,18,7+f*.2,-.4,0,7);ctx.ellipse(x+18,yy-10+f*.3,18,7+f*.2,.4,0,7);ctx.fill();ctx.globalAlpha=1;eyes(x,yy-4,5,"#ffb0e0",2.2);return yy}
-function drawThief(x,y,t){const b=Math.sin(t*2)*2;ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x,y-74-b);ctx.lineTo(x+26,y);ctx.lineTo(x-26,y);ctx.closePath();ctx.fill();ctx.beginPath();ctx.arc(x+24,y-14,12,0,7);ctx.fill();eyes(x,y-44-b,6,"#ffd76a",2.4)}
-function drawLant(x,y,t){ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-8,y);ctx.lineTo(x-5,y-96);ctx.lineTo(x+5,y-96);ctx.lineTo(x+8,y);ctx.fill();ctx.beginPath();ctx.ellipse(x,y-100,22,5,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(x,y-106,8,0,7);ctx.fill();ctx.strokeStyle=BLK;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x+4,y-80);ctx.lineTo(x+30,y-70);ctx.lineTo(x+30,y-52+Math.sin(t*2)*2);ctx.stroke();const ly=y-44+Math.sin(t*2)*2;glow(x+30,ly,60,"rgba(255,215,106,.9)",.6);ctx.fillStyle="#ffd76a";ctx.fillRect(x+25,ly-8,10,14);eyes(x,y-104,3,"#fff6d8",1.4)}
-function drawGrumme(x,y,t){const b=Math.sin(t*1.6)*1.5;ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-22,y);ctx.lineTo(x-24,y-70-b);ctx.quadraticCurveTo(x,y-90-b,x+24,y-70-b);ctx.lineTo(x+22,y);ctx.fill();ctx.beginPath();ctx.arc(x,y-92-b,15,0,7);ctx.fill();ctx.fillRect(x-17,y-104-b,34,8);ctx.fillRect(x-3,y-122-b,6,18);ctx.strokeStyle=BLK;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-34,y);ctx.lineTo(x-34,y-140);ctx.stroke();ctx.beginPath();ctx.moveTo(x-34,y-158);ctx.lineTo(x-27,y-138);ctx.lineTo(x-41,y-138);ctx.fill();eyes(x-2,y-92-b,6,"#ff7a7a",2.4)}
+function drawMumle(x,y,t,hop){const b=hop?Math.abs(Math.sin(t*9))*7:Math.sin(t*2.4)*1.5;ctx.fillStyle=BLK;ctx.beginPath();ctx.arc(x,y-13-b,14,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(x-2,y-50-b);ctx.quadraticCurveTo(x+10,y-40-b,x+12,y-23-b);ctx.lineTo(x-12,y-23-b);ctx.closePath();ctx.fill();eyes(x,y-16-b,5,"#9ff3e0",2.2)}
+function drawRaven(x,y,t){const look=Math.sin(t*.7)>0?1:-1,fl=W.talk==="r"?Math.sin(t*14)*5:0;ctx.fillStyle=BLK;ctx.beginPath();ctx.ellipse(x,y-8,11,7,-.3*look,0,7);ctx.fill();ctx.beginPath();ctx.arc(x+8*look,y-15,5,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(x+12*look,y-16);ctx.lineTo(x+21*look,y-14);ctx.lineTo(x+12*look,y-12);ctx.fill();ctx.beginPath();ctx.moveTo(x-8*look,y-8);ctx.lineTo(x-22*look,y-2-fl);ctx.lineTo(x-6*look,y-3);ctx.fill();ctx.fillStyle="#e9edf8";ctx.fillRect(x+8*look,y-16,1.6,1.6)}
+function drawTroll(x,y,t,up){if(up<=.01)return;const yy=y+150*(1-up),b=Math.sin(t*1.2)*2;ctx.fillStyle="#020208";ctx.beginPath();ctx.moveTo(x-70,yy+60);ctx.quadraticCurveTo(x-80,yy-70-b,x-20,yy-110-b);ctx.quadraticCurveTo(x+30,yy-126-b,x+62,yy-70-b);ctx.quadraticCurveTo(x+84,yy-10,x+70,yy+60);ctx.fill();
+ for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(x-60+i*18,yy-84-b-Math.sin(i)*8);ctx.lineTo(x-52+i*18,yy-112-b-(i%2)*10);ctx.lineTo(x-44+i*18,yy-86-b);ctx.fill()}
+ ctx.beginPath();ctx.moveTo(x-6,yy-64-b);ctx.quadraticCurveTo(x-28,yy-40-b,x-4,yy-34-b);ctx.fill();
+ ctx.fillStyle="#ffb347";ctx.beginPath();ctx.arc(x-24,yy-72-b,3.4,0,7);ctx.arc(x+14,yy-72-b,3.4,0,7);ctx.fill();glow(x-5,yy-72-b,36,"rgba(255,150,60,.9)",.45)}
 
 function frame(ts){
- const t=ts/1000,dt=Math.min(.05,t-W.t||0);W.t=t;
+ const t=ts/1000,dt=Math.min(.05,t-W.t||0);W.t=t;const open=sheetOpen();
  // ----- movement
- const open=sheetOpen();
- if(!open&&!W.drop){const v=(W.R?1:0)-(W.L?1:0);if(v){W.dir=v;W.px+=v*150*dt;W.walk=1}else W.walk=0;
+ if(!open&&!W.drop&&S.landed){const v=(W.R?1:0)-(W.L?1:0)+(W.tiltV||0);if(Math.abs(v)>.2){W.dir=v>0?1:-1;W.px+=Math.sign(v)*150*dt;W.walk=1}else W.walk=0;
   if(W.py>0||W.vy){W.vy-=900*dt;W.py+=W.vy*dt;if(W.py<=0){W.py=0;W.vy=0}}
-  let maxX=W.len-150;for(const e of ENT)if(e.block&&!e.done()){maxX=Math.min(maxX,e.x-70)}
-  W.px=Math.max(500,Math.min(maxX,W.px));
-  // collect word-lights
-  for(const w of WISPS){if(S.got.includes(w[2]))continue;if(Math.abs(W.px-w[0])<26&&Math.abs((W.py+45)-w[1])<40){S.got.push(w[2]);if(!S.known.includes(w[2]))S.known.push(w[2]);save();toast("✦ "+w[2]+" = "+(GLOSS[w[2]]||"?"),2600);speak(w[2])}}
-  // approach triggers
-  let near=null;for(const e of ENT){const d=Math.abs(W.px-e.x);if(e.scene&&!e.done()&&d<(e.block?80:60)){scene(e.scene);break}if(e.tap&&d<70&&(!e.scene||e.done()))near=e}
-  const a=$("#act");if(near&&!sheetOpen()){a.hidden=false;a.textContent=near.tap;a.onclick=()=>near.run()}else a.hidden=true;
+  const b=BEATS[S.beat];const maxX=b?b.x:W.len-140;W.px=Math.max(500,Math.min(maxX,W.px));
+  for(const f of FAIRY){if(S.got.includes(f[2]))continue;if(Math.abs(W.px-f[0])<28&&Math.abs((W.py+45)-f[1])<42){S.got.push(f[2]);grant(f[2]);W.pulse[f[2]]=t;for(let i=0;i<14;i++)W.spark.push({x:f[0],y:f[1],vx:(Math.random()-.5)*120,vy:60+Math.random()*120,t});sfx.catch();bump(2);save();toast("✦ "+f[2]+" = "+GLOSS[f[2]],3000);const wd=f[2];setTimeout(()=>speak(wd),350)}}
+  if(b&&!W.busy&&W.px>=b.x-4){const miss=(b.need||[]).filter(w=>!S.got.includes(w));
+   if(miss.length){if(t-W.lastHint>6){W.lastHint=t;bark("Fang ordene først!");toast(`Catch the word-light${miss.length>1?"s":""} first: ${miss.length} still flying behind you`,3200)}}
+   else{W.busy=true;W.L=W.R=false;b.run().then(()=>{S.beat++;S.top=Math.max(S.top,S.beat);W.busy=false;closeSheet();save();hud()})}}
  }else W.walk=0;
- // intro drop
- if(W.drop){W.dropT+=dt;if(W.dropT>2.6){W.drop=0;W.px=540;S.flags.landed=1;save()}}
- for(const k in W.fx)W.fx[k]=Math.max(0,W.fx[k]-dt*1.6);
- // ----- camera & layout: when the sheet is open the world slides up into the free space
- const targetBase=open&&!app.classList.contains("full")?.30:.72;W.base+=(targetBase-W.base)*Math.min(1,dt*6);
- const focus=W.foe?(W.px+W.foe.x)/2:W.px+W.dir*40;W.cam+=(focus-VW/2-W.cam)*Math.min(1,dt*4);
- const cam=W.cam+(W.fx.hurt?Math.sin(t*90)*6*W.fx.hurt:0),GY=VH*W.base,gy=x=>GY+ground(x),sx=x=>x-cam;
- // ----- sky
- const sky=ctx.createLinearGradient(0,0,0,GY+40);sky.addColorStop(0,"#0b1a24");sky.addColorStop(.55,"#1f5560");sky.addColorStop(.88,"#d8a25a");sky.addColorStop(1,"#f3d9a0");ctx.fillStyle=sky;ctx.fillRect(0,0,VW,VH);
- const mx=VW*.66-cam*.02,my=GY-190;glow(mx,my,170,"rgba(255,246,216,.55)");ctx.fillStyle="#fff6d8";ctx.beginPath();ctx.arc(mx,my,46,0,7);ctx.fill();
- // ship drifting across, with a searchlight
- const shx=((t*22+200)%(VW+500))-250,shy=GY-330+Math.sin(t*.7)*8;ctx.fillStyle="#0b1a24";ctx.beginPath();ctx.ellipse(shx,shy,48,9,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(shx,shy-3,22,Math.PI,0);ctx.fill();ctx.fillStyle="#ffd76a";for(const d of[-24,0,24]){ctx.beginPath();ctx.arc(shx+d,shy+5,2,0,7);ctx.fill()}
- ctx.globalAlpha=.07;ctx.fillStyle="#fff6d8";ctx.beginPath();ctx.moveTo(shx-6,shy+8);ctx.lineTo(shx+6,shy+8);ctx.lineTo(shx+70+Math.sin(t)*60,GY+20);ctx.lineTo(shx-70+Math.sin(t)*60,GY+20);ctx.fill();ctx.globalAlpha=1;
- // far mountains
- ctx.fillStyle="rgba(43,102,112,.55)";for(const m of FAR){const x=m.x-cam*.15-200;if(x<-300||x>VW+300)continue;ctx.beginPath();ctx.moveTo(x-m.w,GY+30);ctx.lineTo(x,GY-m.h);ctx.lineTo(x+m.w,GY+30);ctx.fill()}
- // mid trees
- ctx.fillStyle="rgba(23,70,80,.9)";for(const m of MID){const x=m.x-cam*.45-100;if(x<-80||x>VW+80)continue;ctx.beginPath();ctx.moveTo(x-m.w,GY+30);ctx.lineTo(x,GY-m.h);ctx.lineTo(x+m.w,GY+30);ctx.fill()}
- // town wall far right (mid layer feel but world-locked)
- {const x=sx(5640);if(x<VW+100){ctx.fillStyle="#0e2a33";ctx.fillRect(x,GY-170,900,220);for(let i=0;i<24;i++)ctx.fillRect(x+i*38,GY-186,22,18);ctx.fillStyle="#f3d9a0";ctx.globalAlpha=S.flags.ch1?.8:.25;ctx.beginPath();ctx.moveTo(x+18,gy(5660)+2);ctx.lineTo(x+18,GY-80);ctx.arc(x+50,GY-80,32,Math.PI,0);ctx.lineTo(x+82,gy(5700)+2);ctx.fill();ctx.globalAlpha=1}}
- // horizon fog
- const fg=ctx.createLinearGradient(0,GY-90,0,GY+30);fg.addColorStop(0,"rgba(243,217,160,0)");fg.addColorStop(1,"rgba(243,217,160,.32)");ctx.fillStyle=fg;ctx.fillRect(0,GY-90,VW,120);
- // lake
- {const x1=sx(-200),x2=sx(480);if(x2>0){ctx.fillStyle="#2b6670";ctx.fillRect(x1,GY+4,x2-x1,60);ctx.globalAlpha=.35;ctx.fillStyle="#fff6d8";for(let i=0;i<6;i++){const wx=sx(40+i*75)+Math.sin(t+i)*8;ctx.fillRect(wx,GY+10+i%3*6,30,1.5)}ctx.globalAlpha=1}}
- // structures behind the ground line
- {let x=sx(1750);if(x>-150&&x<VW+150){const y=gy(1750);ctx.fillStyle=BLK;ctx.fillRect(x-42,y-52,84,56);ctx.beginPath();ctx.moveTo(x-56,y-50);ctx.lineTo(x,y-98);ctx.lineTo(x+56,y-50);ctx.fill();ctx.fillRect(x+22,y-104,10,26);ctx.fillStyle="#ffd76a";ctx.fillRect(x-28,y-38,14,14);ctx.fillRect(x+6,y-34,14,34);glow(x+13,y-18,44,"rgba(255,215,106,.8)",.5)}
-  x=sx(2520);if(x>-150&&x<VW+150){const y=gy(2520);ctx.strokeStyle=BLK;ctx.fillStyle=BLK;ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-6,y-70);ctx.stroke();ctx.beginPath();ctx.ellipse(x-10,y-86,46,18,-.5,0,Math.PI);ctx.fill();ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-10,y-86);ctx.lineTo(x+22,y-126);ctx.stroke();const bl=.5+.5*Math.sin(t*4);glow(x+22,y-128,18,"rgba(255,122,122,1)",bl);ctx.fillStyle="#ff7a7a";ctx.beginPath();ctx.arc(x+22,y-128,3,0,7);ctx.fill()}
-  x=sx(4560);if(x>-200&&x<VW+200){const y=gy(4560);ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-10,y+4);ctx.quadraticCurveTo(x+90,y-150,x+220,y+4);ctx.fill();ctx.fillStyle="#0b2630";ctx.beginPath();ctx.moveTo(x+40,y+2);ctx.arc(x+66,y-26,26,Math.PI,0);ctx.lineTo(x+92,y+2);ctx.fill()}
-  x=sx(3150);if(x>-100&&x<VW+100){const y=gy(3150);ctx.strokeStyle=BLK;ctx.lineWidth=2.5;for(let i=-9;i<=9;i++){const s=Math.sin(t*1.5+i)*4;ctx.beginPath();ctx.moveTo(x+i*7,y+2);ctx.quadraticCurveTo(x+i*7+s,y-30,x+i*8+s*2,y-52-(i*i)%17);ctx.stroke()}if(Math.sin(t*2)>.2)eyes(x+6,y-22,5,"#ffb0e0",1.8)}
-  x=sx(5380);if(x>-150&&x<VW+150){const y=gy(5380);ctx.fillStyle="#2b6670";ctx.beginPath();ctx.ellipse(x,y+4,70,7,0,0,7);ctx.fill();ctx.fillStyle=BLK;for(let i=-3;i<=3;i++){const fx=x+i*18,j=Math.max(0,Math.sin(t*3+i*1.7))*4;ctx.beginPath();ctx.arc(fx,y+2-j,5,Math.PI,0);ctx.fill();ctx.fillStyle="#8ff0dc";ctx.fillRect(fx-3,y-2-j,1.5,1.5);ctx.fillRect(fx+2,y-2-j,1.5,1.5);ctx.fillStyle=BLK}}}
- // ground silhouette
- ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(0,VH);for(let x=0;x<=VW+8;x+=8)ctx.lineTo(x,gy(x+cam));ctx.lineTo(VW,VH);ctx.fill();
- ctx.strokeStyle=BLK;ctx.lineWidth=1.5;for(const g of TUFT){const x=sx(g.x);if(x<-10||x>VW+10||g.x<480)continue;const y=gy(g.x),s=Math.sin(t*1.3+g.x)*2;ctx.beginPath();ctx.moveTo(x,y+1);ctx.lineTo(x+s,y-g.h);ctx.moveTo(x+3,y+1);ctx.lineTo(x+5+s,y-g.h*.7);ctx.stroke()}
- // fireflies
- for(const f of FLY){const x=sx(f.x+Math.sin(t*.5+f.p)*30);if(x<-10||x>VW+10)continue;const y=GY-f.y+Math.cos(t*.8+f.p)*14;ctx.globalAlpha=.4+.4*Math.sin(t*2+f.p);ctx.fillStyle="#ffd76a";ctx.beginPath();ctx.arc(x,y,1.5,0,7);ctx.fill()}ctx.globalAlpha=1;
+ if(W.drop){W.dropT+=dt;if(W.dropT>2.6){W.drop=0;W.px=540;S.landed=1;save()}}
+ const wantTroll=(S.beat>=TROLL_BEAT&&S.beat<TROLL_BEAT+2&&W.px>4150)?1:0;W.trollUp+=(wantTroll-W.trollUp)*Math.min(1,dt*1.5);
+ audioTick(t);
+ // ----- camera
+ const tb=open&&!app.classList.contains("full")?.33:.72;W.base+=(tb-W.base)*Math.min(1,dt*6);
+ const focus=W.talk==="t"?(W.px+4515)/2:W.px+W.dir*40;W.cam+=(focus-VW/2-W.cam)*Math.min(1,dt*4);
+ const cam=W.cam,GY=VH*W.base,gy=x=>GY+ground(x),sx=x=>x-cam,P=palette(W.px);
+ // ----- sky, stars, sun or moon
+ const sky=ctx.createLinearGradient(0,0,0,GY+50);P.sky.forEach((c,i)=>sky.addColorStop(i/3,rgb(c)));ctx.fillStyle=sky;ctx.fillRect(0,0,VW,VH);
+ ctx.fillStyle="#e8e0ff";for(const s of STARS){ctx.globalAlpha=s.a*P.stars*(.7+.3*Math.sin(t*2+s.x*90));ctx.fillRect(s.x*VW,s.y*GY*1.3,1.2,1.2)}ctx.globalAlpha=1;
+ const ox=VW*P.orb[0]-cam*.01,oy=GY*P.orb[1],oc=[P.orb[3],P.orb[4],P.orb[5]],pm=W.pulse["måne"]&&t-W.pulse["måne"]<2?1.5:1;
+ glow(ox,oy,P.orb[2]*3*pm,rgb(oc,.5));ctx.fillStyle=rgb(oc);ctx.beginPath();ctx.arc(ox,oy,P.orb[2],0,7);ctx.fill();
+ ctx.fillStyle=rgb(P.far,.5);for(const m of [[.2,.92,.4,.016],[.7,1.04,.5,.012],[.45,1.1,.3,.009]]){ctx.beginPath();ctx.ellipse(ox+(m[0]-.45)*VW+Math.sin(t*.05+m[0]*9)*20,oy*m[1],VW*m[2],VH*m[3],0,0,7);ctx.fill()}
+ // the ship
+ const shx=((t*18+260)%(VW+500))-250,shy=GY*.16+Math.sin(t*.7)*6;ctx.fillStyle="#0a0818";ctx.beginPath();ctx.ellipse(shx,shy,30,6,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(shx,shy-2,14,Math.PI,0);ctx.fill();ctx.fillStyle="#9ff3e0";for(const d of[-15,0,15])ctx.fillRect(shx+d-1,shy+3,2,2);
+ if(W.pulse["rumskib"]&&t-W.pulse["rumskib"]<2.5)glow(shx,shy,60,"rgba(159,243,224,.9)",.6);
+ // Tågeby on its crag, far away
+ {const x=4700-cam*.2-600+VW*.2;if(x>-300&&x<VW+200){ctx.fillStyle=rgb(P.far);ctx.beginPath();ctx.moveTo(x-60,GY+30);ctx.lineTo(x-30,GY-70);ctx.lineTo(x+10,GY-92);ctx.lineTo(x+110,GY-96);ctx.lineTo(x+170,GY-60);ctx.lineTo(x+210,GY+30);ctx.fill();
+   for(const tw of [[0,-90,10,38],[20,-94,14,62],[46,-96,9,44],[66,-96,16,80],[94,-94,10,48],[112,-84,8,30]]){ctx.fillRect(x+tw[0],GY+tw[1]-tw[3],tw[2],tw[3]);ctx.beginPath();ctx.moveTo(x+tw[0]-3,GY+tw[1]-tw[3]);ctx.lineTo(x+tw[0]+tw[2]/2,GY+tw[1]-tw[3]-tw[2]*1.9);ctx.lineTo(x+tw[0]+tw[2]+3,GY+tw[1]-tw[3]);ctx.fill()}
+   ctx.fillStyle="#ffcf7a";for(const w of [[24,-140],[28,-124],[72,-160],[76,-140],[70,-126],[97,-128],[4,-112],[50,-128]]){ctx.globalAlpha=.6+.4*Math.sin(t*1.5+w[0]);ctx.fillRect(x+w[0],GY+w[1],2,3)}ctx.globalAlpha=1}}
+ // far firs, mist, mid trees
+ ctx.fillStyle=rgb(P.far,.9);for(const f of FIRS){const x=f.x-cam*.25-80;if(x<-10||x>VW+10)continue;ctx.beginPath();ctx.moveTo(x-6,GY+30);ctx.lineTo(x,GY-f.h);ctx.lineTo(x+6,GY+30);ctx.fill()}
+ const mg=ctx.createLinearGradient(0,GY-90,0,GY+30);mg.addColorStop(0,rgb(P.mist,0));mg.addColorStop(1,rgb(P.mist,.4));ctx.fillStyle=mg;ctx.fillRect(0,GY-90,VW,120);
+ ctx.globalAlpha=.9;for(const m of MIDT){const x=m.x-cam*.55-200,im=TMID[m.k];if(x<-300||x>VW+20)continue;ctx.drawImage(im,x,GY+26-im.height)}ctx.globalAlpha=1;
+ // lake, with the light's reflection
+ {const x2=sx(482);if(x2>0){ctx.fillStyle=rgb(P.water);ctx.fillRect(sx(-400),GY+4,x2-sx(-400),80);ctx.globalAlpha=W.pulse["sø"]&&t-W.pulse["sø"]<2.5?1:.4;ctx.fillStyle=rgb(oc);for(let i=0;i<8;i++){const wx=sx(20+i*58)+Math.sin(t+i)*8;ctx.fillRect(wx,GY+10+i%3*7,30,1.5)}ctx.globalAlpha=1;
+   const jx=sx(430);ctx.fillStyle=BLK;ctx.fillRect(jx,GY+2,70,5);ctx.fillRect(jx+6,GY+2,4,26);ctx.fillRect(jx+50,GY+2,4,26)}}
+ // ravine mist and water far below
+ {const x1=sx(RAV[0]),x2=sx(RAV[1]);if(x2>0&&x1<VW){ctx.fillStyle=rgb(P.water);ctx.fillRect(x1,GY+150,x2-x1,60);const rg=ctx.createLinearGradient(0,GY+20,0,GY+160);rg.addColorStop(0,rgb(P.mist,0));rg.addColorStop(1,rgb(P.mist,.5));ctx.fillStyle=rg;ctx.fillRect(x1,GY+20,x2-x1,140)}}
+ drawTroll(sx(4515),GY+56,t,W.trollUp);
+ // near trees (in the world)
+ for(const n of NEART){const im=TNEAR[n.k],x=sx(n.x)-im.width/2;if(x<-380||x>VW+20)continue;ctx.drawImage(im,x,gy(n.x)+6-im.height)}
+ // standing stone with its word, and the raven
+ {const x=sx(2950);if(x>-80&&x<VW+80){const y=gy(2950);ctx.fillStyle="#0b0a1c";ctx.beginPath();ctx.moveTo(x-22,y+4);ctx.lineTo(x-16,y-92);ctx.quadraticCurveTo(x,y-110,x+14,y-92);ctx.lineTo(x+22,y+4);ctx.fill();ctx.save();ctx.translate(x,y-40);ctx.rotate(-Math.PI/2);ctx.font="italic 15px Georgia";ctx.textAlign="center";ctx.shadowColor="#9ff3e0";ctx.shadowBlur=10;ctx.fillStyle="#9ff3e0";ctx.fillText("hvorfor",0,5);ctx.restore();drawRaven(x-2,y-104,t)}}
+ // bridge stones rise as you earn them
+ for(let i=0;i<3;i++){const bx=RAV[0]+(RAV[1]-RAV[0])*(i+.5)/3,w=(RAV[1]-RAV[0])/3+2;W["st"+i]=(W["st"+i]||0)+((S.stones>i?1:0)-(W["st"+i]||0))*Math.min(1,dt*1.6);const up=W["st"+i];if(up<.01)continue;const y=GY+170*(1-up);ctx.fillStyle="#090716";ctx.fillRect(sx(bx)-w/2,y,w,26);ctx.beginPath();ctx.moveTo(sx(bx)-w/2,y+26);ctx.lineTo(sx(bx),y+60+i%2*10);ctx.lineTo(sx(bx)+w/2,y+26);ctx.fill();ctx.fillRect(sx(bx)-w/2+4,y-7,10,8);ctx.fillRect(sx(bx)+w/2-14,y-7,10,8)}
+ // ground
+ ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(0,VH);for(let x=0;x<=VW+6;x+=6)ctx.lineTo(x,gy(x+cam));ctx.lineTo(VW,VH);ctx.fill();
+ ctx.strokeStyle=BLK;ctx.lineWidth=1.4;for(const g of TUFT){const x=sx(g.x);if(x<-10||x>VW+10||inRav(g.x))continue;const y=gy(g.x),s=Math.sin(t*1.3+g.x)*2;ctx.beginPath();ctx.moveTo(x,y+1);ctx.lineTo(x+s,y-g.h);ctx.moveTo(x+3,y+1);ctx.lineTo(x+5+s,y-g.h*.7);ctx.stroke()}
+ for(const m of SHROOM){const x=sx(m.x);if(x<-30||x>VW+30)continue;const y=gy(m.x),s=m.s;ctx.fillStyle=BLK;ctx.fillRect(x-1.5*s,y-12*s,3*s,13*s);ctx.beginPath();ctx.ellipse(x,y-12*s,9*s,6*s,0,Math.PI,0);ctx.fill();glow(x,y-14*s,22*s,`rgba(${m.c},.9)`,.4+.15*Math.sin(t*2+m.x));ctx.fillStyle=`rgb(${m.c})`;for(const p of [[-4,-14],[2,-16],[5,-13]]){ctx.beginPath();ctx.arc(x+p[0]*s,y+p[1]*s,1.3*s,0,7);ctx.fill()}}
+ // lanterns on posts
+ LAMPS.forEach((lx,i)=>{const x=sx(lx);if(x<-60||x>VW+60)return;const y=gy(lx),lit=S.lit>i,sw=Math.sin(t*1.4+i)*3;ctx.strokeStyle=BLK;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-16,y+2);ctx.lineTo(x-16,y-112);ctx.quadraticCurveTo(x-14,y-128,x+4,y-124);ctx.stroke();ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+4,y-124);ctx.lineTo(x+4+sw,y-100);ctx.stroke();ctx.fillStyle=BLK;ctx.fillRect(x-3+sw,y-102,14,3);ctx.fillStyle=lit?"#ffcf7a":"#1a1630";ctx.fillRect(x-1+sw,y-99,10,14);if(lit)glow(x+4+sw,y-92,70,"rgba(255,207,122,.9)",.55+.1*Math.sin(t*7+i))});
  // word-lights
  ctx.font="italic 13px Georgia";ctx.textAlign="center";
- for(const w of WISPS){if(S.got.includes(w[2]))continue;const x=sx(w[0]);if(x<-60||x>VW+60)continue;const y=gy(w[0])-w[1]+Math.sin(t*2+w[0])*5;glow(x,y,22,"rgba(143,240,220,.9)",.7);ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();ctx.fillStyle="rgba(143,240,220,.9)";ctx.fillText(w[2],x,y-14)}
- // creatures
- const foeDead=id=>W.fx["dead_"+id];
- let fy=null;
- if(!S.flags.met||true){const follow=S.flags.met;const mxw=follow?(W.mx=(W.mx==null?640:W.mx)+((W.px-W.dir*46)-(W.mx==null?640:W.mx))*Math.min(1,dt*2.2)):640;const moving=follow&&Math.abs((W.px-W.dir*46)-mxw)>12;
-  if(!follow){ctx.strokeStyle=BLK;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx(630),gy(640)-20);ctx.lineTo(sx(560),gy(640)-70);ctx.stroke();ctx.strokeStyle="rgba(255,246,216,.5)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(sx(560),gy(640)-70);ctx.lineTo(sx(560),GY+8);ctx.stroke()}
-  drawMumle(sx(mxw),gy(mxw),t,moving);W.mxs=sx(mxw);W.mys=gy(mxw)-60}
- if(!S.flags.tut)fy=drawFly(sx(1300),gy(1300),t);
- if(W.foe&&W.foe.id==="reeds")drawFly(sx(3150),gy(3150),t);
- if(!S.flags.diary)drawThief(sx(4626),gy(4626),t);
- drawLant(sx(3800),gy(3800),t);
- drawGrumme(sx(5560),gy(5560),t);
- // hero (or the fall from the ship)
- if(W.drop){const k=Math.min(1,W.dropT/1.6),hx=sx(330),hy=(GY-320)+(320)*k*k;ctx.globalAlpha=.25;ctx.fillStyle="#fff6d8";ctx.beginPath();ctx.moveTo(hx-8,GY-330);ctx.lineTo(hx+8,GY-330);ctx.lineTo(hx+50,GY+6);ctx.lineTo(hx-50,GY+6);ctx.fill();ctx.globalAlpha=1;if(k<1){ctx.save();ctx.translate(hx,hy);ctx.rotate(W.dropT*6);ctx.translate(-hx,-hy);drawHero(hx,hy+30,t);ctx.restore()}else{const s=(W.dropT-1.6);ctx.strokeStyle="#fff6d8";ctx.lineWidth=2;ctx.globalAlpha=Math.max(0,1-s);for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(hx,GY+8,20+s*90+i*14,4+s*10,0,0,7);ctx.stroke()}ctx.globalAlpha=1}}
- else if(S.flags.landed||S.flags.met)drawHero(sx(W.px),gy(W.px)-W.py,t);
- // battle effects
- if(W.foe){const fxp=sx(W.foe.x),fyp=gy(W.foe.x)-(W.foe.h||60);
-  if(W.fx.beam>0){const hx=sx(W.px)+17*W.dir,hy=gy(W.px)-78;ctx.strokeStyle="#ffd76a";ctx.lineWidth=2+W.fx.beam*8;ctx.globalAlpha=W.fx.beam;ctx.beginPath();ctx.moveTo(hx,hy);ctx.quadraticCurveTo((hx+fxp)/2,hy-60,fxp,fyp);ctx.stroke();ctx.globalAlpha=1;glow(fxp,fyp,70*W.fx.beam+10,"rgba(255,215,106,.9)",W.fx.beam)}
-  const r=W.foe.hp/W.foe.max;ctx.strokeStyle="rgba(255,122,122,.25)";ctx.lineWidth=3;ctx.beginPath();ctx.arc(fxp,fyp,44,0,7);ctx.stroke();ctx.strokeStyle="#ff7a7a";ctx.beginPath();ctx.arc(fxp,fyp,44,-Math.PI/2,-Math.PI/2+Math.max(0,r)*6.283);ctx.stroke()}
- // speech bubble barks
- if(W.bub&&t<W.bub.until){const b=W.bub,x=b.who==="m"?W.mxs:sx(b.x),y=b.who==="m"?W.mys:gy(b.x)-b.h;ctx.font="15px Georgia";const tw=ctx.measureText(b.text).width+20;ctx.fillStyle="rgba(255,246,216,.94)";const bx=Math.max(8,Math.min(VW-tw-8,x-tw/2));ctx.beginPath();ctx.roundRect(bx,y-34,tw,26,10);ctx.fill();ctx.fillStyle=BLK;ctx.textAlign="left";ctx.fillText(b.text,bx+10,y-16);ctx.textAlign="center"}
- // foreground trunks pass in front of everything: depth
- ctx.fillStyle="#020a0e";if(!open)for(const f of FG){const x=f.x-cam*1.6;if(x<-120||x>VW+120)continue;ctx.beginPath();ctx.moveTo(x-f.w,VH);ctx.lineTo(x-f.w*.5+f.lean*300,-10);ctx.lineTo(x+f.w*.5+f.lean*300,-10);ctx.lineTo(x+f.w,VH);ctx.fill()}
- // vignette + hurt flash
- const vg=ctx.createRadialGradient(VW/2,VH*.45,VH*.25,VW/2,VH*.45,VH*.8);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.55)");ctx.fillStyle=vg;ctx.fillRect(0,0,VW,VH);
- if(W.fx.hurt>0){ctx.fillStyle=`rgba(255,80,80,${W.fx.hurt*.3})`;ctx.fillRect(0,0,VW,VH)}
- $("#hp").textContent=`♥ ${Math.max(0,S.hp)}/${maxHp()} · Lv ${S.lvl}`;$("#wk").textContent=`✦ ${S.got.length}/${WISPS.length} · ◆ ${S.cr}`;
+ for(const f of FAIRY){if(S.got.includes(f[2]))continue;const x=sx(f[0]);if(x<-60||x>VW+60)continue;const y=gy(f[0])-f[1]+Math.sin(t*2+f[0])*5;glow(x,y,22,"rgba(159,243,224,.9)",.75);const fl=Math.sin(t*26)*1.5;ctx.strokeStyle="rgba(233,237,248,.85)";ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x-5,y-3,5,2+fl,-.6,0,7);ctx.ellipse(x+5,y-3,5,2+fl,.6,0,7);ctx.stroke();ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(x,y,2.2,0,7);ctx.fill();ctx.fillStyle="rgba(200,255,244,.95)";ctx.fillText(f[2],x,y-14)}
+ W.spark=W.spark.filter(p=>t-p.t<1);for(const p of W.spark){const a=t-p.t;ctx.globalAlpha=1-a;ctx.fillStyle="#9ff3e0";ctx.fillRect(sx(p.x+p.vx*a),gy(p.x)-p.y-p.vy*a+200*a*a,2,2)}ctx.globalAlpha=1;
+ // Mumle
+ {const follow=S.beat>=1,tx=follow?W.px-W.dir*46:660;W.mx=W.mx==null?(follow?W.px-46:660):W.mx+(tx-W.mx)*Math.min(1,dt*2.2);const moving=follow&&Math.abs(tx-W.mx)>12;
+  if(!follow){ctx.strokeStyle=BLK;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx(650),gy(660)-20);ctx.lineTo(sx(585),gy(660)-66);ctx.stroke()}
+  if(S.landed||W.drop)drawMumle(sx(W.mx),GY+walkY(W.mx),t,moving);W.mxs=sx(W.mx);W.mys=GY+walkY(W.mx)-58}
+ // hero, or the fall
+ if(W.drop){const k=Math.min(1,W.dropT/1.6),hx=sx(330),hy=(GY-340)+340*k*k;ctx.globalAlpha=.22;ctx.fillStyle="#9ff3e0";ctx.beginPath();ctx.moveTo(hx-8,GY*.16);ctx.lineTo(hx+8,GY*.16);ctx.lineTo(hx+50,GY+6);ctx.lineTo(hx-50,GY+6);ctx.fill();ctx.globalAlpha=1;if(k<1){ctx.save();ctx.translate(hx,hy);ctx.rotate(W.dropT*6);ctx.translate(-hx,-hy);drawHero(hx,hy+30,t);ctx.restore()}else{const s=W.dropT-1.6;ctx.strokeStyle="#e9edf8";ctx.lineWidth=2;ctx.globalAlpha=Math.max(0,1-s);for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(hx,GY+8,20+s*90+i*14,4+s*10,0,0,7);ctx.stroke()}ctx.globalAlpha=1}}
+ else if(S.landed){drawHero(sx(W.px),GY+walkY(W.px)-W.py,t);if(W.pulse["våd"]&&t-W.pulse["våd"]<3){ctx.fillStyle="#9fd8ff";for(let i=0;i<5;i++){const a=((t*1.4+i*.2)%1);ctx.fillRect(sx(W.px)-10+i*5,GY+walkY(W.px)-50+a*50,1.5,5)}}}
+ // forest darkness, with holes cut by every light
+ const dz=Math.max(0,Math.min(1,(W.px-1850)/160))*Math.max(0,Math.min(1,(3850-W.px)/200)),dark=dz*(.93-.25*S.lit);
+ if(dark>.01){if(!W.dk){W.dk=document.createElement("canvas");W.dk.width=VW;W.dk.height=VH}const d=W.dk.getContext("2d");d.globalCompositeOperation="source-over";d.clearRect(0,0,VW,VH);d.fillStyle=`rgba(2,2,8,${dark})`;d.fillRect(0,0,VW,VH);d.globalCompositeOperation="destination-out";
+  glow(sx(W.px)+19*W.dir,GY+walkY(W.px)-84-W.py,90,"rgba(0,0,0,1)",1,d);glow(W.mxs,W.mys+40,30,"rgba(0,0,0,.8)",1,d);
+  LAMPS.forEach((lx,i)=>{if(S.lit>i)glow(sx(lx)+4,gy(lx)-80,230,"rgba(0,0,0,1)",1,d)});
+  for(const f of FAIRY)if(!S.got.includes(f[2]))glow(sx(f[0]),gy(f[0])-f[1],46,"rgba(0,0,0,1)",1,d);glow(sx(2950),gy(2950)-50,70,"rgba(0,0,0,.9)",1,d);
+  ctx.drawImage(W.dk,0,0)}
+ // speech bubble
+ if(W.bub&&t<W.bub.until){const b=W.bub,x=W.mxs,y=W.mys;ctx.font="15px Georgia";const tw=ctx.measureText(b.text).width+20;ctx.fillStyle="rgba(233,237,248,.95)";const bx=Math.max(8,Math.min(VW-tw-8,x-tw/2));ctx.beginPath();ctx.roundRect(bx,y-34,tw,26,10);ctx.fill();ctx.fillStyle=BLK;ctx.textAlign="left";ctx.fillText(b.text,bx+10,y-16);ctx.textAlign="center"}
+ // foreground trunks and the thorn frame
+ if(!open)for(const f of FGT){const im=TFG[f.k],x=f.x-cam*1.5-im.width/2;if(x<-560||x>VW+20)continue;ctx.drawImage(im,x,VH+40-im.height)}
+ ctx.strokeStyle="#020208";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-10,58);ctx.bezierCurveTo(VW*.25,18,VW*.42,88,VW*.66,40);ctx.bezierCurveTo(VW*.83,10,VW*.92,60,VW+20,30);ctx.stroke();
+ ctx.fillStyle="#020208";for(let i=0;i<22;i++){const k=i/21,a=-10+k*(VW+30),b2=48+Math.sin(k*9)*22-(k>.55?12:0);ctx.beginPath();ctx.moveTo(a-3,b2);ctx.lineTo(a+(i%2?4:-4),b2+(i%2?-12:12));ctx.lineTo(a+3,b2);ctx.fill()}
+ const vg=ctx.createRadialGradient(VW/2,VH*.45,VH*.25,VW/2,VH*.45,VH*.8);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.62)");ctx.fillStyle=vg;ctx.fillRect(0,0,VW,VH);
  requestAnimationFrame(frame);
 }
-function bark(who,text,x,h){W.bub={who,text:fogPlain(text),x,h:h||80,until:W.t+3.2};speak(text)}
-// controls: on-screen pad, keyboard, and jump
-const hold=(el,k)=>{const on=e=>{e.preventDefault();W[k]=true},off=e=>{e.preventDefault();W[k]=false};el.addEventListener("pointerdown",on);el.addEventListener("pointerup",off);el.addEventListener("pointerleave",off);el.addEventListener("pointercancel",off)};
+function bark(text){W.bub={text,until:W.t+3.2};speak(text,"m")}
+const hold=(el,k)=>{const on=e=>{e.preventDefault();audioStart();W[k]=true},off=e=>{e.preventDefault();W[k]=false};el.addEventListener("pointerdown",on);el.addEventListener("pointerup",off);el.addEventListener("pointerleave",off);el.addEventListener("pointercancel",off)};
 hold($("#bl"),"L");hold($("#br"),"R");
-const jump=()=>{if(W.py<=0&&!sheetOpen())W.vy=430};$("#bj").addEventListener("pointerdown",e=>{e.preventDefault();jump()});
-addEventListener("keydown",e=>{if(e.key==="ArrowLeft")W.L=true;if(e.key==="ArrowRight")W.R=true;if(e.key==="ArrowUp"||e.key===" ")jump()});
+const jump=()=>{if(W.py<=0&&!sheetOpen())W.vy=440};$("#bj").addEventListener("pointerdown",e=>{e.preventDefault();jump()});
+addEventListener("keydown",e=>{if(e.target.tagName==="INPUT")return;if(e.key==="ArrowLeft")W.L=true;if(e.key==="ArrowRight")W.R=true;if(e.key==="ArrowUp"||e.key===" ")jump()});
 addEventListener("keyup",e=>{if(e.key==="ArrowLeft")W.L=false;if(e.key==="ArrowRight")W.R=false});
+addEventListener("deviceorientation",e=>{W.tiltV=S.tilt&&e.gamma!=null?(e.gamma>12?1:e.gamma<-12?-1:0):0});
 
-// ============================================================ DIALOGUE
-function go(x){typeof x==="function"?x():scene(x)}
-function scene(id){
- const sc=SC[id],lines=sc.L.slice(),gone={};let k=0,pend=null;W.L=W.R=false;
- const html=([who,txt])=>who==="n"?`<p class="nar">${esc(txt)}</p>`:who==="y"?`<p class="you">${esc(txt)}</p>`:who==="t"?`<p class="term">${fog(txt)} <button class="mini" data-say="${esc(txt)}">▶</button></p>`:WHO[who].en?`<p class="ali"><b>${WHO[who].n}</b> ${esc(txt)}</p>`:`<p class="dk"><b>${WHO[who].n}</b>${fog(txt)} <button class="mini" data-say="${esc(txt)}">▶</button></p>`;
- function draw(){
-  const end=k>=lines.length-1;let foot;
-  if(!end)foot=`<button class="go" id="nx">▸</button>`;
-  else if(pend)foot=`<button class="go" id="nx">Continue</button>`;
-  else if(sc.ch)foot=`<p class="lab">${sc.ask}</p><div class="opts">${sc.ch.map((c,i)=>gone[i]||(c.need&&!S.flags[c.need])?"":`<button data-c="${i}">${esc(c.t)}</button>`).join("")}</div>`;
-  else foot=`<button class="go" id="nx">Continue</button>`;
-  // show only the latest few lines so the world stays visible
-  ui(`<div class="log">${lines.slice(Math.max(0,k-1),k+1).map(html).join("")}</div>${foot}`);
-  app.querySelector(".log").lastElementChild.classList.add("pop");
-  const cur=lines[k];if(cur&&!["n","y"].includes(cur[0])&&!(WHO[cur[0]]||{}).en)speak(cur[1]);
-  const nx=$("#nx");if(nx)nx.onclick=()=>{if(!end){k++;draw()}else go(pend||sc.next)};
-  app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{const c=sc.ch[+b.dataset.c];
-   if(c.bad){gone[b.dataset.c]=1;lines.push(...c.say);k=lines.length-c.say.length;draw();return}
-   if(c.set){S.flags[c.set]=1;save()}
-   if(c.say){lines.push(...c.say);k=lines.length-c.say.length;pend=c.to;draw()}else go(c.to)});
- }
- draw();
-}
-function hut(){
- const tile=id=>{const r=RUNES[id];return `<span class="tile t-${TAG[r.t]}" style="display:inline-block;border:1px solid;margin:2px"><i>${TAG[r.t]}</i>${r.w}<br><small class="dim">${r.en}</small></span>`};
- const uniq=[...new Set(S.deck)];
- ui(`<p class="lab">Mumle's hut</p><h1>Grimoire</h1>
- <button id="rest" class="go">Sleep on the moss · full heal</button>
- <p class="lab">How spells work</p><p class="formula">(3 + words) × operators × bonuses</p><p class="dim">A spell is a Danish sentence. If it type-checks, it fires. Longer and more nested sentences hit harder. Typing a spell from memory gives ×1.25 and may use any rune you own. Saying it aloud gives ×1.25.</p>
- <p class="lab">Rules discovered · ${Object.keys(S.rules).length}/${Object.keys(RULES).length}</p>${Object.keys(RULES).map(k=>S.rules[k]?`<p><span style="color:var(--gold)">${RULES[k][0]}</span><br><span class="dim">${RULES[k][1]}</span></p>`:`<p class="dim">??? — undiscovered. Experiment.</p>`).join("")}
- <p class="lab">Your runes · ${uniq.length}</p><div>${uniq.map(tile).join("")}</div>
- <p class="lab">Words caught · ${S.got.length}/${WISPS.length}</p><p class="dim">${S.got.map(w=>w+" = "+(GLOSS[w]||"?")).join(" · ")||"None yet. Walk into the floating lights; some need a jump."}</p>
- <p class="lab">Settings</p><button id="mo">Tilt-to-parry: ${S.motion?"on":"off"}</button><button id="rs" class="ghost">Erase save and restart</button>
- <button class="go" id="bk">Back outside</button>`,true);
- $("#rest").onclick=()=>{S.hp=maxHp();save();toast("You sleep. The moss is judgemental but soft.")};
- $("#bk").onclick=closeSheet;$("#mo").onclick=()=>{S.motion=!S.motion;save();hut()};
- let arm=false;$("#rs").onclick=e=>{if(!arm){arm=true;e.target.textContent="Tap again to erase everything";return}try{localStorage.removeItem("dumpet-w1")}catch(x){}location.reload()};
-}
-function shop(){
- ui(`<p class="lab">Lygtemanden · ◆ ${S.cr}</p><h2>Old runes for sale</h2><p class="dim">Sigils change your damage formula. Fit up to two.</p><div class="opts">${Object.keys(SIGILS).map(k=>{const s=SIGILS[k],own=S.own.includes(k),on=S.sig.includes(k);return `<button data-s="${k}" ${!own&&S.cr<s[2]?"disabled":""}><b>${s[0]}${on?" · fitted":""}</b>${s[1]}<small>${own?(on?"Tap to remove":"Tap to fit"):"Buy for ◆ "+s[2]}</small></button>`}).join("")}</div><button class="go" id="bk">Farvel</button>`);
- $("#bk").onclick=closeSheet;
- app.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{const k=b.dataset.s;if(!S.own.includes(k)){S.cr-=SIGILS[k][2];S.own.push(k)}else if(S.sig.includes(k))S.sig=S.sig.filter(x=>x!==k);else if(S.sig.length<2)S.sig.push(k);else return toast("Two sigils at most. Remove one first.");save();shop()});
-}
-
-// ============================================================ ENCOUNTERS
-let B;const HAND=12;
-const FOEX={fly:1300,reeds:3150,thief:4626,grumme:5560},FOEH={fly:70,reeds:70,thief:44,grumme:92};
-function startBattle(key,opt){
- const f=FOES[key],max=Math.round(f.hp*(opt.hpMul||1));
- B={key,f,hp:max,max,opt,line:f.say,cd:0};W.foe={id:opt.ent,x:FOEX[opt.ent],h:FOEH[opt.ent],hp:max,max};W.dir=1;
- if(W.px>W.foe.x-110)W.px=W.foe.x-150;newHand();drawBattle();speak(f.say);
-}
-function newHand(){
- const deck=S.deck.slice(),take=id=>{const i=deck.indexOf(id);if(i>=0)deck.splice(i,1);return id};
- const pairs=[["kom","hertil"],["fly","hertil"],["lan","her"],["boe","her"]].filter(p=>deck.includes(p[0])&&deck.includes(p[1])),p=B.opt.tut?["kom","hertil"]:rnd(pairs);
- const core=[take("jeg"),take(p[0]),take(p[1])];
- B.hand=shuffle(core.concat(shuffle(deck).slice(0,HAND-3))).map(id=>({id,used:false}));B.sent=[];
-}
-const pretty=ids=>{let s=ids.map(id=>(RUNES[id].t==="FORDI"?", ":" ")+RUNES[id].w).join("").trim();return s.charAt(0).toUpperCase()+s.slice(1)+"."};
-const head=()=>{if(W.foe)W.foe.hp=B.hp;return `<div class="hud2"><span>♥ ${Math.max(0,S.hp)}</span><div class="meter me" style="flex:1"><i style="width:${100*Math.max(0,S.hp)/maxHp()}%"></i></div><span style="color:var(--red)">${B.f.n} ${Math.max(0,B.hp)}</span></div><p class="dk" style="font-size:1.05rem">${fog(B.line)}</p>`};
-const tileHTML=(id,attr,used)=>{const r=RUNES[id];return `<button class="tile t-${TAG[r.t]} ${used?"used":""}" ${attr}><i>${TAG[r.t]}</i>${r.w}<small>${r.en}</small></button>`};
-function drawBattle(){
- const tut=B.opt.tut&&S.casts<3?`<p class="fb"><span>Mumle taps three stones: <b>jeg · kom · hertil</b>.</span><span class="dim">Tap runes to build a sentence, then cast. Then extend it: for at + an infinitive, or på grund af + a noun. Wrong shapes fizzle and tell you why.</span></p>`:"";
- ui(head()+`<p class="dim">${B.f.note}</p>`+tut+`<div class="tiles slot" id="sent"></div><div class="tiles" id="hand"></div>
- <input type="text" id="ty" hidden autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type the whole sentence · ×1.25">
- <div class="row"><button class="go" id="cast">Cast</button><button class="ghost" id="clr">Clear</button></div>
- <div class="row"><button id="wr">⌨ Write it</button><button id="mu" ${B.cd>0?"disabled":""}>New runes${B.cd>0?" ("+B.cd+")":""}</button></div>`);
- const paint=()=>{
-  $("#sent").innerHTML=B.sent.map((h,k)=>tileHTML(B.hand[h].id,`data-k="${k}"`)).join("")||`<span class="dim">Your spell. Tap runes below.</span>`;
-  $("#hand").innerHTML=B.hand.map((h,i)=>tileHTML(h.id,`data-i="${i}" ${h.used?"disabled":""}`,h.used)).join("");
-  $("#sent").querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const h=B.sent.splice(+b.dataset.k,1)[0];B.hand[h].used=false;paint()});
-  $("#hand").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;B.hand[i].used=true;B.sent.push(i);paint()})};
+// ---------- TALKING ----------
+const npc=(who,da)=>`<p class="dk pop"><b>${NAMES[who]}</b>${fog(da)} <button class="mini" data-say="${esc(da)}" data-who="${who}">▶</button></p>`;
+// an NPC speaks; note = what you see them do, think = your own English thought
+function say(who,da,o){o=o||{};return new Promise(res=>{W.talk=who;hud();ui(npc(who,da)+(o.note?`<p class="nar">${esc(o.note)}</p>`:"")+(o.think?`<p class="you">${esc(o.think)}</p>`:"")+`<button class="go" id="nx">▸</button>`);speak(da,who);$("#nx").onclick=res})}
+function tell(lines){return new Promise(res=>{ui(lines.map(l=>l[0]==="y"?`<p class="you pop">${esc(l[1])}</p>`:l[0]==="a"?`<p class="ali pop">${esc(l[1])}</p>`:`<p class="nar pop">${esc(l[1])}</p>`).join("")+`<button class="go" id="nx">▸</button>`);$("#nx").onclick=res})}
+// You speak: tap your words in order, or say it aloud, or write it. Returns the normalised text.
+function utter(o){return new Promise(res=>{
+ let comp=[],done=false,raf,t0=performance.now();const fresh=W.fresh||[];
+ const chipTxt=w=>w==="NAVN"?S.name:w;
+ ui(`${o.who&&o.da&&o.da!=="…"?npc(o.who,o.da):""}${o.note?`<p class="nar">${esc(o.note)}</p>`:""}${o.secs?`<div class="meter"><i id="tm" style="width:100%"></i></div>`:""}
+ <div class="chips slot" id="comp"></div>
+ <input type="text" id="ty" hidden autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Skriv her …">
+ <div class="row"><button class="go" id="sig">Sig det</button><button class="ghost" id="del">⌫</button></div>
+ <div class="chips" id="tray"></div>
+ <div class="row"><button id="mic">🎤 Say it</button><button id="wr">⌨ Write it</button><button id="hint">?</button></div>`);if(o.who&&S.til[o.who]!=null){W.talk=o.who;hud()}
+ const fin=(text,mode)=>{if(done)return;done=true;cancelAnimationFrame(raf);res({text:norm(text),mode})};
+ const paint=()=>{$("#comp").innerHTML=comp.map((w,k)=>`<button class="chip" data-k="${k}">${esc(chipTxt(w))}</button>`).join("")||`<span class="dim">Your words. Tap them in order.</span>`;
+  $("#tray").innerHTML=S.chips.map((w,i)=>`<button class="chip ${fresh.includes(w)?"new":""}" data-i="${i}">${esc(chipTxt(w))}</button>`).join("");
+  $("#comp").querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{comp.splice(+b.dataset.k,1);paint()});
+  $("#tray").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{comp.push(S.chips[+b.dataset.i]);paint()})};
  paint();
- $("#clr").onclick=()=>{B.sent.forEach(h=>B.hand[h].used=false);B.sent=[];$("#ty").value="";paint()};
+ $("#del").onclick=()=>{comp.pop();paint()};
  $("#wr").onclick=()=>{const t=$("#ty");t.hidden=!t.hidden;if(!t.hidden)t.focus()};
- $("#mu").onclick=()=>{B.cd=3;newHand();drawBattle()};
- $("#cast").onclick=cast;
-}
-function tokenize(text){
- const w=norm(text).split(" ").filter(Boolean),own=[...new Set(S.deck)],ids=[];let p=0;
- while(p<w.length){let hit=null;for(let n=3;n>=1&&!hit;n--){const chunk=w.slice(p,p+n).join(" ");const id=own.find(id=>RUNES[id].w===chunk);if(id){hit=id;p+=n}}
-  if(!hit)return {err:`“${w[p]}” is not a rune you own. Check the spelling, or your grimoire.`};ids.push(hit)}
- return {ids};
-}
-async function cast(){
- const ty=$("#ty"),typed=!ty.hidden&&ty.value.trim();let ids;
- if(typed){const t=tokenize(ty.value);if(t.err)return fizzle(t.err,ty.value);ids=t.ids}else ids=B.sent.map(i=>B.hand[i].id);
- if(!ids.length)return toast("Build a sentence first.");
- const r=parse(ids.map(id=>RUNES[id].t)),text=pretty(ids);S.casts++;
- if(!r.ok)return fizzle(r.err,text);
- ui(head()+`<div class="pop"><p class="lab">The spell holds</p><p class="big">${esc(text)} <button class="mini" data-say="${esc(text)}">▶</button></p><p class="dim">Say it aloud for ×1.25.</p><div class="row"><button class="go" id="mic">🎤 Speak it</button><button class="ghost" id="skip">Cast silently</button></div><div id="vo"></div></div>`);
- const voiced=await new Promise(res=>{
-  $("#skip").onclick=()=>res(false);
-  $("#mic").onclick=async()=>{$("#mic").disabled=true;$("#vo").innerHTML=`<p class="dim">Listening …</p>`;const alts=await hear();
-   if(alts===null){$("#vo").innerHTML=`<p class="dim">This browser won't listen. Say it three times, then be honest:</p><div class="row"><button id="y">It sounded right</button><button id="n">Not yet</button></div>`;$("#y").onclick=()=>res(true);$("#n").onclick=()=>res(false);return}
-   if(heardScore(alts,text)>=.7)return res(true);
-   $("#vo").innerHTML=`<p class="dim">Heard: “${esc(alts[0]||"nothing")}”. Not close enough.</p>`;$("#mic").disabled=false;$("#mic").textContent="🎤 Try again"}});
- resolveCast(ids,r.f,text,!!typed,voiced);
-}
-function fizzle(err,text){
- B.line=rnd(["Hvad? Det giver ingen mening.","Ha! Forkert grammatik.","Prøv igen, fremmed."]);
- ui(head()+`<div class="fb no pop"><b>The spell fizzles.</b><span>${esc(text)}</span><span class="dim">${esc(err)}</span><button class="go" id="nx">Brace yourself</button></div>`);
- $("#nx").onclick=()=>enemyTurn();
-}
-function resolveCast(ids,f,text,typed,voiced){
- const has=k=>S.sig.includes(k),words=ids.reduce((n,id)=>n+RUNES[id].w.split(" ").length,0);
- let base=3+words*(has("breath")?2:1),parts=[`(3 + ${words}${has("breath")?"×2":""})`],m=1;
- const mul=(x,label)=>{m*=x;parts.push(`× ${x} ${label}`)};
- f.ops.forEach(o=>mul(o==="FORDI"&&has("sub")?3:OPM[o],OPN[o]));
- if(f.subAdv)mul(1.25,"S–A–V");if(f.front)mul(1.5,"V2");
- if(!f.ops.length&&has("sub"))mul(.5,"no operator");
- if(has("glass"))mul(1.3,"glass");if(typed)mul(1.25,"written");if(voiced)mul(1.25,"spoken");
- if(B.f.weak&&f.ops.includes(B.f.weak))mul(1.5,"weakness");
- let dmg=Math.round(base*m);if(B.f.armour&&!f.ops.length){dmg=1;parts=["no reason given → armour holds"]}
- B.hp-=dmg;W.fx.beam=1;
- const found=[];const disc=k=>{if(!S.rules[k]){S.rules[k]=1;found.push(k)}};
- disc("MAIN");disc("PLACE");f.ops.forEach(disc);if(f.subAdv)disc("SAV");if(f.front)disc("V2");if(f.ops.length>1)disc("CHAIN");
- let heal=0;if(f.front&&has("inv")){heal=5;S.hp=Math.min(maxHp(),S.hp+5)}
- S.xp+=found.length*10;save();
- B.line=B.hp<=0?"…":rnd(["Av!","Det var … rigtig grammatik.","Ikke dårligt, fremmed."]);
- ui(head()+`<div class="fb pop"><b>${dmg} damage</b><span>${esc(text)}</span><span class="formula">${parts.join(" ")} = ${dmg}</span>${heal?`<span class="dim">Inverter: +5 ♥</span>`:""}${found.map(k=>`<span><span style="color:var(--gold)">Rule discovered: ${RULES[k][0]}</span><br><span class="dim">${RULES[k][1]} · +10 xp</span></span>`).join("")}<button class="go" id="nx">${B.hp<=0?"Finish it":"Their turn"}</button></div>`);
- $("#nx").onclick=()=>B.hp<=0?(B.f.boss&&!B.final?finisher():win()):enemyTurn();
-}
-function finisher(){
- ui(head()+`<p class="lab">${B.f.n} · the last word</p><h2>Hvorfor kom du hertil?</h2><p class="dim">He is on one knee, and still asking. Write your answer from memory: one sentence with at least two operators, or a fordi-clause containing an adverb.</p><input type="text" id="fw" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Jeg kom hertil …"><button class="go" id="ck">Answer him</button><div id="out"></div>`);
- $("#ck").onclick=()=>{const v=$("#fw").value;if(!v.trim())return;const t=tokenize(v);let err=t.err,r;
-  if(!err){r=parse(t.ids.map(id=>RUNES[id].t));if(!r.ok)err=r.err;else if(!(r.f.ops.length>=2||(r.f.ops.includes("FORDI")&&r.f.subAdv)))err="Grammatical, but too thin a reason. Two operators, or a fordi-clause with an adverb (ikke, gerne, altid)."}
-  if(err){S.hp-=4;W.fx.hurt=1;save();$("#out").innerHTML=`<div class="fb no pop"><b>He shakes his head. −4 ♥</b><span class="dim">${esc(err)}</span></div>`;if(S.hp<=0)setTimeout(()=>scene("frog"),1200);return}
-  B.final=true;W.fx.beam=1;
-  $("#out").innerHTML=`<div class="fb pop"><b>He lowers the spear.</b><span>${esc(pretty(t.ids))}</span><span class="dk"><b>Grumme</b>${fog("Det er en god grund. Velkommen til Tågeby.")}</span><button class="go" id="nx">Continue</button></div>`;$("#nx").onclick=win};
-}
-function win(){
- const f=B.f,o=B.opt,xp=Math.round(f.xp*(o.xpMul||1));S.xp+=xp;S.cr+=f.cr;let extra="";
- if(o.hunt){S.hunts++;if(S.hunts===1){gain(["igar","inat"]);extra+=`<p class="dk"><b>Mumle</b>${fog("Husk: først tid, så verbet!")}</p><p class="dim">New runes: i går, i nat. They go at the FRONT of a sentence. See what that does to the word order.</p>`}
-  else if(S.hunts===2){gain(["boe","vi","try"]);extra+=`<p class="dim">New runes: boede, vi, trylle.</p>`}}
- let up="";while(S.xp>=40*S.lvl){S.xp-=40*S.lvl;S.lvl++;S.hp=maxHp();up=`<p class="big" style="color:var(--gold)">Level ${S.lvl}. +5 max ♥, fully healed.</p>`}
- save();
- ui(`<p class="lab">Victory</p><h2>${f.n} is gone</h2><p>+${xp} xp · +${f.cr} ◆</p>${up}${extra}<button class="go" id="nx">Continue</button>`);
- $("#nx").onclick=()=>{W.foe=null;o.after?scene(o.after):closeSheet()};
-}
-function enemyTurn(){
- if(B.cd>0)B.cd--;
- const f=B.f,n=f.boss&&B.hp<B.max/2?2:1;let k=0;const pool=shuffle(PARRY);
- const one=async()=>{
-  const it=pool[k],secs=(f.boss?9:11)-(S.sig.includes("glass")?2:0);
-  const r=await parry(it,secs,n>1?`Attack ${k+1} of ${n}`:"Parry");
-  const dmg=f.dmg+(B.opt.dmgAdd||0);let hd,cls="";
-  if(r.perfect){const c=5+3*S.lvl;B.hp-=c;W.fx.beam=.7;S.hp=Math.min(maxHp(),S.hp+2);hd=`Perfect parry. Counter for ${c}, +2 ♥`}
-  else if(r.ok)hd="Parried.";
-  else{S.hp-=dmg;W.fx.hurt=1;hd=(r.late?"Too slow. ":"Wrong. ")+`You take ${dmg}.`;cls="no"}
-  // hearing a line in a fight teaches its words
-  const full=it.d.replace("___",it.o[0]);if(r.ok)norm(full).split(" ").forEach(w=>{if(GLOSS[w]&&!knows(w))S.known.push(w)});
-  save();B.line=full;
-  ui(head()+`<div class="fb ${cls} pop"><b>${hd}</b><span>${esc(full)}</span>${it.sp?`<span class="dim">${esc(it.o[0])}</span>`:""}<button class="go" id="nx">Continue</button></div>`);
-  $("#nx").onclick=()=>{if(S.hp<=0){W.foe=null;return scene("frog")}if(B.hp<=0)return B.f.boss&&!B.final?finisher():win();k++;if(k<n)one();else{newHand();drawBattle()}};
- };
- one();
-}
-// Timed parry: three answers at ← ↑ →. Tilt the phone, swipe, or tap.
-function parry(it,secs,label){return new Promise(res=>{
- const order=shuffle([0,1,2]),pos=["U","L","R"],t0=performance.now();let done=false,base=null,raf;
- ui(`<p class="lab">${label} · ${B.f.n} attacks</p><div class="meter time"><i id="tm" style="width:100%"></i></div><p class="big">${it.sp?fog(it.d):esc(it.d)}</p><p class="dim">${it.sp?"Listen. What did they say?":"Fill the gap."} ${S.motion?"Tilt, swipe or tap.":"Swipe or tap."}</p>
- <div class="parry">${order.map((oi,p)=>`<button class="${pos[p]}" data-p="${pos[p]}" data-o="${oi}">${esc(it.o[oi])}</button>`).join("")}</div>`);
- if(it.sp)speak(it.d,1);
- const fin=(oi,late)=>{if(done)return;done=true;cancelAnimationFrame(raf);removeEventListener("deviceorientation",ori);document.removeEventListener("touchstart",ts);document.removeEventListener("touchend",te);
-  const el=(performance.now()-t0)/1000;res({ok:oi===0,perfect:oi===0&&el<secs*.45,late})};
- const pick=p=>{const b=app.querySelector(`[data-p="${p}"]`);if(b)fin(+b.dataset.o)};
- app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>fin(+b.dataset.o));
- const tick=()=>{const el=(performance.now()-t0)/1000,t=$("#tm");if(t)t.style.width=Math.max(0,100*(1-el/secs))+"%";if(el>=secs)return fin(-1,true);raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);
- function ori(e){if(!S.motion||e.gamma==null)return;if(!base){base={g:e.gamma,b:e.beta};return}if(performance.now()-t0<500)return;const dg=e.gamma-base.g,db=e.beta-base.b;if(dg<-20)pick("L");else if(dg>20)pick("R");else if(db<-20)pick("U")}
- addEventListener("deviceorientation",ori);
- let sx0,sy0;function ts(e){sx0=e.touches[0].clientX;sy0=e.touches[0].clientY}
- function te(e){if(sx0==null)return;const dx=e.changedTouches[0].clientX-sx0,dy=e.changedTouches[0].clientY-sy0;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy))pick(dx<0?"L":"R");else if(dy<-60)pick("U")}
- document.addEventListener("touchstart",ts,{passive:true});document.addEventListener("touchend",te,{passive:true});
+ $("#ty").addEventListener("keydown",e=>{if(e.key==="Enter")$("#sig").click()});
+ $("#sig").onclick=()=>{const ty=$("#ty");if(!ty.hidden&&ty.value.trim())return fin(ty.value,"write");if(!comp.length)return toast("Tap some words first.");fin(comp.map(chipTxt).join(" "),"tap")};
+ $("#mic").onclick=async()=>{const m=$("#mic");m.disabled=true;m.textContent="Listening …";const alts=await hear();if(done)return;m.disabled=false;m.textContent="🎤 Say it";if(alts===null)return toast("The microphone isn't available here. Tap or write instead.",3200);if(!alts.length)return toast("Heard nothing. Try again.");fin(alts[0],"voice")};
+ $("#hint").onclick=()=>toast(o.hint||"Say what you can.",4500);
+ if(o.secs){const tick=()=>{const el=(performance.now()-t0)/1000,b=$("#tm");if(b)b.style.width=Math.max(0,100*(1-el/o.secs))+"%";if(el>=o.secs)return fin("","late");raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick)}
 })}
+const has=(t,...ws)=>ws.every(w=>(" "+t+" ").includes(" "+w+" "));
+// keep asking until the judge is satisfied; the NPC always answers in fluent Danish
+async function converse(o){
+ for(let tries=0;;tries++){
+  const u=await utter(o),r=u.mode==="late"?(o.late||{who:o.who,da:"For langsomt."}):o.judge(u.text,tries);
+  if(r.ok){S.chips.forEach(w=>{if(w!=="NAVN"&&has(u.text,w))S.used[w]=(S.used[w]||0)+1});W.fresh=[];sfx.ok()}else sfx.bad();
+  const own=r.ok&&u.mode!=="tap";bump((r.fors||0)+(own?2:0),o.who,r.til||0);
+  await new Promise(res=>{ui(`${u.text?`<p class="mine"><b>${esc(S.name||"You")}${u.mode==="voice"?" · spoken":u.mode==="write"?" · written":""}</b>${esc(u.text)}</p>`:""}${npc(r.who||o.who,r.da)}${r.note?`<p class="nar">${esc(r.note)}</p>`:""}${r.think?`<p class="you">${esc(r.think)}</p>`:""}${own?`<p class="dim">+2 Forstand for ${u.mode==="voice"?"saying":"writing"} it yourself.</p>`:""}<button class="go" id="nx">▸</button>`);speak(r.da,r.who||o.who);$("#nx").onclick=res});
+  if(r.ok)return r;
+ }
+}
 
-// ============================================================ BOOT
+// ---------- STORY · Chapter 1, Part 1 ----------
+async function intro(){
+ await tell([["n","You were asleep. Then you were on a ship. Nobody asked."],["a","OFFICER: Subject 4471. Human. Occupation: mathematician."],["a","AIDE: Does it speak the moon language?"],["a","OFFICER: It speaks English and something called Python."]]);
+ await tell([["a","AIDE: So, no. Useless for the project. Drop it on Seven."],["y","I have a doctorate."],["a","AIDE: We know. We read it. Airlock."]]);
+ closeSheet();W.drop=1;
+}
+const TROLL_BEAT=8;
+const BEATS=[
+ {x:600,run:async()=>{
+  await tell([["n","Something small drags you out of the lake by the collar. It has a pointed hat, a fishing rod, and the look of someone whose evening has been interrupted."]]);
+  await say("m","Hov! Hvad laver du i min sø?",{note:"He points at you. Then at the lake. Then at you again, with feeling.",think:"That is not English. That is not anything I… wait. 'Du'. 'Min'. Evening classes. This is Danish. An entire universe, and it's Danish."});
+  await say("m","Er du okay?",{note:"He tilts his head and looks you over for damage.",think:"That one I got. Every word of it. I can tap any dim word to see what it means. The words at the bottom are the ones I can actually say."});
+  await converse({who:"m",da:"Er du okay?",hint:"He asked if you're okay. Answer with any of your words: ja, nej, okay, tak …",judge:t=>has(t,"nej")?{ok:1,da:"Nej? Stakkels dig. Og du er helt våd.",fors:2,til:2,note:"He pats your knee, which is as high as he can reach."}:t?{ok:1,da:"Godt. Men du er helt våd.",fors:2,til:2,note:"He flicks water off your sleeve and holds up the drop like evidence."}:{da:"Hvad siger du?"}});
+  await say("m","Se! Ordene flyver. Fang dem!",{note:"Small lights drift over the shore. He jumps at one, misses, and points at you instead.",think:"Lights with words in them. If I catch one, I keep the word. Walk with ◀ ▶, jump with ▲."});
+ }},
+ {x:1010,need:["våd","sø","måne"],run:async()=>{
+  await say("m","Jeg hedder Mumle. Hvad hedder du?",{note:"He taps his own chest twice. Then points at yours.",think:"'Jeg hedder Mumle.' He's telling me his name. And asking mine."});
+  if(!S.name)await new Promise(res=>{ui(`<p class="lab">Your name</p><input type="text" id="nm" maxlength="14" autocomplete="off" placeholder="Write your name"><button class="go" id="nx">That's me</button>`);$("#nx").onclick=()=>{const v=$("#nm").value.trim().replace(/[^\p{L}\- ]/gu,"");if(!v)return toast("Write a name first.");S.name=v;res()}});
+  grant("hedder","NAVN");
+  await converse({who:"m",da:"Hvad hedder du?",hint:"Copy his sentence with your own name: Jeg hedder …",judge:t=>has(t,"jeg","hedder")&&t.includes(S.name.toLowerCase())?{ok:1,da:`Velkommen til Måne Syv, ${S.name}.`,fors:4,til:3}:t.includes(S.name.toLowerCase())?{da:`${S.name}? Sig det selv: Jeg hedder …`,note:"He says it slowly, drawing the words in the air."}:{da:"Hvad siger du? Jeg hedder Mumle. Og du?"}});
+  await say("m","Hvor kommer du fra?",{note:"He points at you, then sweeps an arm across the whole horizon, and shrugs.",think:"'Hvor' … where? Where do I come from. I can't even begin. Although there is a light up there, near that awful ship. High up. I'd have to jump."});
+ }},
+ {x:1420,need:["rumskib"],run:async()=>{
+  await say("m","Nå! Du kom med et rumskib?",{note:"He saw which light you caught. He points up at the ship, draws a line down to the lake, and makes a splash with both hands.",think:"'Kom' is 'came'. 'Med et rumskib': with a spaceship. He's handing me the whole sentence. I only have to turn 'du' into 'jeg'."});
+  grant("kom","med","et");
+  await converse({who:"m",da:"Du kom med et rumskib?",hint:"Say it about yourself: I came with a spaceship. Jeg kom …",judge:t=>has(t,"jeg","kom","med","et","rumskib")?{ok:1,da:"De smider altid ting i min sø.",fors:5,til:3,note:"He glares up at the ship and shakes a very small fist.",think:"'Always' and 'my lake' I caught. I am apparently not the first thing they've thrown in."}:has(t,"jeg","kom")&&has(t,"rumskib")?{da:"Du kom MED et rumskib. Ja. Sig det igen.",note:"He leans on the little words in the middle.",fors:1}:has(t,"ja")?{da:"Ja! Sig det selv: Jeg kom …"}:{da:"Hvad siger du? Du kom med et rumskib, ikke?"}});
+  await say("m","Kom, vi går til Tågeby. Der er varmt og tørt.",{note:"He picks up his rod and sets off along the shore without checking whether you follow.",think:"'Kom' again, but now it means 'come'. Same word, two jobs. Fine. Tågeby: a place. I'll take anywhere that isn't a lake."});
+ }},
+ {x:1900,run:async()=>{
+  await say("m","Uha, her er mørkt. Lygterne sover.",{note:"The path runs into trees so black that the dusk stops at the edge. Lanterns hang in there, unlit.",think:"Dark. Something is asleep. I can see about as far as my own staff."});
+  await say("m","Sig 'lys' til dem!",{note:"He cups his hands and whispers the word at the nearest lantern, as if waking a cat.",think:"He wants me to say it. 'Lys.' A word that does something. I've had worse lab equipment."});
+  grant("lys");
+ }},
+ {x:2075,run:async()=>{await converse({who:"l",da:"…",note:"A lantern, cold and dark. It seems to be waiting.",hint:"Say the word Mumle gave you: lys.",judge:t=>has(t,"lys")?(S.lit=1,sfx.lamp(),{ok:1,who:"m",da:"Ja! Lys!",fors:3,note:"The lantern yawns open. Gold light spills across the path.",think:"I said a word and the world changed. That is the first thing on this moon that has made sense."}):{who:"m",da:"Nej, nej. Sig: lys.",note:"The lantern stays asleep."}})}},
+ {x:2395,run:async()=>{await converse({who:"l",da:"…",note:"A second lantern, asleep.",hint:"The same word wakes it.",judge:t=>has(t,"lys")?(S.lit=2,sfx.lamp(),{ok:1,who:"m",da:"Godt! Én lygte til.",fors:2,note:"It lights. Things with too many legs withdraw politely into the undergrowth."}):{who:"m",da:"Sig: lys.",note:"Nothing happens."}})}},
+ {x:2715,run:async()=>{await converse({who:"l",da:"…",note:"A third lantern. This one is asleep with its back to you.",hint:"Mumle says this one is grumpy and wants politeness: say lys and tak.",judge:t=>has(t,"lys","tak")?(S.lit=3,sfx.lamp(),{ok:1,who:"m",da:"Se! Skoven er lys nu.",fors:4,note:"The lantern brightens, flattered. The whole forest opens up in gold.",think:"Manners work on furniture here. Noted."}):has(t,"lys")?{who:"m",da:"Den her er lidt sur. Prøv at sige tak.",note:"The lantern flickers once and goes out again, pointedly."}:{who:"m",da:"Sig: lys. Og tak.",note:"Nothing."}})}},
+ {x:3075,need:["fremmed","hvorfor","hertil"],run:async()=>{
+  await say("r","Nå, endnu en fremmed. Hvorfor kom du hertil?",{note:"A raven on the standing stone looks you up and down. It speaks fast, as if words were cheap.",think:"'Hvorfor' is on that stone: why. 'Kom … hertil': came here. Why did I come here. I know the answer. I don't know how to say 'because'."});
+  await say("m","Hun kom hertil på grund af et rumskib.",{note:"Mumle answers for you, jerking a thumb at the sky.",think:"'På grund af et rumskib.' He put three small words in front of the spaceship and it became a reason. Because of. That's the piece I was missing."});
+  grant("på grund af");
+  await say("r","På grund af et rumskib? Selvfølgelig. De falder ned fra himlen hele tiden.",{note:"The raven sounds unsurprised, which is its own kind of insult."});
+  grant("søen");
+  await converse({who:"r",da:"Og hvorfor er du så våd?",note:"It eyes the puddle forming around your boots.",hint:"Why are you wet? Because of the lake: på grund af søen. A full sentence is worth more.",judge:t=>has(t,"på grund af","søen")?(has(t,"jeg","er","våd")?{ok:1,da:"Ha! Hun kan tale. Næsten.",fors:7,til:4,note:"The raven hops once, impressed against its will."}:{ok:1,da:"På grund af søen. Ja. Hun kan tale. Næsten.",fors:4,til:2}):has(t,"søen")||has(t,"sø")?{da:"Søen? Du mener: på grund af søen.",note:"It repeats the three small words as if to a chick.",fors:1}:has(t,"på grund af")?{da:"På grund af hvad? Søen?",fors:1}:{da:"Kra! Det gav ingen mening."}});
+  await say("r","Pas på ved broen. Der bor en trold, og han stiller spørgsmål.",{note:"It says this with relish, then turns its back, conversation over.",think:"I caught almost none of that. Something about a… 'bro'? Something lives there. I suspect I'm about to find out the hard way."});
+ }},
+ {x:4300,need:["grund","bro","trold"],run:async()=>{
+  await tell([["n","The path ends at a ravine. There was a bridge here once; three stones of it are missing, and the river is a long way down."],["n","Then the dark under the bridge opens two amber eyes."]]);
+  await say("t","Stop. Ingen går over min bro uden en god grund.",{note:"The voice comes up through your boots.",think:"'Min bro.' His bridge. 'En god grund': a good reason. Everyone on this moon wants a reason from me."});
+ }},
+ {x:4300,run:async()=>{
+  await converse({who:"t",da:"Hvorfor kom du hertil?",secs:45,note:"A stone waits below the gap. The troll does not like to wait.",hint:"The raven's question, and Mumle's answer about you: Jeg kom hertil på grund af …",late:{who:"t",da:"For langsomt. Igen.",note:"He drums his fingers on the cliff. Rocks fall."},
+   judge:t=>has(t,"jeg","kom","hertil","på grund af","rumskib")?(S.stones=1,sfx.stone(),{ok:1,da:"Godt. Én sten.",fors:7,til:3,note:"A stone the size of a cart rises out of the mist and locks into place."}):has(t,"på grund af","rumskib")?{da:"En hel sætning, tak. Jeg kom hertil …",fors:1}:{da:"Nej. Prøv igen.",til:-1}});
+  await converse({who:"t",da:"Hvorfor er du våd?",secs:40,hint:"You answered this for the raven.",late:{who:"t",da:"For langsomt. Igen."},
+   judge:t=>has(t,"på grund af","søen")?(S.stones=2,sfx.stone(),{ok:1,da:"To sten.",fors:has(t,"jeg","er","våd")?7:4,til:3,note:"The second stone grinds up into the gap."}):{da:"Nej. Hvorfor er du våd?",til:-1}});
+  grant("skoven","lygterne","mig");
+  await converse({who:"t",da:"Og hvorfor er skoven lys nu?",secs:45,note:"He looks past you, at the gold glow in the trees behind. Nobody has lit those in a long time.",hint:"Why is the forest light now? Because of the lanterns … or because of someone.",late:{who:"t",da:"For langsomt. Igen."},
+   judge:t=>has(t,"på grund af","mig")?(S.stones=3,sfx.stone(),{ok:1,da:"På grund af dig? Ha. Du er ikke så dum, som du ser ud.",fors:10,til:6,note:"The laugh shakes mist out of the ravine. The last stone rises."}):has(t,"på grund af","lygterne")?(S.stones=3,sfx.stone(),{ok:1,da:"På grund af lygterne. Ja. Det er rigtigt.",fors:7,til:3,note:"The last stone rises and the bridge is whole."}):{da:"Nej. Hvorfor er skoven lys?",til:-1}});
+  await say("t","Gå bare over. Og hils i Tågeby.",{note:"The eyes sink back into the dark.",think:"I think that was permission."});
+ }},
+ {x:4520,run:async()=>{
+  await tell([["n","Halfway across, the stone under your feet speaks. Quietly. Not in Danish."],["a","“Forty years I have asked that question. Nobody ever answers 'a spaceship'.”"]]);
+  await tell([["y","That was English."],["a","“They dropped me here too. Keep walking. Do not look down. And say nothing to the moss.”"],["n","Ahead of you, Mumle hums and swings his fishing rod, and does not turn around."]]);
+  S.done=1;
+  await new Promise(res=>{ui(`<p class="lab">Chapter 1 · end of part one</p><h1>Broen</h1><p>Forstand ${S.fors} · words caught ${S.got.length}/${FAIRY.length}</p><p class="dim">The road to Tågeby continues in part two. Until then you can replay any place from the menu (☰), and any word-lights you missed are still flying.</p><button class="go" id="nx">Keep walking</button>`,true);$("#nx").onclick=res});
+ }}
+];
+// places you can return to from the menu, unlocked as you reach them
+const PLACES=[{n:"Søen",en:"The lake at dusk",beat:0,px:540},{n:"Tornskoven",en:"The thorn forest",beat:3,px:1720},{n:"Ravnens sten",en:"The raven's stone",beat:7,px:2800},{n:"Broen",en:"The troll's bridge",beat:8,px:4000}];
+function travel(i){const p=PLACES[i];S.beat=p.beat;W.px=p.px;W.mx=null;W.cam=W.px-VW/2;if(p.beat<=6)S.lit=0;if(p.beat<=9)S.stones=0;save();closeSheet();hud();toast(p.n,1800)}
+function menu(){
+ ui(`<p class="lab">Dumpet på Måne Syv</p><h1>Chapter 1</h1><p class="dim">Forstand ${S.fors}/100 · Tillid: ${Object.keys(S.til).filter(k=>S.til[k]).map(k=>NAMES[k]+" "+S.til[k]).join(" · ")||"none yet"}</p>
+ <p class="lab">Places</p><div class="opts">${PLACES.map((p,i)=>`<button data-p="${i}" ${S.top<p.beat?"disabled":""}>${p.n}<small>${S.top<p.beat?"Not reached yet":p.en+" · go here"}</small></button>`).join("")}<button disabled>Part two<small>Coming next</small></button></div>
+ <p class="lab">Ordbog · your words · ${S.chips.length}</p>${S.chips.map(w=>`<p>${esc(w==="NAVN"?S.name:w)} <span class="dim">${w==="NAVN"?"your name":esc(GLOSS[w]||(w==="på grund af"?"because of":""))} · ${S.got.includes(w)?"caught":"given"}${S.used[w]?" · used "+S.used[w]+"×":" · not used yet"}</span> <button class="mini" data-say="${esc(w==="NAVN"?S.name:w)}">▶</button></p>`).join("")}
+ <p class="lab">Settings</p><button id="snd">Sound: ${S.sound?"on":"off"}</button><button id="tlt">Tilt the phone to walk: ${S.tilt?"on":"off"}</button><button id="rs" class="ghost">Erase save and restart</button>
+ <button class="go" id="bk">Back</button>`,true);
+ $("#bk").onclick=closeSheet;$("#snd").onclick=()=>{S.sound=S.sound?0:1;save();audioStart();menu()};$("#tlt").onclick=()=>{S.tilt=S.tilt?0:1;save();menu()};
+ app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>travel(+b.dataset.p));
+ let arm=false;$("#rs").onclick=e=>{if(!arm){arm=true;e.target.textContent="Tap again to erase everything";return}try{localStorage.removeItem("dumpet-f1")}catch(x){}location.reload()};
+}
+$("#menu").onclick=()=>{if(!W.busy&&!sheetOpen()&&S.landed)menu()};
+
+// ---------- BOOT ----------
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
-window.RUNES=RUNES;window.G={get S(){return S},get B(){return B},W,parse,tokenize,scene,closeSheet,sheetOpen};
-W.cam=W.px-VW/2;
-requestAnimationFrame(frame);
-if(!S.flags.landed)scene("p1");
+window.G={get S(){return S},W,sheetOpen,BEATS,FAIRY,travel};
+W.cam=W.px-VW/2;hud();requestAnimationFrame(frame);
+if(!S.landed)intro();
 </script>
 </body>
 </html>
