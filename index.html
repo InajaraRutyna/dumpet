@@ -85,7 +85,7 @@ const VOICE={m:[1,1.05],r:[1.08,1.15],t:[.8,.6],l:[1,1],k:[.88,.9],b:[1,1.05],y:
 
 // ---------- STATE ----------
 const $=s=>document.querySelector(s),app=$("#app"),tip=$("#tip"),cv=$("#cv"),ctx=cv.getContext("2d");
-let S={v:1,beat:0,top:0,px:540,name:"",chips:START.slice(),got:[],peek:[],used:{},fors:8,til:{m:10,r:0,t:0},lit:0,stones:0,landed:0,done:0,sound:1,tilt:0,vp:.42,vr:.82,vn:"",vset:2};
+let S={v:1,beat:0,top:0,px:540,name:"",chips:START.slice(),got:[],peek:[],used:{},fors:8,til:{m:10,r:0,t:0},lit:0,stones:0,landed:0,done:0,sound:1,tilt:0,pro:"hun",vp:.42,vr:.82,vn:"",vset:2};
 try{const o=JSON.parse(localStorage.getItem("dumpet-f1")||"null");if(o&&o.v===1)S=Object.assign(S,o)}catch(e){}
 if(S.vset!==2){S.vp=.42;S.vr=.82;S.vset=2}
 S.til=Object.assign({m:10,r:0,t:0,k:0,b:0,y:0,i:0,f:0,g:0,c:0},S.til);
@@ -360,6 +360,7 @@ function utter(o){return new Promise(res=>{
  $("#hint").onclick=()=>toast(o.hint||"Say what you can.",4500);
  if(o.secs){const tick=()=>{const el=(performance.now()-t0)/1000,b=$("#tm");if(b)b.style.width=Math.max(0,100*(1-el/o.secs))+"%";if(el>=o.secs)return fin("","late");raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick)}
 })}
+const Hx=()=>S.pro==="han"?"Han":"Hun",hx=()=>S.pro==="han"?"han":"hun";
 const has=(t,...ws)=>ws.every(w=>(" "+t+" ").includes(" "+w+" "));
 // keep asking until the judge is satisfied; the NPC always answers in fluent Danish
 async function converse(o){
@@ -389,7 +390,7 @@ const BEATS=[
  }},
  {x:1010,need:["våd","sø","måne"],run:async()=>{
   await say("m","Jeg hedder Mumle. Hvad hedder du?",{note:"He taps his own chest twice. Then points at yours.",think:"'Jeg hedder Mumle.' He's telling me his name. And asking mine."});
-  if(!S.name)await new Promise(res=>{ui(`<p class="lab">Your name</p><input type="text" id="nm" maxlength="14" autocomplete="off" placeholder="Write your name"><button class="go" id="nx">That's me</button>`);$("#nx").onclick=()=>{const v=$("#nm").value.trim().replace(/[^\p{L}\- ]/gu,"");if(!v)return toast("Write a name first.");S.name=v;res()}});
+  if(!S.name)await new Promise(res=>{ui(`<p class="lab">Your name</p><input type="text" id="nm" maxlength="14" autocomplete="off" placeholder="Write your name"><p class="lab">How should people here talk about you?</p><div class="row"><button id="phun">hun <small>she</small></button><button id="phan">han <small>he</small></button></div><button class="go" id="nx">That's me</button>`);const mark=()=>{$("#phun").style.borderColor=S.pro==="hun"?"var(--gold)":"";$("#phan").style.borderColor=S.pro==="han"?"var(--gold)":""};mark();$("#phun").onclick=()=>{S.pro="hun";mark()};$("#phan").onclick=()=>{S.pro="han";mark()};$("#nx").onclick=()=>{const v=$("#nm").value.trim().replace(/[^\p{L}\- ]/gu,"");if(!v)return toast("Write a name first.");S.name=v;res()}});
   grant("hedder","NAVN");
   await converse({who:"m",da:"Hvad hedder du?",hint:"Copy his sentence with your own name: Jeg hedder …",judge:t=>has(t,"jeg","hedder")&&t.includes(S.name.toLowerCase())?{ok:1,da:`Velkommen til Måne Syv, ${S.name}.`,fors:4,til:3}:t.includes(S.name.toLowerCase())?{da:`${S.name}? Sig det selv: Jeg hedder …`,note:"He says it slowly, drawing the words in the air."}:{da:"Hvad siger du? Jeg hedder Mumle. Og du?"}});
   await say("m","Hvor kommer du fra?",{note:"He points at you, then sweeps an arm across the whole horizon, and shrugs.",think:"'Hvor' … where? Where do I come from. I can't even begin. Although there is a light up there, near that awful ship. High up. I'd have to jump."});
@@ -410,11 +411,11 @@ const BEATS=[
  {x:2715,run:async()=>{await converse({who:"l",da:"…",note:"A third lantern. This one is asleep with its back to you.",hint:"Mumle says this one is grumpy and wants politeness: say lys and tak.",judge:t=>has(t,"lys","tak")?(S.lit=3,sfx.lamp(),{ok:1,who:"m",da:"Se! Skoven er lys nu.",fors:4,note:"The lantern brightens, flattered. The whole forest opens up in gold.",think:"Manners work on furniture here. Noted."}):has(t,"lys")?{who:"m",da:"Den her er lidt sur. Prøv at sige tak.",note:"The lantern flickers once and goes out again, pointedly."}:{who:"m",da:"Sig: lys. Og tak.",note:"Nothing."}})}},
  {x:3075,need:["fremmed","hvorfor","hertil"],run:async()=>{
   await say("r","Nå, endnu en fremmed. Hvorfor kom du hertil?",{note:"A raven on the standing stone looks you up and down. It speaks fast, as if words were cheap.",think:"'Hvorfor' is on that stone: why. 'Kom … hertil': came here. Why did I come here. I know the answer. I don't know how to say 'because'."});
-  await say("m","Hun kom hertil på grund af et rumskib.",{note:"Mumle answers for you, jerking a thumb at the sky.",think:"'På grund af et rumskib.' He put three small words in front of the spaceship and it became a reason. Because of. That's the piece I was missing."});
+  await say("m",`${Hx()} kom hertil på grund af et rumskib.`,{note:"Mumle answers for you, jerking a thumb at the sky.",think:"'På grund af et rumskib.' He put three small words in front of the spaceship and it became a reason. Because of. That's the piece I was missing."});
   grant("på grund af");
   await say("r","På grund af et rumskib? Selvfølgelig. De falder ned fra himlen hele tiden.",{note:"The raven sounds unsurprised, which is its own kind of insult."});
   grant("søen");
-  await converse({who:"r",da:"Og hvorfor er du så våd?",note:"It eyes the puddle forming around your boots.",hint:"Why are you wet? Because of the lake: på grund af søen. A full sentence is worth more.",judge:t=>has(t,"på grund af","søen")?(has(t,"jeg","er","våd")?{ok:1,da:"Ha! Hun kan tale. Næsten.",fors:7,til:4,note:"The raven hops once, impressed against its will."}:{ok:1,da:"På grund af søen. Ja. Hun kan tale. Næsten.",fors:4,til:2}):has(t,"søen")||has(t,"sø")?{da:"Søen? Du mener: på grund af søen.",note:"It repeats the three small words as if to a chick.",fors:1}:has(t,"på grund af")?{da:"På grund af hvad? Søen?",fors:1}:{da:"Kra! Det gav ingen mening."}});
+  await converse({who:"r",da:"Og hvorfor er du så våd?",note:"It eyes the puddle forming around your boots.",hint:"Why are you wet? Because of the lake: på grund af søen. A full sentence is worth more.",judge:t=>has(t,"på grund af","søen")?(has(t,"jeg","er","våd")?{ok:1,da:`Ha! ${Hx()} kan tale. Næsten.`,fors:7,til:4,note:"The raven hops once, impressed against its will."}:{ok:1,da:`På grund af søen. Ja. ${Hx()} kan tale. Næsten.`,fors:4,til:2}):has(t,"søen")||has(t,"sø")?{da:"Søen? Du mener: på grund af søen.",note:"It repeats the three small words as if to a chick.",fors:1}:has(t,"på grund af")?{da:"På grund af hvad? Søen?",fors:1}:{da:"Kra! Det gav ingen mening."}});
   await say("r","Pas på ved broen. Der bor en trold, og han stiller spørgsmål.",{note:"It says this with relish, then turns its back, conversation over.",think:"I caught almost none of that. Something about a… 'bro'? Something lives there. I suspect I'm about to find out the hard way."});
  }},
  {x:4300,need:["grund","bro","trold"],run:async()=>{
@@ -542,11 +543,11 @@ const BEATS=[
  }}
  ,{x:11020,run:async()=>{
   await tell([["n","Tågeby smells of rain, woodsmoke and irregular verbs. The fog here is ordinary fog. People stop in the street to stare at you, politely, the way you stare at weather."]]);
-  await converse({who:"c",da:"Mor, hvorfor er hun så våd?",note:"A very small person is pointing at you. Its mother is pretending not to know it.",hint:"Answer the child however you like. You know this one by heart.",judge:t=>has(t,"på grund af")||has(t,"fordi")?{ok:1,da:"Hun taler dansk! Mor, hun taler dansk!",fors:6,til:6,note:"The street relaxes. Someone laughs. Someone else goes back to sweeping."}:t?{ok:1,da:"Hun taler dansk! Næsten!",fors:2,til:3}:{da:"Mor, hun siger ikke noget."}});
+  await converse({who:"c",da:`Mor, hvorfor er ${hx()} så våd?`,note:"A very small person is pointing at you. Its mother is pretending not to know it.",hint:"Answer the child however you like. You know this one by heart.",judge:t=>has(t,"på grund af")||has(t,"fordi")?{ok:1,da:`${Hx()} taler dansk! Mor, ${hx()} taler dansk!`,fors:6,til:6,note:"The street relaxes. Someone laughs. Someone else goes back to sweeping."}:t?{ok:1,da:`${Hx()} taler dansk! Næsten!`,fors:2,til:3}:{da:`Mor, ${hx()} siger ikke noget.`}});
   await say("m","Jeg skal lige noget. Vent her.",{note:"Mumle pats your knee and trots off round the corner of the bakery, humming.",think:"He needs to do something. 'Vent her': wait here. Fine. I have waited in worse places. Most of them today."});
   W.mumAway=1;closeSheet();await new Promise(r=>setTimeout(r,2600));
   await tell([["n","Behind the bakery, where he thinks nobody can see, the small mossy figure takes something out of his hat. It has lights on it."],["a","“Subject 4471 is inside the walls. Forstand: rising. Faster than the others.”"]]);
-  await tell([["a","“…Yes, Captain. She suspects nothing.”"],["n","In perfect English."]]);
+  await tell([["a",`“…Yes, Captain. ${S.pro==="han"?"He":"She"} suspects nothing.”`],["n","In perfect English."]]);
   S.ch1=1;
   await new Promise(res=>{ui(`<p class="lab">End of chapter one</p><h1>Dumpet på Måne Syv</h1><p>Forstand ${Math.round(S.fors)}/100 · words ${S.chips.length} · word-lights ${S.got.length}/${FAIRY.length}</p><p class="dim">You can now say why you came, three ways: på grund af + a thing, for at + an action, and fordi + a whole clause with its own word order.</p><p class="dim">Chapter two is not written yet. Every place in this chapter is open from the menu (☰).</p><button class="go" id="nx">Stay in Tågeby</button>`,true);$("#nx").onclick=res});
  }}
@@ -589,9 +590,9 @@ function menu(){
  <p class="lab">Chapter 1 · places</p><div class="opts">${PLACES.map((p,i)=>`<button data-p="${i}" ${S.top<p.beat||W.busy?"disabled":""}>${p.n}<small>${S.top<p.beat?"Not reached yet":W.busy?p.en+" · finish this conversation first":p.en+" · play from here"}</small></button>`).join("")}</div>
  <p class="lab">Chapter 2</p><div class="opts"><button disabled>Not written yet<small>Opens with your next chapter</small></button></div>
  <p class="lab">Study</p><div class="opts"><button id="nb">Notesbog<small>The grammar you have worked out, with examples</small></button><button id="ob">Ordbog<small>Your ${S.chips.length} words</small></button></div>
- <p class="lab">Settings</p><div class="opts"><button id="vo">Voice<small>Deeper, slower, or a different voice</small></button><button id="snd">Sound and music: ${S.sound?"on":"off"}</button><button id="tlt">Tilt the phone to walk: ${S.tilt?"on":"off"}</button><button id="sv">Your progress<small>Saved automatically · backup · restart</small></button></div>`,true);
+ <p class="lab">Settings</p><div class="opts"><button id="vo">Voice<small>Deeper, slower, or a different voice</small></button><button id="pr">People call you: ${S.pro}<small>Tap to switch between hun (she) and han (he)</small></button><button id="snd">Sound and music: ${S.sound?"on":"off"}</button><button id="tlt">Tilt the phone to walk: ${S.tilt?"on":"off"}</button><button id="sv">Your progress<small>Saved automatically · backup · restart</small></button></div>`,true);
  $("#bk").onclick=closeM;$("#nb").onclick=notes;$("#ob").onclick=words;$("#vo").onclick=voice;$("#sv").onclick=backup;
- $("#snd").onclick=()=>{S.sound=S.sound?0:1;save();audioStart();menu()};$("#tlt").onclick=()=>{S.tilt=S.tilt?0:1;save();menu()};
+ $("#pr").onclick=()=>{S.pro=S.pro==="han"?"hun":"han";save();menu()};$("#snd").onclick=()=>{S.sound=S.sound?0:1;save();audioStart();menu()};$("#tlt").onclick=()=>{S.tilt=S.tilt?0:1;save();menu()};
  mp.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>travel(+b.dataset.p));
 }
 $("#menu").onclick=()=>{if(!mp.hidden)return closeM();if(S.landed)menu()};
