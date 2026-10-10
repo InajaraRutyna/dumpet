@@ -154,6 +154,7 @@ const FGT=Array.from({length:20},(_,i)=>({x:500+i*900+sr()*300,k:i%2}));
 const FIRS=Array.from({length:150},(_,i)=>({x:i*42+sr()*20,h:30+sr()*60}));
 const TUFT=Array.from({length:520},()=>({x:470+sr()*10000,h:5+sr()*12}));
 const SHROOM=Array.from({length:26},()=>({x:1850+sr()*2000,s:.7+sr()*.9,c:sr()>.5?"232,120,220":"159,243,224"}));
+const FLY=Array.from({length:90},()=>({x:sr()*11700,y:40+sr()*220,p:sr()*6}));
 const STARS=Array.from({length:110},()=>({x:sr(),y:sr()*.5,a:.2+sr()*.7}));
 const LAMPS=[2080,2400,2720];
 const POND=[9350,9870],STALLS=[[7420,"b"],[7920,"y"],[8420,"i"]];
@@ -213,7 +214,7 @@ function frame(ts){
  // ----- camera
  const tb=open&&!app.classList.contains("full")?.33:.72;W.base+=(tb-W.base)*Math.min(1,dt*6);
  const focus=W.talk==="t"?(W.px+4515)/2:W.px+W.dir*40;W.cam+=(focus-VW/2-W.cam)*Math.min(1,dt*4);
- const cam=W.cam,GY=VH*W.base,gy=x=>GY+ground(x),sx=x=>x-cam,P=palette(W.px);
+ const cam=W.cam+(W.shake&&t-W.shake<.4?Math.sin(t*90)*5*(1-(t-W.shake)/.4):0),GY=VH*W.base,gy=x=>GY+ground(x),sx=x=>x-cam,P=palette(W.px);
  // ----- sky, stars, sun or moon
  const sky=ctx.createLinearGradient(0,0,0,GY+50);P.sky.forEach((c,i)=>sky.addColorStop(i/3,rgb(c)));ctx.fillStyle=sky;ctx.fillRect(0,0,VW,VH);
  ctx.fillStyle="#e8e0ff";for(const s of STARS){ctx.globalAlpha=s.a*P.stars*(.7+.3*Math.sin(t*2+s.x*90));ctx.fillRect(s.x*VW,s.y*GY*1.3,1.2,1.2)}ctx.globalAlpha=1;
@@ -222,6 +223,7 @@ function frame(ts){
  ctx.fillStyle=rgb(P.far,.5);for(const m of [[.2,.92,.4,.016],[.7,1.04,.5,.012],[.45,1.1,.3,.009]]){ctx.beginPath();ctx.ellipse(ox+(m[0]-.45)*VW+Math.sin(t*.05+m[0]*9)*20,oy*m[1],VW*m[2],VH*m[3],0,0,7);ctx.fill()}
  // the ship
  const shx=((t*18+260)%(VW+500))-250,shy=GY*.16+Math.sin(t*.7)*6;ctx.fillStyle="#0a0818";ctx.beginPath();ctx.ellipse(shx,shy,30,6,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(shx,shy-2,14,Math.PI,0);ctx.fill();ctx.fillStyle="#9ff3e0";for(const d of[-15,0,15])ctx.fillRect(shx+d-1,shy+3,2,2);
+ ctx.globalAlpha=.07;ctx.fillStyle="#9ff3e0";ctx.beginPath();ctx.moveTo(shx-6,shy+6);ctx.lineTo(shx+6,shy+6);ctx.lineTo(shx+70+Math.sin(t)*60,GY+20);ctx.lineTo(shx-70+Math.sin(t)*60,GY+20);ctx.fill();ctx.globalAlpha=1;
  if(W.pulse["rumskib"]&&t-W.pulse["rumskib"]<2.5)glow(shx,shy,60,"rgba(159,243,224,.9)",.6);
  // Tågeby on its crag, far away
  {const x=4700-cam*.2-600+VW*.2;if(x>-300&&x<VW+200){ctx.fillStyle=rgb(P.far);ctx.beginPath();ctx.moveTo(x-60,GY+30);ctx.lineTo(x-30,GY-70);ctx.lineTo(x+10,GY-92);ctx.lineTo(x+110,GY-96);ctx.lineTo(x+170,GY-60);ctx.lineTo(x+210,GY+30);ctx.fill();
@@ -281,6 +283,7 @@ function frame(ts){
     const sofar=W.bell.rung.map(i=>W.bell.words[i]).join(" ");ctx.font="18px Georgia";ctx.fillStyle="#ffd76a";ctx.shadowColor="#000";ctx.shadowBlur=6;ctx.fillText((W.bell.lead||"")+" "+sofar+" …",VW/2,96);ctx.shadowBlur=0}}}
  // lanterns on posts
  LAMPS.forEach((lx,i)=>{const x=sx(lx);if(x<-60||x>VW+60)return;const y=gy(lx),lit=S.lit>i,sw=Math.sin(t*1.4+i)*3;ctx.strokeStyle=BLK;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-16,y+2);ctx.lineTo(x-16,y-112);ctx.quadraticCurveTo(x-14,y-128,x+4,y-124);ctx.stroke();ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+4,y-124);ctx.lineTo(x+4+sw,y-100);ctx.stroke();ctx.fillStyle=BLK;ctx.fillRect(x-3+sw,y-102,14,3);ctx.fillStyle=lit?"#ffcf7a":"#1a1630";ctx.fillRect(x-1+sw,y-99,10,14);if(lit)glow(x+4+sw,y-92,70,"rgba(255,207,122,.9)",.55+.1*Math.sin(t*7+i))});
+ for(const f of FLY){const x=sx(f.x+Math.sin(t*.5+f.p)*30);if(x<-10||x>VW+10)continue;const y=GY-f.y+Math.cos(t*.8+f.p)*14;ctx.globalAlpha=.35+.4*Math.sin(t*2+f.p);ctx.fillStyle="#ffd76a";ctx.beginPath();ctx.arc(x,y,1.5,0,7);ctx.fill()}ctx.globalAlpha=1;
  // word-lights
  ctx.font="italic 13px Georgia";ctx.textAlign="center";
  for(const f of FAIRY){if(S.got.includes(f[2]))continue;const x=sx(f[0]);if(x<-60||x>VW+60)continue;const y=gy(f[0])-f[1]+Math.sin(t*2+f[0])*5;glow(x,y,22,"rgba(159,243,224,.9)",.75);const fl=Math.sin(t*26)*1.5;ctx.strokeStyle="rgba(233,237,248,.85)";ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x-5,y-3,5,2+fl,-.6,0,7);ctx.ellipse(x+5,y-3,5,2+fl,.6,0,7);ctx.stroke();ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(x,y,2.2,0,7);ctx.fill();ctx.fillStyle="rgba(200,255,244,.95)";ctx.fillText(f[2],x,y-14)}
@@ -291,7 +294,7 @@ function frame(ts){
   if((S.landed||W.drop)&&!(W.mumAway&&W.mx>11560))drawMumle(sx(W.mx),GY+walkY(W.mx),t,moving||W.mumAway);W.mxs=sx(W.mx);W.mys=GY+walkY(W.mx)-58}
  // hero, or the fall
  if(W.drop){const k=Math.min(1,W.dropT/1.6),hx=sx(330),hy=(GY-340)+340*k*k;ctx.globalAlpha=.22;ctx.fillStyle="#9ff3e0";ctx.beginPath();ctx.moveTo(hx-8,GY*.16);ctx.lineTo(hx+8,GY*.16);ctx.lineTo(hx+50,GY+6);ctx.lineTo(hx-50,GY+6);ctx.fill();ctx.globalAlpha=1;if(k<1){ctx.save();ctx.translate(hx,hy);ctx.rotate(W.dropT*6);ctx.translate(-hx,-hy);drawHero(hx,hy+30,t);ctx.restore()}else{const s=W.dropT-1.6;ctx.strokeStyle="#e9edf8";ctx.lineWidth=2;ctx.globalAlpha=Math.max(0,1-s);for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(hx,GY+8,20+s*90+i*14,4+s*10,0,0,7);ctx.stroke()}ctx.globalAlpha=1}}
- else if(S.landed){drawHero(sx(W.px),GY+walkY(W.px)-W.py,t);if(W.pulse["våd"]&&t-W.pulse["våd"]<3){ctx.fillStyle="#9fd8ff";for(let i=0;i<5;i++){const a=((t*1.4+i*.2)%1);ctx.fillRect(sx(W.px)-10+i*5,GY+walkY(W.px)-50+a*50,1.5,5)}}}
+ else if(S.landed){drawHero(sx(W.px),GY+walkY(W.px)-W.py,t);if(W.cast&&t-W.cast<1.2){const a=(t-W.cast)/1.2,hx=sx(W.px)+19*W.dir,hy=GY+walkY(W.px)-84;ctx.strokeStyle="#ffd76a";ctx.lineWidth=3*(1-a)+.5;ctx.globalAlpha=1-a;for(const k of [1,.6]){ctx.beginPath();ctx.arc(hx,hy,a*190*k,0,7);ctx.stroke()}ctx.globalAlpha=1;glow(hx,hy,120*(1-a)+20,"rgba(255,215,106,.9)",1-a)}if(W.pulse["våd"]&&t-W.pulse["våd"]<3){ctx.fillStyle="#9fd8ff";for(let i=0;i<5;i++){const a=((t*1.4+i*.2)%1);ctx.fillRect(sx(W.px)-10+i*5,GY+walkY(W.px)-50+a*50,1.5,5)}}}
  // forest darkness, with holes cut by every light
  const dz=Math.max(0,Math.min(1,(W.px-1850)/160))*Math.max(0,Math.min(1,(3850-W.px)/200)),dark=dz*(.93-.25*S.lit);
  if(dark>.01){if(!W.dk){W.dk=document.createElement("canvas");W.dk.width=VW;W.dk.height=VH}const d=W.dk.getContext("2d");d.globalCompositeOperation="source-over";d.clearRect(0,0,VW,VH);d.fillStyle=`rgba(2,2,8,${dark})`;d.fillRect(0,0,VW,VH);d.globalCompositeOperation="destination-out";
@@ -355,7 +358,7 @@ const has=(t,...ws)=>ws.every(w=>(" "+t+" ").includes(" "+w+" "));
 async function converse(o){
  for(let tries=0;;tries++){
   const u=await utter(o),r=u.mode==="late"?(o.late||{who:o.who,da:"For langsomt."}):o.judge(u.text,tries);
-  if(r.ok){S.chips.forEach(w=>{if(w!=="NAVN"&&has(u.text,w))S.used[w]=(S.used[w]||0)+1});W.fresh=[];sfx.ok()}else sfx.bad();
+  if(r.ok){S.chips.forEach(w=>{if(w!=="NAVN"&&has(u.text,w))S.used[w]=(S.used[w]||0)+1});W.fresh=[];W.cast=W.t;sfx.ok()}else{W.shake=W.t;sfx.bad()}
   const own=r.ok&&u.mode!=="tap";bump((r.fors||0)+(own?2:0),o.who,r.til||0);
   await new Promise(res=>{ui(`${u.text?`<p class="mine"><b>${esc(S.name||"You")}${u.mode==="voice"?" · spoken":u.mode==="write"?" · written":""}</b>${esc(u.text)}</p>`:""}${npc(r.who||o.who,r.da)}${r.note?`<p class="nar">${esc(r.note)}</p>`:""}${r.think?`<p class="you">${esc(r.think)}</p>`:""}${own?`<p class="dim">+2 Forstand for ${u.mode==="voice"?"saying":"writing"} it yourself.</p>`:""}<button class="go" id="nx">▸</button>`);speak(r.da,r.who||o.who);$("#nx").onclick=res});
   if(r.ok)return r;
