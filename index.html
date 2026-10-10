@@ -18,8 +18,10 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 #pad{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;padding:0 14px;pointer-events:none}
 #pad button{pointer-events:auto;width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(233,237,248,.3);background:rgba(5,4,12,.35);font-size:22px;text-align:center;padding:0;min-height:0}
 #pad div{display:flex;gap:10px}
+#act{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--gold);color:#221a05;border:0;border-radius:22px;padding:10px 18px;font-weight:700;min-height:0;white-space:nowrap}
+#mapb{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(28px + env(safe-area-inset-bottom,0px));border-radius:22px;padding:8px 20px;min-height:0;background:rgba(5,4,12,.5)}
 #app{position:fixed;left:0;right:0;bottom:0;max-height:62%;overflow-y:auto;background:var(--panel);border-top:1px solid rgba(255,215,106,.6);border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
-#app.full{max-height:100%;top:0;border-radius:0;border:0;padding-top:calc(18px + env(safe-area-inset-top,0px))}
+#app.full{max-height:100%;top:0;border-radius:0;border:0;padding-top:calc(58px + env(safe-area-inset-top,0px))}
 #app>*,#mp>*{flex-shrink:0}
 #mp{position:fixed;inset:0;z-index:6;overflow-y:auto;background:rgba(5,4,12,.97);padding:calc(56px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
 #hud{z-index:7}
@@ -61,6 +63,7 @@ input[type=text]{font:inherit;color:var(--ink);background:#120e26;border:1px sol
 <canvas id="cv"></canvas>
 <div id="hud"><div>FORSTAND<div class="bar"><i id="fo" style="background:var(--gold)"></i></div></div><div id="tl">TILLID<div class="bar"><i id="ti" style="background:var(--teal)"></i></div></div><button id="menu" aria-label="menu">☰</button></div>
 <div id="pad"><div><button id="bl" aria-label="walk left">◀</button><button id="br" aria-label="walk right">▶</button></div><button id="bj" aria-label="jump">▲</button></div>
+<button id="act" hidden></button><button id="mapb" hidden>Kort</button>
 <div id="app" hidden></div>
 <div id="mp" hidden></div>
 <div id="tip" hidden></div>
@@ -111,8 +114,8 @@ function uiM(h){mp.hidden=false;mp.innerHTML=h;mp.scrollTop=0;W.L=W.R=false}
 function closeM(){mp.hidden=true;mp.innerHTML=""}
 const sheetOpen=()=>!app.hidden||!mp.hidden;
 function grant(...ws){const fresh=ws.filter(w=>!S.chips.includes(w));S.chips.push(...fresh);W.fresh=fresh;return fresh}
-function bump(f,who,t){if(f)S.fors=Math.max(0,Math.min(100,S.fors+f*.42));if(who&&t&&S.til[who]!=null)S.til[who]=Math.max(0,Math.min(30,S.til[who]+t));hud()}
-function hud(){$("#fo").style.width=Math.round(S.fors)+"%";const who=W.talk&&S.til[W.talk]!=null?W.talk:"m";$("#tl").firstChild.textContent="TILLID · "+NAMES[who].toUpperCase();$("#ti").style.width=(100*S.til[who]/30)+"%"}
+function bump(f,who,t){if(f)S.fors=Math.max(0,Math.min(399,S.fors+f*.42));if(who&&t&&S.til[who]!=null)S.til[who]=Math.max(0,Math.min(30,S.til[who]+t));hud()}
+function hud(){$("#fo").style.width=Math.round(S.fors%100)+"%";$("#hud").firstElementChild.firstChild.textContent="FORSTAND"+["",""," · II"," · III"," · IV"][Math.floor(S.fors/100)+1];const who=W.talk&&S.til[W.talk]!=null?W.talk:"m";$("#tl").firstChild.textContent="TILLID · "+NAMES[who].toUpperCase();$("#ti").style.width=(100*S.til[who]/30)+"%"}
 
 // ---------- SOUND: everything is synthesised here, nothing is recorded ----------
 const A={c:null};
@@ -210,20 +213,21 @@ function frame(ts){
  // ----- movement
  if(!open&&!W.drop&&S.landed){const v=(W.R?1:0)-(W.L?1:0)+(W.tiltV||0);if(Math.abs(v)>.2){W.dir=v>0?1:-1;W.px+=Math.sign(v)*150*dt;W.walk=1}else W.walk=0;
   if(W.py>0||W.vy){W.vy-=900*dt;W.py+=W.vy*dt;if(W.py<=0){W.py=0;W.vy=0}}
-  const b=BEATS[S.beat];const maxX=W.bell?W.bell.max:b?b.x:W.len-140;W.px=Math.max(500,Math.min(maxX,W.px));
+  const inC2=W.px>19000,b=inC2?null:BEATS[S.beat];if(inC2){const d=curDist();W.px=Math.max(d.x+60,Math.min(d.x+700,W.px))}else{const maxX=W.bell?W.bell.max:b?b.x:W.len-140;W.px=Math.max(500,Math.min(maxX,W.px))}
   if(W.bell&&W.py>45&&t>W.bell.cool)W.bell.xs.forEach((bx,i)=>{if(Math.abs(W.px-bx)<26&&!W.bell.rung.includes(i))ring(i,t)});
   for(const f of FAIRY){if(S.got.includes(f[2]))continue;if(Math.abs(W.px-f[0])<28&&Math.abs((W.py+45)-f[1])<42){S.got.push(f[2]);grant(f[2]);W.pulse[f[2]]=t;for(let i=0;i<14;i++)W.spark.push({x:f[0],y:f[1],vx:(Math.random()-.5)*120,vy:60+Math.random()*120,t});sfx.catch();bump(2);save();toast("✦ "+f[2]+" = "+GLOSS[f[2]],3000);const wd=f[2];setTimeout(()=>speak(wd),350)}}
   if(b&&!W.busy&&!W.bell&&W.px>=b.x-4){const miss=(b.need||[]).filter(w=>!S.got.includes(w));
    if(miss.length){if(t-W.lastHint>6){W.lastHint=t;bark("Fang ordene først!");toast(`Catch the word-light${miss.length>1?"s":""} first: ${miss.length} still flying behind you`,3200)}}
    else{W.busy=true;W.L=W.R=false;b.run().then(()=>{S.beat++;S.top=Math.max(S.top,S.beat);W.busy=false;closeSheet();save();hud()})}}
  }else W.walk=0;
+ c2buttons(open,t);
  if(W.drop){W.dropT+=dt;if(W.dropT>2.6){W.drop=0;W.px=540;S.landed=1;save()}}
  const wantTroll=(S.beat>=TROLL_BEAT&&S.beat<TROLL_BEAT+2&&W.px>4150)?1:0;W.trollUp+=(wantTroll-W.trollUp)*Math.min(1,dt*1.5);
  audioTick(t);
  // ----- camera
  const tb=!app.hidden&&!app.classList.contains("full")?.33:.72;W.base+=(tb-W.base)*Math.min(1,dt*6);
  const focus=W.talk==="t"?(W.px+4515)/2:W.px+W.dir*40;W.cam+=(focus-VW/2-W.cam)*Math.min(1,dt*4);
- const cam=W.cam+(W.shake&&t-W.shake<.4?Math.sin(t*90)*5*(1-(t-W.shake)/.4):0),GY=VH*W.base,gy=x=>GY+ground(x),sx=x=>x-cam,P=palette(W.px);
+ const cam=W.cam+(W.shake&&t-W.shake<.4?Math.sin(t*90)*5*(1-(t-W.shake)/.4):0),GY=VH*W.base,gy=x=>GY+ground(x),sx=x=>x-cam,P=W.px>19000?c2pal():palette(W.px);
  // ----- sky, stars, sun or moon
  const sky=ctx.createLinearGradient(0,0,0,GY+50);P.sky.forEach((c,i)=>sky.addColorStop(i/3,rgb(c)));ctx.fillStyle=sky;ctx.fillRect(0,0,VW,VH);
  ctx.fillStyle="#e8e0ff";for(const s of STARS){ctx.globalAlpha=s.a*P.stars*(.7+.3*Math.sin(t*2+s.x*90));ctx.fillRect(s.x*VW,s.y*GY*1.3,1.2,1.2)}ctx.globalAlpha=1;
@@ -279,6 +283,7 @@ function frame(ts){
    if(openK<.98){ctx.fillStyle="#05040c";ctx.fillRect(x,GY-176+176*0,110*(1-openK)/1,0);ctx.strokeStyle="#05040c";ctx.lineWidth=4;for(let i=0;i<6;i++){const bx=x+10+i*18;ctx.beginPath();ctx.moveTo(bx,GY-170-openK*170);ctx.lineTo(bx,GY+6-openK*170);ctx.stroke()}}}}
  {const x=sx(10560);if(x>-80&&x<VW+80&&!S.gate){const y=GY,b2=Math.sin(t*1.6)*1.5;ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-22,y);ctx.lineTo(x-24,y-70-b2);ctx.quadraticCurveTo(x,y-90-b2,x+24,y-70-b2);ctx.lineTo(x+22,y);ctx.fill();ctx.beginPath();ctx.arc(x,y-92-b2,15,0,7);ctx.fill();ctx.fillRect(x-17,y-104-b2,34,8);ctx.fillRect(x-3,y-122-b2,6,18);ctx.strokeStyle=BLK;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+34,y);ctx.lineTo(x+34,y-140);ctx.stroke();ctx.beginPath();ctx.moveTo(x+34,y-158);ctx.lineTo(x+41,y-138);ctx.lineTo(x+27,y-138);ctx.fill();eyes(x-2,y-92-b2,6,"#ff8a8a",2.2)}}
  for(const [px2,sc,ec] of [[11050,.55,"#9ff3e0"],[11110,1,"#ffe9b0"],[11300,.95,"#ffe9b0"],[11420,1.05,"#ffe9b0"]]){const x=sx(px2);if(x<-40||x>VW+40)continue;const y=GY,b2=Math.sin(t*1.4+px2)*1.2;ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-12*sc,y);ctx.quadraticCurveTo(x-14*sc,y-56*sc-b2,x,y-62*sc-b2);ctx.quadraticCurveTo(x+14*sc,y-56*sc-b2,x+12*sc,y);ctx.fill();ctx.beginPath();ctx.arc(x,y-72*sc-b2,10*sc,0,7);ctx.fill();eyes(x-2*sc,y-72*sc-b2,3.5*sc,ec,1.5)}
+ if(W.px>19000)drawDistrict(sx,GY,t,P);
  // ground
  ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(0,VH);for(let x=0;x<=VW+6;x+=6)ctx.lineTo(x,gy(x+cam));ctx.lineTo(VW,VH);ctx.fill();
  ctx.strokeStyle=BLK;ctx.lineWidth=1.4;for(const g of TUFT){const x=sx(g.x);if(x<-10||x>VW+10||inRav(g.x))continue;const y=gy(g.x),s=Math.sin(t*1.3+g.x)*2;ctx.beginPath();ctx.moveTo(x,y+1);ctx.lineTo(x+s,y-g.h);ctx.moveTo(x+3,y+1);ctx.lineTo(x+5+s,y-g.h*.7);ctx.stroke()}
@@ -300,7 +305,7 @@ function frame(ts){
  // Mumle
  {const follow=S.beat>=1,tx=W.mumAway?11640:follow?W.px-W.dir*46:660;W.mx=W.mx==null?(follow?W.px-46:660):W.mx+(tx-W.mx)*Math.min(1,dt*2.2);const moving=follow&&Math.abs(tx-W.mx)>12;
   if(!follow){ctx.strokeStyle=BLK;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx(650),gy(660)-20);ctx.lineTo(sx(585),gy(660)-66);ctx.stroke()}
-  if((S.landed||W.drop)&&!(W.mumAway&&W.mx>11560))drawMumle(sx(W.mx),GY+walkY(W.mx),t,moving||W.mumAway);W.mxs=sx(W.mx);W.mys=GY+walkY(W.mx)-58}
+  if((S.landed||W.drop)&&W.px<19000&&!(W.mumAway&&W.mx>11560))drawMumle(sx(W.mx),GY+walkY(W.mx),t,moving||W.mumAway);W.mxs=sx(W.mx);W.mys=GY+walkY(W.mx)-58}
  // hero, or the fall
  if(W.drop){const k=Math.min(1,W.dropT/1.6),hx=sx(330),hy=(GY-340)+340*k*k;ctx.globalAlpha=.22;ctx.fillStyle="#9ff3e0";ctx.beginPath();ctx.moveTo(hx-8,GY*.16);ctx.lineTo(hx+8,GY*.16);ctx.lineTo(hx+50,GY+6);ctx.lineTo(hx-50,GY+6);ctx.fill();ctx.globalAlpha=1;if(k<1){ctx.save();ctx.translate(hx,hy);ctx.rotate(W.dropT*6);ctx.translate(-hx,-hy);drawHero(hx,hy+30,t);ctx.restore()}else{const s=W.dropT-1.6;ctx.strokeStyle="#e9edf8";ctx.lineWidth=2;ctx.globalAlpha=Math.max(0,1-s);for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(hx,GY+8,20+s*90+i*14,4+s*10,0,0,7);ctx.stroke()}ctx.globalAlpha=1}}
  else if(S.landed){drawHero(sx(W.px),GY+walkY(W.px)-W.py,t);if(W.cast&&t-W.cast<1.2){const a=(t-W.cast)/1.2,hx=sx(W.px)+19*W.dir,hy=GY+walkY(W.px)-84;ctx.strokeStyle="#ffd76a";ctx.lineWidth=3*(1-a)+.5;ctx.globalAlpha=1-a;for(const k of [1,.6]){ctx.beginPath();ctx.arc(hx,hy,a*190*k,0,7);ctx.stroke()}ctx.globalAlpha=1;glow(hx,hy,120*(1-a)+20,"rgba(255,215,106,.9)",1-a)}if(W.pulse["våd"]&&t-W.pulse["våd"]<3){ctx.fillStyle="#9fd8ff";for(let i=0;i<5;i++){const a=((t*1.4+i*.2)%1);ctx.fillRect(sx(W.px)-10+i*5,GY+walkY(W.px)-50+a*50,1.5,5)}}}
@@ -311,7 +316,7 @@ function frame(ts){
   LAMPS.forEach((lx,i)=>{if(S.lit>i)glow(sx(lx)+4,gy(lx)-80,230,"rgba(0,0,0,1)",1,d)});
   for(const f of FAIRY)if(!S.got.includes(f[2]))glow(sx(f[0]),gy(f[0])-f[1],46,"rgba(0,0,0,1)",1,d);glow(sx(2950),gy(2950)-50,70,"rgba(0,0,0,.9)",1,d);
   ctx.drawImage(W.dk,0,0)}
- if(W.fogK>.02){const x=sx(6060);if(x<VW){const fg2=ctx.createLinearGradient(Math.max(-200,x-120),0,Math.max(0,x)+160,0);fg2.addColorStop(0,"rgba(150,210,170,0)");fg2.addColorStop(1,`rgba(150,210,170,${.9*W.fogK})`);ctx.fillStyle=fg2;ctx.fillRect(Math.max(-200,x-120),0,VW+400,VH);for(let i=0;i<6;i++){ctx.globalAlpha=.25*W.fogK;ctx.fillStyle="#d6f0dc";ctx.beginPath();ctx.ellipse(x+80+i*90+Math.sin(t*.3+i)*40,GY-40-i%3*60,120,30,0,0,7);ctx.fill()}ctx.globalAlpha=1}}
+ if(W.fogK>.02&&W.px<8000){const x=sx(6060);if(x<VW){const fg2=ctx.createLinearGradient(Math.max(-200,x-120),0,Math.max(0,x)+160,0);fg2.addColorStop(0,"rgba(150,210,170,0)");fg2.addColorStop(1,`rgba(150,210,170,${.9*W.fogK})`);ctx.fillStyle=fg2;ctx.fillRect(Math.max(-200,x-120),0,VW+400,VH);for(let i=0;i<6;i++){ctx.globalAlpha=.25*W.fogK;ctx.fillStyle="#d6f0dc";ctx.beginPath();ctx.ellipse(x+80+i*90+Math.sin(t*.3+i)*40,GY-40-i%3*60,120,30,0,0,7);ctx.fill()}ctx.globalAlpha=1}}
  // speech bubble
  if(W.bub&&t<W.bub.until){const b=W.bub,x=W.mxs,y=W.mys;ctx.font="15px Georgia";const tw=ctx.measureText(b.text).width+20;ctx.fillStyle="rgba(233,237,248,.95)";const bx=Math.max(8,Math.min(VW-tw-8,x-tw/2));ctx.beginPath();ctx.roundRect(bx,y-34,tw,26,10);ctx.fill();ctx.fillStyle=BLK;ctx.textAlign="left";ctx.fillText(b.text,bx+10,y-16);ctx.textAlign="center"}
  // foreground trunks and the thorn frame
@@ -365,7 +370,7 @@ function utter(o){return new Promise(res=>{
 const Hx=()=>S.pro==="han"?"Han":"Hun",hx=()=>S.pro==="han"?"han":"hun";
 const has=(t,...ws)=>ws.every(w=>(" "+t+" ").includes(" "+w+" "));
 const ANS={"m|Er du okay?":"ja","m|Hvad hedder du?":()=>"jeg hedder "+S.name,"m|Du kom med et rumskib?":"jeg kom med et rumskib","r|Og hvorfor er du så våd?":"jeg er våd på grund af søen","t|Hvorfor kom du hertil?":"jeg kom hertil på grund af et rumskib","t|Hvorfor er du våd?":"på grund af søen","t|Og hvorfor er skoven lys nu?":"på grund af lygterne","k|Og du? Hvorfor kom du hertil?":"jeg kom hertil for at finde vejen","b|Og du? Hvad vil du have?":"jeg vil gerne købe et brød","b|Og hvorfor vil du købe brød?":"for at spise","y|Nå. Hvad vil du købe?":"jeg vil gerne købe en lygte","y|Hvorfor vil du købe en lygte?":"for at se","i|Hvorfor vil du have en seng?":"for at sove","i|Og hvorfor er du så træt?":"på grund af trolden","g|Hvorfor kom du hertil?":"jeg kom hertil fordi rumvæsnerne ikke ville have mig","g|Og hvad vil du i Tågeby?":"for at finde mad","g|Og hvorfor er du så våd?":"på grund af søen"};
-const answerFor=o=>{if(o.who==="l")return /tak/.test(o.hint||"")?"lys tak":"lys";if(o.who==="c")return "på grund af søen";const a=ANS[o.who+"|"+o.da];return typeof a==="function"?a():a||""};
+const answerFor=o=>{if(o.ans)return o.ans;if(o.who==="l")return /tak/.test(o.hint||"")?"lys tak":"lys";if(o.who==="c")return "på grund af søen";const a=ANS[o.who+"|"+o.da];return typeof a==="function"?a():a||""};
 const IRONY={m:["Hm. Jeg siger det bare, så gør du det efter mig:","He sighs like a very small teacher."],l:["Lygten er ikke døv. Sig bare:","Mumle folds his arms. The lantern, somehow, also folds its arms."],r:["Kra. Skal jeg også flyve for dig? Sig:","The raven inspects one claw, bored."],t:["Jeg har ventet i fyrre år. Jeg kan godt vente lidt endnu. Sig:","The troll settles in, comfortably, like a landslide."],k:["Min suppe bliver kold. Sig bare:","She stirs, pointedly."],b:["Brødet bliver gammelt, min ven. Sig:","She taps the loaf. It already sounds a day older."],y:["Jeg har hele natten. Det har du ikke. Sig:","He adjusts his hat by one degree."],i:["Du er virkelig træt, kan jeg høre. Sig bare:","She pats your arm, which is worse."],g:["Skal jeg hente frøerne? Sig:","He glances at the pond. The pond glances back."],c:["Mor, kan hun ikke tale? Sig:","The child says this at full volume."]};
 // keep asking until the judge is satisfied; the NPC always answers in fluent Danish
 async function converse(o){
@@ -557,7 +562,7 @@ const BEATS=[
   await tell([["n","Behind the bakery, where he thinks nobody can see, the small mossy figure takes something out of his hat. It has lights on it."],["a","“Subject 4471 is inside the walls. Forstand: rising. Faster than the others.”"]]);
   await tell([["a",`“…Yes, Captain. ${S.pro==="han"?"He":"She"} suspects nothing.”`],["n","In perfect English."]]);
   S.ch1=1;
-  await new Promise(res=>{ui(`<p class="lab">End of chapter one</p><h1>Dumpet på Måne Syv</h1><p>Forstand ${Math.round(S.fors)}/100 · words ${S.chips.length} · word-lights ${S.got.length}/${FAIRY.length}</p><p class="dim">You can now say why you came, three ways: på grund af + a thing, for at + an action, and fordi + a whole clause with its own word order.</p><p class="dim">Chapter two is not written yet. Every place in this chapter is open from the menu (☰).</p><button class="go" id="nx">Stay in Tågeby</button>`,true);$("#nx").onclick=res});
+  await new Promise(res=>{ui(`<p class="lab">End of chapter one</p><h1>Dumpet på Måne Syv</h1><p>Forstand ${Math.round(S.fors)} · words ${S.chips.length} · word-lights ${S.got.length}/${FAIRY.length}</p><p class="dim">You can now say why you came, three ways: på grund af + a thing, for at + an action, and fordi + a whole clause with its own word order.</p><p class="dim">Chapter two is not written yet. Every place in this chapter is open from the menu (☰).</p><button class="go" id="nx">Stay in Tågeby</button>`,true);$("#nx").onclick=res});
  }}
 ];
 // places you can return to from the menu, unlocked as you reach them
@@ -569,7 +574,7 @@ const NOTES=[
  {beat:18,t:"vil gerne, and cause against purpose",h:`<p><b>Jeg vil gerne købe et brød.</b> · I would like to buy a loaf.</p><p class="dim">vil gerne + basic verb is the polite way to want something.</p><p><b>Hvorfor vil du have en seng?</b> – <b>For at sove.</b> (purpose: an action)</p><p><b>Hvorfor er du træt?</b> – <b>På grund af trolden.</b> (cause: a thing)</p><p class="dim">Both questions start with hvorfor. Choose by what your answer is: a verb takes for at, a noun takes på grund af.</p>`},
  {beat:20,t:"fordi + a whole clause",h:`<p><b>Jeg kom hertil, fordi jeg ville finde mad.</b></p><p><b>Jeg kom hertil, fordi jeg ikke kunne sove.</b></p><p><b>Jeg kom hertil, fordi rumvæsnerne ikke ville have mig.</b></p><p class="dim">fordi = because. What follows is a full clause with its own subject and verb.</p><p class="dim">Word order changes inside it. Main clause: <b>jeg kunne ikke sove</b> (verb, then ikke). After fordi: <b>jeg ikke kunne sove</b> (ikke, then verb). The same goes for gerne and altid.</p>`},
  {beat:22,t:"Three ways to give a reason",h:`<p><b>på grund af</b> + thing · <b>for at</b> + action · <b>fordi</b> + clause</p><p>Jeg er her <b>på grund af</b> et rumskib.</p><p>Jeg er her <b>for at</b> lære dansk.</p><p>Jeg er her, <b>fordi</b> rumvæsnerne ikke ville have mig.</p>`}];
-function notes(){uiM(`<p class="lab">Chapter 1</p><h1>Notesbog</h1><p class="dim">What you have worked out so far. New pages appear as the story goes on.</p>${NOTES.map(n=>S.top>=n.beat?`<h2>${n.t}</h2>${n.h}`:`<p class="dim">· a page you haven't reached yet</p>`).join("")}<button class="go" id="bk">Back</button>`,true);$("#bk").onclick=menu;mp.querySelectorAll("b").forEach(b=>{b.dataset.say=b.textContent;b.style.color="var(--gold)";b.style.fontWeight="400"})}
+function notes(){uiM(`<p class="lab">Chapter 1</p><h1>Notesbog</h1><p class="dim">What you have worked out so far. New pages appear as the story goes on.</p>${NOTES.map(n=>(n.when?n.when():S.top>=n.beat)?`<h2>${n.t}</h2>${n.h}`:`<p class="dim">· a page you haven't reached yet</p>`).join("")}<button class="go" id="bk">Back</button>`,true);$("#bk").onclick=menu;mp.querySelectorAll("b").forEach(b=>{b.dataset.say=b.textContent;b.style.color="var(--gold)";b.style.fontWeight="400"})}
 function words(){uiM(`<p class="lab">Chapter 1</p><h1>Ordbog</h1><p class="dim">Tap ▶ to hear a word.</p>${S.chips.map(w=>`<p>${esc(w==="NAVN"?S.name:w)} <span class="dim">${w==="NAVN"?"your name":esc(GLOSS[w]||(w==="på grund af"?"because of":w==="for at"?"in order to":""))} · ${S.got.includes(w)?"caught":"given"}${S.used[w]?" · used "+S.used[w]+"×":" · not used yet"}</span> <button class="mini" data-say="${esc(w==="NAVN"?S.name:w)}">▶</button></p>`).join("")}<button class="go" id="bk">Back</button>`,true);$("#bk").onclick=menu}
 function voice(){const vs=daVoices(),test="Hvorfor kom du hertil, lille fremmed?";
  uiM(`<p class="lab">Settings</p><h1>Voice</h1><p class="dim">The voices come from your phone's own Danish speech engine; the game can only change which one it uses, and how deep and how fast it speaks.</p>
@@ -593,21 +598,258 @@ function backup(){let code="";try{code=btoa(unescape(encodeURIComponent(JSON.str
  $("#bk").onclick=menu}
 function travel(i){const p=PLACES[i];S.beat=p.beat;W.px=p.px;W.mx=null;W.cam=W.px-VW/2;if(p.beat<=6)S.lit=0;if(p.beat<=9)S.stones=0;if(p.beat<=12)S.fogClear=0;if(p.beat<=17)S.dawn=0;if(p.beat<=20)S.gate=0;W.mumAway=0;W.bell=null;save();closeM();hud();toast(p.n,1800)}
 function menu(){
- uiM(`<p class="lab">Dumpet på Måne Syv</p><h1>Menu</h1><p class="dim">Forstand ${Math.round(S.fors)}/100 · Tillid: ${Object.keys(S.til).filter(k=>S.til[k]).map(k=>NAMES[k]+" "+S.til[k]).join(" · ")||"none yet"}</p>
+ uiM(`<p class="lab">Dumpet på Måne Syv</p><h1>Menu</h1><p class="dim">Forstand ${Math.round(S.fors)} · Tillid: ${Object.keys(S.til).filter(k=>S.til[k]).map(k=>NAMES[k]+" "+S.til[k]).join(" · ")||"none yet"}</p>
  <button class="go" id="bk">Continue</button>
  <p class="lab">Chapter 1 · places</p><div class="opts">${PLACES.map((p,i)=>`<button data-p="${i}" ${S.top<p.beat||W.busy?"disabled":""}>${p.n}<small>${S.top<p.beat?"Not reached yet":W.busy?p.en+" · finish this conversation first":p.en+" · play from here"}</small></button>`).join("")}</div>
- <p class="lab">Chapter 2</p><div class="opts"><button disabled>Not written yet<small>Opens with your next chapter</small></button></div>
+ <p class="lab">Chapter 2</p><div class="opts">${!S.ch1?`<button disabled>Tågeby<small>Finish chapter one first</small></button>`:`<button id="c2go">${S.c2?"Open the town map":"Begin chapter two"}<small>${S.c2?(S.c2.st>=4?"Chapter complete · the town stays open":"Tågeby · questions, a ledger, a counter"):"Inside the walls"}</small></button>`}</div>
  <p class="lab">Study</p><div class="opts"><button id="nb">Notesbog<small>The grammar you have worked out, with examples</small></button><button id="ob">Ordbog<small>Your ${S.chips.length} words</small></button></div>
  <p class="lab">Settings</p><div class="opts"><button id="vo">Voice<small>Deeper, slower, or a different voice</small></button><button id="pr">People call you: ${S.pro}<small>Tap to switch between hun (she) and han (he)</small></button><button id="snd">Sound and music: ${S.sound?"on":"off"}</button><button id="tlt">Tilt the phone to walk: ${S.tilt?"on":"off"}</button><button id="sv">Your progress<small>Saved automatically · backup · restart</small></button></div>`,true);
- $("#bk").onclick=closeM;$("#nb").onclick=notes;$("#ob").onclick=words;$("#vo").onclick=voice;$("#sv").onclick=backup;
+ $("#bk").onclick=closeM;if($("#c2go"))$("#c2go").onclick=()=>{if(W.busy)return toast("Finish this conversation first.");if(!S.c2)return c2begin();if(W.px<19000)goDist("raad");townMap()};$("#nb").onclick=notes;$("#ob").onclick=words;$("#vo").onclick=voice;$("#sv").onclick=backup;
  $("#pr").onclick=()=>{S.pro=S.pro==="han"?"hun":"han";save();menu()};$("#snd").onclick=()=>{S.sound=S.sound?0:1;save();audioStart();menu()};$("#tlt").onclick=()=>{S.tilt=S.tilt?0:1;save();menu()};
  mp.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>travel(+b.dataset.p));
 }
 $("#menu").onclick=()=>{if(!mp.hidden)return closeM();if(S.landed)menu()};
 
+// ============================================================ CHAPTER TWO · Tågeby
+// A hub, not a road: a town map, six districts to walk in, people to question.
+Object.assign(GLOSS,{næste:"next",skranke:"counter",navn:"name",rubrik:"box (on a form)",hvornår:"when",dag:"day",dage:"days",siden:"ago (for … siden)",længe:"long (hvor længe = how long)",være:"be",hvis:"if",endnu:"yet",tal:"number",nul:"zero",fremmedtælleren:"the stranger-counter",tæller:"counter (person who counts)",tælleren:"the counter",blev:"became",tirsdags:"i tirsdags = last Tuesday",stillingen:"the post / job",ledig:"vacant",ifølge:"according to",paragraf:"paragraph (of the rules)",overtager:"takes over",nyeste:"newest",tillykke:"congratulations",spørge:"ask",spørg:"ask",fire:"four",skriv:"write",svarene:"the answers",bogen:"the book",tilbage:"back",lukker:"close",hjem:"home",friske:"fresh",sild:"herring",nye:"new",flyttede:"moved",år:"years / year",mand:"husband",fik:"got",job:"job",svarede:"answered",forkert:"wrong",dammen:"the pond",livet:"hele livet = my whole life",tror:"think / believe",jo:"after all",flytte:"move",glad:"happy (glad for at … = happy to …)",bo:"live",regner:"it rains",savner:"miss",elsker:"loves",regn:"rain",alle:"everyone",barn:"child",boede:"lived",kontrakten:"the contract",udløber:"runs out",rejser:"travel(s) / leave(s)",butikken:"the shop",faldt:"fell",trolden:"the troll",færdig:"finished",færdigt:"finished",kvækker:"croak",tik:"tick",tredive:"thirty",uret:"the clock",gik:"gik i stå = stopped",stå:"gik i stå = stopped",allerede:"already",uger:"weeks",uge:"week",rigtigt:"really / right",igen:"again",hjælp:"help",sidder:"sit",sæt:"sit down / put",bygger:"build",næsten:"almost",plan:"plan",stykker:"gået i stykker = broken",gået:"gået i stykker = broken",sætningerne:"the sentences",sammen:"together",måned:"month",måneds:"om en måneds tid = in about a month",tid:"time",nogle:"nogle gange = sometimes",gange:"nogle gange = sometimes",familie:"family",tit:"often",står:"it says (written)",kontrakt:"contract",hver:"every",nat:"night",tager:"take",ringer:"phone",født:"born",fyrre:"forty",kommer:"comes",sagt:"said",hende:"her",åh:"oh",spiser:"am eating",kage:"cake",ung:"young",vejret:"the weather",vigtigt:"important",passer:"fit / add up",tallene:"the numbers",lyver:"is lying",fejlen:"the mistake",hen:"over (there)",stemple:"stamp",løgn:"lie",mangler:"am missing / lack",kun:"only",hel:"whole",høj:"high",hentet:"fetched / collected",syv:"seven",vide:"know",mere:"more",ad:"én ting ad gangen = one thing at a time",gangen:"én ting ad gangen = one thing at a time",først:"first",ser:"look",frø:"frog",seng:"bed",stadig:"still",alene:"alone",dårligt:"badly",sover:"sleep",skinner:"shines",mødte:"met",byggede:"built",vente:"wait",ventet:"waited",tom:"empty",hurtigere:"faster",bro:"bridge",bygger_:"",sidst:"last",lidt:"a bit",bliv:"stay",ved:"know (det ved jeg ikke = I don't know)",hør:"listen",an:"det kommer an på = it depends on",nej:"no",dum:"stupid",altid:"always",ting:"thing",én:"one",står_:"",ud:"out",udlandet:"abroad",sten:"stones",så:"so",ingen:"nobody",ham:"him",jeg:"I",kan:"can",før:"before",går:"go / walk",tik_:"",tak:"thanks",i_går:"yesterday",ny:"new",tæl:"count",spørgsmål:"question",var:"was",væk:"gone",ja:"yes",tre:"three",to:"two"});
+delete GLOSS.bygger_;delete GLOSS.står_;delete GLOSS.tik_;delete GLOSS.i_går;
+Object.assign(NAMES,{x:"Fuldmægtig Blanket",s:"Fru Sild",u:"Hr. Sekund",e:"Brobygger Rask"});
+Object.assign(VOICE,{x:[.92,.8],s:[1.08,1.1],u:[.75,.9],e:[.95,.7]});
+Object.assign(IRONY,{x:["Rubrik 12: 'Den fremmede kan ikke svare.' Jeg skriver det for dig. Sig:","He writes it down. In triplicate."],s:["Mine sild er hurtigere end dig. Sig:","A herring on the slab appears to agree."],u:["Tik. Tak. Tik. Sig:","He checks a watch that has no hands."],e:["Det er ikke en bro, du bygger. Det er en sætning. Sig:","He slides the plan an inch toward you, as to a child."]});
+GLOSS.end="than";Object.assign(GLOSS,{bliver:"get / become",brobyggeren:"the bridge-builder",dit:"your",eller:"or",fem:"five",find:"find",forstand:"wits",kroen:"the inn",meget:"very / a lot",mine:"my",mit:"my",nummer:"number",når:"when",skibet:"the ship",skriver:"write",underskriften:"the signature",da:"when (one moment in the past)",om:"in (om en måned = in a month)",i:"in / for (i to uger = for two weeks)",pænere:"nicer",vil:"want (to)",gerne:"gladly",tak:"thanks / please",hvad:"what",nu:"now",hun:"she",han:"he",min:"my",af:"of",dem:"them",ham:"him",på:"on / at",ved_:""});delete GLOSS.ved_;GLOSS.svare="answer";GLOSS.den="the";
+S.til=Object.assign({x:0,s:0,u:0,e:0},S.til);
+const DIST=[{id:"raad",n:"Rådhuset",en:"The town hall",x:20000,who:"x",need:["hvornår","siden","længe","endnu"]},{id:"torv",n:"Torvet",en:"The square",x:22000,who:"s",need:["år","savner","glad"]},{id:"ur",n:"Urmageren",en:"The clockmaker",x:24000,who:"u",need:["uge","stadig"]},{id:"kro",n:"Kroen",en:"The inn",x:26000,who:"e",need:["måned","hjem"]},{id:"port",n:"Porten",en:"The gate, from inside",x:28000,who:"g",need:[]},{id:"bag",n:"Bageriet",en:"The bakery",x:30000,who:"m",need:[]}];
+[[20200,46,"hvornår"],[20290,112,"siden"],[20380,46,"længe"],[20460,110,"endnu"],[22180,46,"år"],[22280,112,"savner"],[22380,46,"glad"],[22460,110,"regner"],[24200,46,"uge"],[24300,112,"stadig"],[24400,46,"færdig"],[26200,46,"måned"],[26290,112,"hjem"],[26380,46,"familie"],[28250,46,"hende"],[30250,46,"kage"]].forEach(f=>FAIRY.push(f));
+const curDist=()=>DIST.reduce((a,d)=>Math.abs(W.px-d.x-380)<Math.abs(W.px-a.x-380)?d:a,DIST[0]);
+const C2=()=>S.c2||(S.c2={st:0,done:{},tl:{},games:{}});
+const doneN=()=>["s","u","e","g"].filter(k=>C2().done[k]).length;
+function c2pal(){const n=S.c2?(S.c2.st>=3?3:S.c2.st>=2?2:doneN()>=2?1:0):0,p=[PAL[6],PAL[5],PAL[0],PAL[2]][n],o={};for(const k of ["sky","far","mist","water","orb","stars"])o[k]=p[k];return o}
+function goDist(id){const d=DIST.find(x=>x.id===id);W.px=d.x+90;W.dir=1;W.mx=null;W.cam=W.px-VW/2;closeM();closeSheet();save();toast(d.n,1600)}
+function c2begin(){C2();closeM();closeSheet();W.busy=true;W.px=DIST[0].x+90;W.cam=W.px-VW/2;
+ tell([["n","Chapter two. Tågeby, the next morning."],["n","You slept in a doorway. Mumle has 'things to do'. You have a town, a staff, sixty words, and a strong suspicion about a small mossy person."],["y","The troll said to say nothing to the moss. Fine. I won't say anything. I'll ask."]]).then(()=>tell([["n","A notice on the wall, in letters the size of your hand: ALLE FREMMEDE SKAL TIL RÅDHUSET. SKRANKE 7."],["y","All strangers must go to the town hall. Counter seven. Of course there is a counter."]])).then(()=>{W.busy=false;closeSheet();save()})}
+// ----- the ☰-free buttons of the town: talk, and the map
+const actB=$("#act"),mapB=$("#mapb");
+function c2buttons(open,t){
+ const inC2=W.px>19000,idle=!open&&!W.busy&&!W.drop;
+ mapB.hidden=!(inC2&&idle);
+ let label="",fn=null;
+ if(idle&&inC2){const d=curDist();if(Math.abs(W.px-(d.x+560))<80){label=d.who==="x"?"Gå til skranke 7":"Tal med "+NAMES[d.who];fn=()=>{const miss=d.need.filter(w=>!S.got.includes(w));if(miss.length)return toast(`Catch the word-light${miss.length>1?"s":""} here first: ${miss.length} still flying`,3200);W.busy=true;W.L=W.R=false;TALK[d.id]().catch(e=>console.error(e)).then(()=>{W.busy=false;closeSheet();save();hud()})}}}
+ else if(idle&&S.ch1&&!S.c2&&W.px>10900){label="Begin chapter two";fn=c2begin}
+ actB.hidden=!label;if(label){actB.textContent=label;actB.onclick=fn}
+}
+mapB.onclick=()=>townMap();
+function townMap(){
+ const c=C2(),mark=id=>id==="raad"?(c.st===0||(c.st===1&&doneN()===4)||c.st===3?"!":""):id==="kro"?(c.st===2?"!":c.done.e?"✓":""):id==="torv"?(c.done.s?"✓":""):id==="ur"?(c.done.u?"✓":""):id==="port"?(c.done.g?"✓":""):"";
+ const pos={raad:[160,150],torv:[160,250],ur:[62,196],kro:[258,206],port:[160,372],bag:[256,318]};
+ uiM(`<p class="lab">Chapter 2 · Tågeby</p><h1>Kort</h1><p class="dim">Tap a place to go there. ${c.st===0?"Start at the town hall.":c.st===1?`Strangers questioned: ${doneN()}/4`:""}</p>
+ <svg viewBox="0 0 320 420" style="width:100%;max-width:420px;align-self:center"><ellipse cx="160" cy="220" rx="150" ry="190" fill="#0b0a1c" stroke="#3a2a5e" stroke-width="6"/><path d="M40 300q120-50 240 10" stroke="#2f5a66" stroke-width="10" fill="none" opacity=".7"/><rect x="138" y="398" width="44" height="18" fill="#05040c" stroke="#ffd76a"/>
+ ${DIST.map(d=>{const [x,y]=pos[d.id];return `<g data-d="${d.id}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="34" fill="rgba(58,42,94,.55)" stroke="${mark(d.id)==="!"?"#ffd76a":"#3a2a5e"}" stroke-width="2"/><path d="M${x-14} ${y+4}v-14l14-12 14 12v14z" fill="#05040c" stroke="#a79fd0"/><rect x="${x-3}" y="${y-6}" width="6" height="10" fill="#ffcf7a"/><text x="${x}" y="${y+24}" text-anchor="middle" font-family="Georgia" font-size="12" fill="#e9edf8">${d.n}</text><text x="${x+24}" y="${y-20}" text-anchor="middle" font-family="Verdana" font-weight="700" font-size="15" fill="#ffd76a">${mark(d.id)}</text></g>`}).join("")}</svg>
+ <button class="go" id="bk">Back</button>`);
+ mp.querySelectorAll("[data-d]").forEach(g=>g.onclick=()=>goDist(g.dataset.d));$("#bk").onclick=closeM;
+}
+// ----- district art: one street of crooked houses, one landmark, one resident
+function fig(x,y,t,o){const b=Math.sin(t*1.5+x)*1.3,w=o.w||14,h=o.h||64;ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-w,y);ctx.quadraticCurveTo(x-w-3,y-h+8-b,x,y-h-b);ctx.quadraticCurveTo(x+w+3,y-h+8-b,x+w,y);ctx.fill();ctx.beginPath();ctx.arc(x,y-h-10-b,o.r||10,0,7);ctx.fill();if(o.hat)o.hat(x,y-h-10-b);eyes(x,y-h-10-b,o.r?o.r*.38:3.8,o.eye||"#ffe9b0",1.6)}
+function drawDistrict(sx,GY,t,P){
+ const d=curDist(),i=DIST.indexOf(d),x0=sx(d.x),lit=P.stars>.25;let s=97+i*13;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+ for(let L=0;L<2;L++){ctx.fillStyle=L?"#0b0a1c":rgb(mix(P.far,[5,4,12],.4));let hx=x0-140+(L?40:0)-(W.cam-d.x)*(L?0:-.35);while(hx<x0+960){const w=60+r()*46,h=(L?110:160)+r()*90,lean=(r()-.5)*10;ctx.beginPath();ctx.moveTo(hx,GY+8);ctx.lineTo(hx+lean,GY-h);ctx.lineTo(hx+w/2+lean,GY-h-w*.75);ctx.lineTo(hx+w+lean,GY-h);ctx.lineTo(hx+w,GY+8);ctx.fill();if(L){const save2=ctx.fillStyle;ctx.fillStyle=lit?"#ffcf7a":"#2a2548";for(let k=0;k<3;k++)if(r()>.35)ctx.fillRect(hx+12+k*16+lean*.5,GY-h+26+(k%2)*34,8,12);ctx.fillStyle=save2}hx+=w+r()*14}}
+ const X=x0+600,y=GY;ctx.fillStyle=BLK;
+ if(d.id==="raad"){ctx.fillRect(X-150,y-190,240,196);ctx.beginPath();ctx.moveTo(X-166,y-190);ctx.lineTo(X-30,y-250);ctx.lineTo(X+106,y-190);ctx.fill();ctx.fillStyle="#17152e";for(let k=0;k<5;k++)ctx.fillRect(X-136+k*50,y-178,14,178);ctx.fillStyle="#ffcf7a";ctx.fillRect(X-84,y-96,96,56);ctx.fillStyle=BLK;ctx.fillRect(X-90,y-44,108,8);ctx.font="700 11px Verdana";ctx.textAlign="center";ctx.fillStyle="#ffd76a";ctx.fillText("SKRANKE 7",X-36,y-104);
+  fig(X-36,y-40,t,{w:12,h:30,r:8,eye:"#17152e"});ctx.fillStyle="#e9edf8";for(let k=0;k<9;k++)ctx.fillRect(X-4,y-46-k*4,16+Math.sin(k*2)*2,3);ctx.strokeStyle=BLK;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(X-30,y-250);ctx.lineTo(X-30,y-290);ctx.stroke();ctx.fillStyle="#ff8a8a";ctx.fillRect(X-30,y-290,26+Math.sin(t*3)*3,14)}
+ if(d.id==="torv"){ctx.beginPath();ctx.ellipse(X-260,y,60,10,0,0,7);ctx.fill();ctx.fillRect(X-266,y-60,12,60);ctx.beginPath();ctx.ellipse(X-260,y-60,26,7,0,0,7);ctx.fill();for(let k=0;k<4;k++){const a=(t*.8+k*.25)%1;ctx.globalAlpha=1-a;ctx.fillStyle=rgb(P.water);ctx.fillRect(X-262+(k-1.5)*8,y-66-a*26+a*a*40,2,6)}ctx.globalAlpha=1;ctx.fillStyle=BLK;
+  ctx.fillRect(X-76,y-40,120,8);ctx.fillRect(X-70,y-40,6,42);ctx.fillRect(X+32,y-40,6,42);ctx.fillRect(X-86,y-130,6,132);ctx.fillRect(X+48,y-130,6,132);ctx.beginPath();ctx.moveTo(X-100,y-126);ctx.lineTo(X-16,y-150);ctx.lineTo(X+68,y-126);ctx.fill();
+  for(let k=0;k<5;k++){const fx=X-66+k*24,sw=Math.sin(t*1.6+k)*3;ctx.strokeStyle=BLK;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fx,y-126);ctx.lineTo(fx+sw,y-104);ctx.stroke();ctx.fillStyle=rgb(mix(P.far,[233,237,248],.5));ctx.beginPath();ctx.ellipse(fx+sw,y-92,5,13,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(fx+sw-5,y-76);ctx.lineTo(fx+sw,y-82);ctx.lineTo(fx+sw+5,y-76);ctx.fill()}
+  fig(X-40,y-2,t,{w:20,h:58,r:11,hat:(a,b)=>{ctx.beginPath();ctx.moveTo(a-13,b-2);ctx.quadraticCurveTo(a,b-22,a+13,b-2);ctx.lineTo(a+16,b+12);ctx.lineTo(a-16,b+12);ctx.fill()}})}
+ if(d.id==="ur"){ctx.fillRect(X-80,y-330,110,336);ctx.beginPath();ctx.moveTo(X-92,y-330);ctx.lineTo(X-25,y-410);ctx.lineTo(X+42,y-330);ctx.fill();ctx.fillStyle="#f1e6c8";ctx.beginPath();ctx.arc(X-25,y-270,40,0,7);ctx.fill();ctx.strokeStyle=BLK;ctx.lineWidth=4;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(X-25,y-270);ctx.lineTo(X-25+Math.cos(-t*.9)*30,y-270+Math.sin(-t*.9)*30);ctx.moveTo(X-25,y-270);ctx.lineTo(X-25+Math.cos(t*.13)*20,y-270+Math.sin(t*.13)*20);ctx.stroke();ctx.fillStyle=lit?"#ffcf7a":"#2a2548";ctx.fillRect(X-40,y-70,30,70);
+  for(let k=0;k<3;k++){const sw=Math.sin(t*2+k)*3;ctx.strokeStyle=BLK;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X-130-k*26,y-120);ctx.lineTo(X-130-k*26+sw,y-100);ctx.stroke();ctx.fillStyle=BLK;ctx.beginPath();ctx.arc(X-130-k*26+sw,y-94,8,Math.PI,0);ctx.fill()}ctx.fillRect(X-200,y-124,84,4);ctx.fillRect(X-200,y-124,4,128);
+  fig(X-40,y-2,t,{w:9,h:74,r:8,eye:"#9ff3e0"})}
+ if(d.id==="kro"){ctx.fillRect(X-170,y-150,230,156);ctx.beginPath();ctx.moveTo(X-186,y-150);ctx.lineTo(X-55,y-230);ctx.lineTo(X+76,y-150);ctx.fill();ctx.fillStyle="#ffcf7a";ctx.fillRect(X-150,y-110,40,44);ctx.fillRect(X-10,y-110,40,44);ctx.fillStyle="#2a2548";ctx.fillRect(X-82,y-84,36,84);ctx.fillStyle=BLK;ctx.fillRect(X+60,y-170,60,4);const sw=Math.sin(t*1.3)*.12;ctx.save();ctx.translate(X+98,y-166);ctx.rotate(sw);ctx.fillRect(-20,6,40,30);ctx.fillStyle="#b6ffb0";ctx.beginPath();ctx.arc(0,24,8,Math.PI,0);ctx.fill();ctx.fillRect(-5,15,2,2);ctx.fillRect(3,15,2,2);ctx.restore();
+  ctx.fillStyle=BLK;ctx.fillRect(X-250,y-36,90,6);ctx.fillRect(X-244,y-36,5,38);ctx.fillRect(X-170,y-36,5,38);ctx.fillStyle="#e9edf8";ctx.fillRect(X-238,y-42,56,5);
+  fig(X-40,y-2,t,{w:15,h:60,r:10,hat:(a,b)=>{ctx.fillRect(a-12,b-22,24,14);ctx.fillRect(a-17,b-9,34,4)}})}
+ if(d.id==="port"){ctx.fillStyle="#0b0a1c";ctx.fillRect(X+40,y-190,300,200);for(let k=0;k<8;k++)ctx.fillRect(X+40+k*38,y-206,22,18);ctx.fillStyle=rgb(P.mist,.7);ctx.beginPath();ctx.moveTo(X+70,y+2);ctx.lineTo(X+70,y-90);ctx.arc(X+120,y-90,50,Math.PI,0);ctx.lineTo(X+170,y+2);ctx.fill();
+  ctx.fillStyle=rgb(P.water);ctx.beginPath();ctx.ellipse(X-250,y+4,90,9,0,0,7);ctx.fill();for(let k=0;k<6;k++){const fx=X-310+k*24,j=Math.max(0,Math.sin(t*2.6+k*1.9))*5;ctx.fillStyle=BLK;ctx.beginPath();ctx.arc(fx,y+3-j,6,Math.PI,0);ctx.fill();ctx.fillStyle="#b6ffb0";ctx.fillRect(fx-4,y-2-j,1.6,1.6);ctx.fillRect(fx+2.5,y-2-j,1.6,1.6)}
+  fig(X-40,y-2,t,{w:22,h:78,r:14,eye:"#ff8a8a",hat:(a,b)=>{ctx.fillRect(a-16,b-14,32,8);ctx.fillRect(a-3,b-32,6,18)}});ctx.strokeStyle=BLK;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(X-6,y);ctx.lineTo(X-6,y-150);ctx.stroke();ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(X-6,y-168);ctx.lineTo(X+1,y-148);ctx.lineTo(X-13,y-148);ctx.fill()}
+ if(d.id==="bag"){ctx.fillRect(X-150,y-130,220,136);ctx.beginPath();ctx.moveTo(X-166,y-130);ctx.lineTo(X-40,y-200);ctx.lineTo(X+86,y-130);ctx.fill();ctx.fillRect(X+20,y-230,26,70);for(let k=0;k<5;k++){const a=(t*.3+k*.2)%1;ctx.globalAlpha=(1-a)*.5;ctx.fillStyle=rgb(P.mist);ctx.beginPath();ctx.arc(X+33+Math.sin(k*2+t)*10,y-236-a*90,8+a*20,0,7);ctx.fill()}ctx.globalAlpha=1;ctx.fillStyle="#ffcf7a";ctx.fillRect(X-130,y-96,70,50);ctx.fillStyle="#2a2548";ctx.fillRect(X-30,y-80,34,80);
+  drawMumle(X-40,y,t,false);ctx.fillStyle="#f1e6c8";ctx.fillRect(X-22,y-20,12,7)}
+}
+// ----- new kinds of play
+// by ear: hear a line, choose its category; the words appear only afterwards
+function sorter(o){return new Promise(res=>{let i=0;const items=o.items.slice().sort(()=>Math.random()-.5);
+ const show=()=>{const it=items[i];ui(`<p class="lab">${o.title} · ${i+1}/${items.length}</p><p class="nar">${esc(o.intro)}</p><div class="row"><button class="go" id="pl">▶ Lyt</button><button class="ghost" id="tx">Show the words</button></div><p class="dk" id="txt" hidden>${fog(it[0])}</p><div class="opts">${o.cats.map((c,k)=>`<button data-k="${k}">${c}</button>`).join("")}</div>`,true);
+  const play=()=>speak(it[0],o.who);$("#pl").onclick=play;$("#tx").onclick=()=>{$("#txt").hidden=false};play();
+  app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{if(+b.dataset.k===it[1]){sfx.bell(+b.dataset.k);bump(3,o.who,1);$("#txt").hidden=false;b.style.borderColor="var(--gold)";app.querySelectorAll("[data-k]").forEach(x=>x.disabled=true);setTimeout(()=>{i++;i<items.length?show():res()},1300)}else{sfx.clang();bump(-1);$("#txt").hidden=false;toast(o.wrong?o.wrong(it):"Not that one. Listen again.",3800);play()}})};show()})}
+// word order: drop the small word into the right gap, or choose which way round
+function gaps(o){return new Promise(res=>{let i=0;const show=()=>{const r=o.rounds[i],head=`<p class="lab">${o.title} · ${i+1}/${o.rounds.length}</p>`;
+  const win=full=>{sfx.bell(i);W.cast=W.t;bump(4,o.who,1);speak(full,o.who);ui(head+`<p class="dk pop">${fog(full)}</p><p class="you">${esc(r.rule)}</p><button class="go" id="nx">▸</button>`,true);$("#nx").onclick=()=>{i++;i<o.rounds.length?show():res()}};
+  if(r.opts){ui(head+`<p class="nar">Which way round?</p><p class="dk">${fog(r.lead)} …</p><div class="opts">${r.opts.map((x,k)=>`<button data-k="${k}">… ${esc(x)}</button>`).join("")}</div>`,true);
+   app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>+b.dataset.k===r.a?win(r.lead+" "+r.opts[r.a]+"."):(sfx.clang(),bump(-1),toast(r.hint,4200)))}
+  else{ui(head+`<p class="nar">Where does <b style="color:var(--gold)">${r.adv}</b> go? Tap the gap.</p><div class="chips" style="align-items:center;font-size:1.2rem">${r.pre?`<span>${esc(r.pre)}</span>`:""}${r.words.map((w,k)=>`${k?`<button class="chip" data-g="${k}" style="min-width:34px;border-style:dashed">·</button>`:""}<span>${esc(w)}</span>`).join("")}<button class="chip" data-g="${r.words.length}" style="min-width:34px;border-style:dashed">·</button></div>`,true);
+   app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{if(+b.dataset.g===r.at){const w=r.words.slice();w.splice(r.at,0,r.adv);win((r.pre?r.pre+" ":"")+w.join(" ")+(r.pre?" …":"."))}else{sfx.clang();bump(-1);toast(r.hint,4200)}})}
+ };show()})}
+// connect: join each beginning to the ending it belongs with
+function connect(o){return new Promise(res=>{const R=o.R.map((t,k)=>[t,k]).sort(()=>Math.random()-.5);let sel=null,done=0;
+ ui(`<p class="lab">${o.title}</p><p class="nar">${esc(o.intro)}</p><div id="cn" style="position:relative;display:grid;grid-template-columns:1fr 1fr;gap:10px 34px"><svg id="ln" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg>${o.L.map((l,k)=>`<button data-l="${k}" style="grid-column:1;grid-row:${k+1}">${esc(l)}</button>`).join("")}${R.map((r,k)=>`<button data-r="${r[1]}" style="grid-column:2;grid-row:${k+1}">${esc(r[0])}</button>`).join("")}</div><p class="you" id="say" hidden></p>`,true);
+ const line=(a,b)=>{const c=$("#cn").getBoundingClientRect(),A=a.getBoundingClientRect(),B=b.getBoundingClientRect();$("#ln").innerHTML+=`<line x1="${A.right-c.left}" y1="${A.top+A.height/2-c.top}" x2="${B.left-c.left}" y2="${B.top+B.height/2-c.top}" stroke="#ffd76a" stroke-width="2.5"/>`};
+ app.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{app.querySelectorAll("[data-l]").forEach(x=>x.style.borderColor="");sel=b;b.style.borderColor="var(--gold)"});
+ app.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{if(!sel)return toast("Tap a beginning on the left first.");const l=+sel.dataset.l,r=+b.dataset.r;
+  if(l===r){line(sel,b);sel.disabled=b.disabled=true;sel.style.borderColor=b.style.borderColor="var(--gold)";sel=null;done++;sfx.bell(done);bump(4,o.who,1);const full=o.L[l]+" "+o.R[r];speak(full,o.who);$("#say").hidden=false;$("#say").textContent=o.why[l];if(done===o.L.length)setTimeout(res,2600)}
+  else{sfx.clang();const pastL=o.past[l],pastR=o.past[r];if(pastL!==pastR){bump(-1);toast(pastL?"That beginning is in the past. A past moment takes da, not når.":"That beginning is about now or later. It takes når, not da.",4500)}else toast(o.silly||"Grammatically fine. Factually worrying. Try another.",3800)}})})}
+// the ledger: after someone answers, mark it on the line of time
+const ARR=["for 40 år siden","for 30 år siden","for 4 år siden","for 3 år siden","for 2 år siden"],STAY=["i to uger","om en måned","om to år","hele livet","det ved ingen"];
+function place(who,kind,idx,line){return new Promise(res=>{const list=kind==="a"?ARR:STAY;
+ ui(`<p class="lab">The ledger · ${kind==="a"?"when they came":"how long they stay"}</p>${npc(who,line)}<p class="nar">${kind==="a"?"Past ⟵ tap where it belongs on the line ⟶ now":"Now ⟵ tap where it belongs on the line ⟶ never"}</p><div class="row" style="gap:4px">${list.map((x,k)=>`<button data-k="${k}" style="flex:1 1 30%;text-align:center;font-size:.9rem">${x}</button>`).join("")}</div>`);
+ app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{if(+b.dataset.k===idx){C2().tl[who+kind]=idx;sfx.ok();bump(3);res()}else{sfx.bad();bump(-1);toast("That's not what they said. Listen again.",3000);speak(line,who)}})})}
+// ----- questions you can now ask
+const qWhen=t=>/hvornår (kom|flyttede) du (hertil|til tågeby)/.test(t),qLong=t=>/hvor længe skal du være her/.test(t),qGlad=t=>/er du glad for at (være|bo) her/.test(t);
+const QP=["hvornår","hvor længe","hvorfor","kom","flyttede","du","jeg","hertil","skal","være","bo","her","er","glad","for at","siden","ikke"];
+function question(who,kind,prompt,reply){const A={w:["hvornår kom du hertil","Ask when they came here: Hvornår kom du hertil?"],l:["hvor længe skal du være her","Ask how long they will be here: Hvor længe skal du være her?"],g:["er du glad for at være her","Ask if they are happy to be here: Er du glad for at være her?"]}[kind],test={w:qWhen,l:qLong,g:qGlad}[kind];
+ return converse({who,da:prompt,ans:A[0],pool:QP,hint:A[1],judge:t=>test(t)?Object.assign({ok:1,fors:6,til:3},reply):/hvornår du (kom|flyttede)|hvor længe du skal|du er glad for/.test(t)?{da:kind==="g"?"Det er ikke et spørgsmål. Verbet først: Er du glad …?":"Verbet før 'du', tak: "+(kind==="w"?"Hvornår KOM du …?":"Hvor længe SKAL du …?"),think:"In a question the verb still comes before the subject. I keep wanting English order.",fors:1}:qWhen(t)||qLong(t)||qGlad(t)?{da:"Én ting ad gangen."}:{da:"Hvad siger du? Spørg igen."}})}
+async function interview(who,A){
+ await question(who,"w","Ja? Hvad vil du vide?",{da:A.w[0],note:A.w[1],think:A.w[2]});await place(who,"a",A.w[3],A.w[0]);
+ if(A.x)await say(who,A.x[0],{note:A.x[1],think:A.x[2]});
+ await question(who,"l","Og hvad mere?",{da:A.l[0],note:A.l[1],think:A.l[2]});await place(who,"s",A.l[3],A.l[0]);
+ await question(who,"g","Er du færdig?",{da:A.g[0],note:A.g[1],think:A.g[2]});
+}
+// ----- the story of chapter two
+const TALK={
+ raad:async()=>{const c=C2();
+  if(c.st===0){
+   await tell([["n","The town hall of Tågeby has the patient look of a building that has been waiting for you specifically. There are seven counters. Six are bricked up."]]);
+   await say("x","Næste! Skranke syv. Navn?",{note:"Behind the glass sits a small grey official and a very tall pile of forms. He does not look up."});
+   await converse({who:"x",da:"Navn?",ans:"jeg hedder "+S.name,hint:"Your name, the way you told Mumle: Jeg hedder …",pool:["jeg","hedder","NAVN","er","hej","ja"],judge:t=>t.includes(S.name.toLowerCase())?{ok:1,da:`${S.name}. Rubrik 1.`,fors:2,til:1}:{da:"Navn. Dit navn."}});
+   await say("x","Hvornår kom du hertil?",{note:"His pen hovers over box 2.",think:"'Hvornår.' Not 'hvorfor'. The light in the hall said: when. When did I come here."});
+   await say("x","I dag? I går? For to dage siden?",{note:"He offers these like a waiter listing soups.",think:"'I går': yesterday. 'For to dage siden': two days ago. 'For' and 'siden' close around the time like brackets."});
+   grant("i går","for","siden","to","dage");
+   await converse({who:"x",da:"Hvornår kom du hertil?",ans:"jeg kom hertil i går",hint:"You arrived yesterday: Jeg kom hertil i går. Or: for to dage siden.",pool:["jeg","kom","hertil","i går","for","to","dage","siden","i","er"],judge:t=>/i går|for (en|to) dage? siden/.test(t)?{ok:1,da:has(t,"jeg","kom","hertil")?"Godt. Rubrik 2.":"En hel sætning er pænere. Men godt. Rubrik 2.",fors:has(t,"jeg","kom","hertil")?6:3,til:2}:/siden/.test(t)?{da:"For … hvor længe siden? For to dage siden?",fors:1}:{da:"Hvornår? I går?"}});
+   await say("x","Og hvor længe skal du være her?",{think:"'Hvor længe': how long. 'Skal du være her': shall you be here. I have no idea. Nobody gave me a return ticket."});
+   await say("x","Hvis du ikke ved det, siger du: Det ved jeg ikke endnu.",{note:"He says it without looking up, a man reading out a fire regulation.",think:"'Det ved jeg ikke endnu.' That I-know-not-yet. He put 'det' first, so the verb jumped in front of 'jeg'. The verb always wants to be second."});
+   grant("det","ved");
+   await converse({who:"x",da:"Hvor længe skal du være her?",ans:"det ved jeg ikke endnu",hint:"Say you don't know yet: Det ved jeg ikke endnu.",pool:["det","ved","jeg","ikke","endnu","længe","er","i går","ja","nej"],judge:t=>/det ved jeg ikke( endnu)?$/.test(t)||/jeg ved det ikke( endnu)?$/.test(t)?{ok:1,da:"'Ved ikke' er ikke et tal. Rubrik 4 skal have et tal. Jeg skriver nul.",fors:7,til:2,note:"He writes a zero with great care, and then a second zero, in case."}:/det jeg ved|jeg det ved|ved ikke jeg|jeg ikke ved/.test(t)?{da:"Nej. 'Det VED jeg ikke.' Verbet er altid nummer to. Det er paragraf 2.",fors:1,think:"Paragraph two: the verb is always second. For once a rule here that is also a rule."}:{da:"Ved du det, eller ved du det ikke?"}});
+   await say("x","Nå. Fremmedtælleren blev til en frø i tirsdags. Stillingen er ledig.",{note:"Now he looks up. It is not an improvement.",think:"The … stranger-counter … became a frog. Last Tuesday. He says it like a train delay."});
+   await say("x","Ifølge paragraf 3 overtager den nyeste fremmede stillingen. Det er dig. Tillykke.",{note:"A ledger the size of a paving slab is pushed under the glass.",think:"I have been on this moon for one day and I have a government job."});
+   grant("hvornår","hvor længe","skal","være","her","flyttede","bo");
+   await say("x","Du skal spørge fire fremmede: Hvornår kom du hertil? Og: Hvor længe skal du være her? Skriv svarene i bogen.",{think:"Four strangers. Two questions. When did you come, how long are you staying. For once I am the one asking. I could ask a few people a few other things, too."});
+   await say("x","Og kom tilbage, før vi lukker. Vi lukker, når jeg går hjem.",{note:"He returns to his forms. You have ceased to exist until further notice."});
+   c.st=1;await tell([["n","The town map is now open: tap Kort. Four strangers to question, in any order: at the square, the clockmaker's, the inn, and the gate."]]);
+  }else if(c.st===1&&doneN()<4){await say("x",`Rubrik 5 er tom. Du mangler ${["fire","tre","to","én"][doneN()]}. Jeg kan vente. Jeg har ventet før.`,{note:"He does not look up."})}
+  else if(c.st===1){
+   await say("x","Du er tilbage. Bogen, tak.",{note:"He reads your ledger the way other people read bad news about a relative."});
+   await say("x","Hm. Tallene passer ikke. Én af dem lyver. Find fejlen.",{think:"The numbers don't fit. One of them is lying. And apparently finding out which is also my job."});
+   await board();
+   await say("x","Gå hen og spørg ham. Jeg kan ikke stemple en løgn. Det er paragraf 9.",{note:"He slides the ledger back. Somewhere a stamp sighs."});
+   c.st=2;
+  }else if(c.st===2){await say("x","Kroen. Brobyggeren. Spørg ham.",{note:"He points with his pen, without lifting his eyes."})}
+  else if(c.st===3){
+   await say("x","Nu mangler jeg kun dig. Er du glad for at være her?",{note:"Box 7.",think:"Am I glad to be here. On a moon, in a town hall, working for free."});
+   grant("ja","nej","meget","men","savner","rigtigt");
+   await converse({who:"x",da:"Er du glad for at være her?",ans:"ja meget",hint:"Any honest answer: Ja, meget. Or: Nej, ikke rigtigt.",pool:["ja","nej","meget","ikke","rigtigt","men","jeg","savner","glad","er"],judge:t=>has(t,"ja")||has(t,"nej")?{ok:1,da:has(t,"nej")?"'Ikke rigtigt.' Det er det mest almindelige svar.":"'Ja.' Det skriver jeg. Ingen tror på det.",fors:4,til:2}:{da:"Ja eller nej?"}});
+   GLOSS.almindelige="common";GLOSS.mest="most";
+   await say("x","Og hvad savner du, når det regner? En hel sætning. Rubrik 8.",{think:"What do I miss when it rains. Fru Sild's sentence: 'Når det regner, savner jeg …' The når-part goes first, so the verb has to come before 'jeg'."});
+   grant("når","regner","min","seng","familie","kaffe");GLOSS.kaffe="coffee";
+   await converse({who:"x",da:"Hvad savner du, når det regner?",ans:"når det regner savner jeg min seng",hint:"Start with the når-part, then verb before subject: Når det regner, savner jeg min seng.",pool:["når","det","regner","savner","jeg","min","seng","familie","kaffe","mad","ikke"],
+    judge:t=>/når det regner savner jeg (min |mit |mine )?[a-zæøå]+/.test(t)?{ok:1,da:"Verbet er nummer to. Paragraf 2. Godt.",fors:12,til:4,note:"He nods, once, to the form rather than to you."}:/jeg savner .+ når det regner/.test(t)?{ok:1,da:"Det er også rigtigt. Rubrik 8.",fors:8,til:3}:/når det regner jeg savner/.test(t)?{da:"Nej. 'Når det regner, SAVNER jeg …' Først verbet, så 'jeg'. Paragraf 2.",fors:1,think:"The whole når-clause counts as position one. So the verb is next. Every time."}:{da:"En hel sætning: Når det regner, …"}});
+   await say("x","Rubrik 9: Forstand.",{note:"He looks at a point just above your head, as if reading something written there."});
+   await say("x","Høj. Meget høj.",{note:"For the first time, he smiles. It does not suit him."});
+   await say("x","Fremmede med høj Forstand bliver hentet. Det er paragraf 1.",{think:"Strangers with high … get … collected. Paragraph one. The very first rule. The one everybody but me has read."});
+   await say("x","Skibet kommer om syv dage. Tillykke.",{note:"The stamp comes down like a small, final door.",think:"'Om syv dage.' In seven days. I understood every word of that sentence. Which is, apparently, exactly the problem."});
+   await tell([["n","Outside, in the evening fog, a small mossy figure is waiting under a very large umbrella. He is holding a cake."],["n","“Tillykke!” says Mumle."]]);
+   c.st=4;
+   await new Promise(res=>{ui(`<p class="lab">End of chapter two</p><h1>Skranke 7</h1><p>Forstand ${Math.round(S.fors)} · words ${S.chips.length}</p><p class="dim">You can now ask when someone came and how long they are staying, tell da from når, and put the verb second and the small words where they belong.</p><p class="dim">Chapter three is not written yet. The town stays open from Kort.</p><button class="go" id="nx">Seven days</button>`,true);$("#nx").onclick=res});
+  }else await say("x","Syv dage. Rubrik 10 er til underskriften.",{note:"He has already forgotten you."});
+ },
+ torv:async()=>{const c=C2();
+  if(c.done.s){await say("s","Sild! Friske sild! Og nej, jeg ved ikke mere. I dag.",{});return}
+  await say("s","Sild! Friske sild! Nå, det er den nye tæller. Du ser ikke ud som en frø. Endnu.",{note:"The fishmonger of Tågeby is wrapping a herring in a page that looks very like a census ledger.",think:"She knows who I am. News travels faster than I do here."});
+  await interview("s",{w:["Jeg flyttede hertil for tre år siden, da min mand fik et job ved porten.","She points across the square with a fish.","'For tre år siden': three years ago. And 'da min mand fik et job': when her husband got a job. 'Da' and then a small sentence, about one moment in the past.",3],
+   x:["Han svarede forkert på et spørgsmål. Nu bor han i dammen.","She says this the way you would mention that someone has moved to the suburbs."],
+   l:["Hele livet, tror jeg. Jeg vil gerne blive her. Han kan jo ikke flytte.",null,"Her whole life, she thinks. He can't move, after all. Because he is a frog. I am beginning to understand the local housing market.",3],
+   g:["Ja, meget! Men når det regner, savner jeg min mand. Han elsker regn nu.","A pause. A long look toward the pond.","'Når det regner, savner jeg …' The når-part comes first, and then the verb comes before 'jeg'. The same trick as 'Det ved jeg ikke'. Whatever is first, the verb is second."]});
+  await say("s","Bliv lidt! Jeg ved alt om alle. Hør her.",{note:"She leans over the herring. This is the real merchandise."});
+  await sorter({who:"s",title:"Fru Silds sladder",intro:"She talks too fast to read. Listen, and decide what each line is about: one moment in the past, something still to come, or something that happens every time.",cats:["Fortid · one time, in the past","Fremtid · still to come","Hver gang · every time it happens"],
+   items:[["Da jeg var barn, boede jeg ved søen.",0],["Når kontrakten udløber, rejser han hjem.",1],["Når det regner, lukker jeg butikken.",2],["Da broen faldt ned, kom trolden.",0],["Når jeg er færdig i dag, går jeg hjem.",1],["Når frøerne kvækker, kan jeg ikke sove.",2]],
+   wrong:it=>it[1]===0?"'Da' with a past verb: one moment, already over.":it[1]===1?"'Når' with a present verb, about something not yet happened.":"'Når' meaning whenever: it happens each time."});
+  await tell([["y","So: 'da' is for one moment in the past. 'Når' is for the future, and also for whenever. English uses 'when' for all three and never told me there was a choice."]]);
+  c.done.s=1;bump(6,"s",4);
+ },
+ ur:async()=>{const c=C2();
+  if(c.done.u){await say("u","Tik. … Uret går stadig. Næsten.",{});return}
+  if(!c.games.bells){await tell([["n","The clockmaker's door has no handle. It has three bells and a sign: RING RIGTIGT."],["y","Ring correctly. Each bell has a vowel painted on it. A voice inside is saying words."]]);
+   await sorter({who:"u",title:"Tre klokker",intro:"Listen to the vowel in the stressed part of each word, and ring the bell with that sound.",cats:["[i]  as in blive","[e]  as in hende","[æ]  as in længe"],
+    items:[["vi",0],["siden",0],["ikke",1],["til",1],["fem",2],["hjem",2],["blive",0],["hende",1],["længe",2]],wrong:it=>"Listen once more. It is the sound of "+["blive","hende","længe"][it[1]]+"."});
+   c.games.bells=1}
+  await say("u","Tik. … Ja?",{note:"The clockmaker is thin, bent, and surrounded by clocks, every one of which shows a different time. He seems to find this restful."});
+  await interview("u",{w:["Jeg kom hertil for tredive år siden, da uret gik i stå.","He nods toward the tower. The big hand is going backwards.","Thirty years ago, when the clock stopped. 'Da' again, for the one moment.",1],
+   x:["Da jeg kom hertil, var broen allerede væk.","He says this to a pocket watch.","When he came, the bridge was already gone. Thirty years ago. I'm writing that down."],
+   l:["Jeg skal være her i to uger. Det har jeg sagt i tredive år.",null,"'I to uger': for two weeks. He has been staying for two weeks for thirty years. 'I' plus a time is how long something lasts.",0],
+   g:["Nej, ikke rigtigt. Jeg vil gerne hjem igen. Men uret er ikke færdigt.","Somewhere a cuckoo comes out, looks around, and goes back in.","Not really. He'd like to go home again. But the clock isn't finished. There is a pattern forming in this town."]});
+  await say("u","Hjælp mig. Ordene sidder forkert i uret.",{note:"He opens the back of a clock. Inside, where the cogs should be, there are words.",think:"The words sit wrongly in the clock. Naturally."});
+  await gaps({who:"u",title:"Urværket",rounds:[
+   {words:["Jeg","har","tid"],adv:"ikke",at:2,rule:"Main clause: subject, verb, then ikke.",hint:"In a normal sentence the small word comes after the verb."},
+   {pre:"… fordi",words:["jeg","har","tid"],adv:"ikke",at:1,rule:"After fordi it turns round: subject, ikke, then the verb.",hint:"After fordi, da and når, the small word jumps in front of the verb."},
+   {words:["Uret","går"],adv:"stadig",at:2,rule:"Main clause: the verb, then stadig (still).",hint:"A normal sentence: the small word follows the verb."},
+   {pre:"… når",words:["uret","går"],adv:"ikke",at:1,rule:"After når: subject, ikke, verb. The same switch as after fordi.",hint:"This is a når-clause. Where did ikke go after fordi?"},
+   {words:["Jeg","vil","hjem"],adv:"gerne",at:2,rule:"Jeg vil gerne hjem. Main clause: verb, then gerne.",hint:"Gerne behaves exactly like ikke."},
+   {pre:"… da",words:["jeg","ville","hjem"],adv:"gerne",at:1,rule:"After da: jeg gerne ville. All the small words move together: ikke, gerne, stadig, altid, også.",hint:"A da-clause. Small word before the verb."},
+   {lead:"Når det regner,",opts:["savner jeg uret","jeg savner uret"],a:0,rule:"A whole clause in first place, so the verb comes next: savner jeg.",hint:"Something already stands in first place. The verb must be second."},
+   {lead:"I dag",opts:["uret går ikke","går uret ikke"],a:1,rule:"I dag is in first place, so: går uret ikke. The verb is always second.",hint:"'I dag' took first place. What comes second?"}]});
+  await tell([["n","The clock ticks. Once. The clockmaker looks at it as a man looks at a relative who has unexpectedly turned up sober."],["y","Two rules, then. In a main clause the verb is second, whatever comes first. In a da, når or fordi clause the small words slip in front of the verb. Everything else is vocabulary."]]);
+  c.done.u=1;bump(6,"u",4);
+ },
+ kro:async()=>{const c=C2();
+  if(c.st===2){
+   await say("e","Tælleren igen. Sæt dig. Broen er næsten færdig.",{note:"He does not look like a man whose bridge is almost finished. He looks like a man who has said so for a long time.",think:"The clockmaker said the bridge was already gone thirty years ago. The troll said forty. This man says two."});
+   grant("fyrre","år","lyver","broen","faldt","ned");
+   await converse({who:"e",da:"Hvad vil du nu?",ans:"du kom hertil for fyrre år siden",hint:"Tell him what you worked out: Du kom hertil for fyrre år siden.",pool:["du","kom","ikke","hertil","for","fyrre","to","år","siden","lyver","broen","faldt","ned"],
+    judge:t=>/du kom hertil for (fyrre|tredive) år siden/.test(t)||/du kom ikke hertil for to år siden/.test(t)||/broen faldt ned for (fyrre|tredive) år siden/.test(t)?{ok:1,da:"… Ja. Ja, ja. Jeg kom hertil for fyrre år siden.",fors:10,til:3,note:"He puts down his pencil. It has been sharpened so many times it is mostly an idea."}:has(t,"du","lyver")?{ok:1,da:"… Ja. Jeg kom hertil for fyrre år siden.",fors:5,til:1,note:"Blunt. But he puts down his pencil."}:{da:"Hvad siger du? Broen er næsten færdig."}});
+   await say("e","Jeg rejser hjem, når broen er færdig. Det står i min kontrakt.",{think:"He goes home when the bridge is finished. It says so in his contract."});
+   await say("e","Så hver nat tager jeg tre sten ud igen.",{note:"He says it calmly, as one mentions watering a plant.",think:"Every night he takes three stones out again. Three stones. The three I talked back into place for the troll. I have been doing this man's un-doing."});
+   await say("e","… fordi jeg ikke vil hjem. Her er der ingen, der ringer til mig.",{note:"He picks the pencil up again.",think:"'Fordi jeg ikke vil hjem.' Because he doesn't want to go home. Nobody phones him here. Ikke before the verb, and I didn't even have to think about it."});
+   c.st=3;bump(8,"e",5);return}
+  if(c.done.e){await say("e","Broen er næsten færdig. Om en måneds tid.",{});return}
+  await say("e","Sæt dig. Jeg bygger broen. Den er næsten færdig.",{note:"A man in a long coat, at a table covered in plans. The plans are covered in rings from forty years of mugs."});
+  await say("e","Min plan er gået i stykker. Sæt sætningerne sammen igen.",{note:"He pushes over a torn sheet. Each sentence has come apart in the middle.",think:"His plan has fallen to bits, and he wants the sentences put back together. The second halves start with 'da' or 'når'."});
+  await connect({who:"e",title:"Brobyggerens plan",intro:"Join each beginning to its ending. Tap one on the left, then one on the right.",L:["Jeg flyttede hertil,","Jeg rejser hjem,","Jeg blev våd,","Jeg sover dårligt,"],R:["da jeg fik et job på broen.","når broen er færdig.","da jeg faldt i søen.","når frøerne kvækker."],past:[1,0,1,0],
+   why:["Past beginning (flyttede), so the moment takes da.","Rejser hjem is still to come, so it takes når.","Blev is past: one moment, da.","Something that happens every time: når."]});
+  await interview("e",{w:["Jeg kom hertil for to år siden, da broen faldt ned.","He does not hesitate at all.","Two years ago, when the bridge fell down.",4],
+   l:["Jeg rejser hjem, når broen er færdig. Om en måneds tid.",null,"He leaves when the bridge is finished. 'Om en måneds tid': in about a month. 'Om' plus a time counts forward from now.",1],
+   g:["Ja, det er jeg. Men jeg savner nogle gange min familie. Ikke så tit.","He considers the question as he might consider a load-bearing wall.","He's glad. He misses his family sometimes. Not so often. 'Nogle gange' sits right after the verb, like ikke."]});
+  c.done.e=1;bump(6,"e",4);
+ },
+ port:async()=>{const c=C2();
+  if(c.done.g){await say("g","Om en måned. Det har hun sagt.",{note:"He is looking at the road."});return}
+  await say("g","Nå, det er dig. Tælleren. Jeg er ikke fremmed. Jeg er født her.",{note:"From the inside, the gate guard looks smaller. The pond behind him is listening."});
+  await say("g","Men min kæreste … spørg om hende.",{note:"He straightens his helmet.",think:"He isn't a stranger; he was born here. But he wants me to ask about her. He wants to be asked. The frogs were right about him."});
+  await interview("g",{w:["Hun flyttede til udlandet for fire år siden, da hun fik et job.","He answers about her, not himself, and the ledger does not object.","She moved abroad four years ago, when she got a job. I'll write her in. Someone should.",2],
+   l:["Hun kommer hjem om en måned. Det har hun sagt i fire år.",null,"She is coming home in a month. She has said so for four years. 'Om en måned' forward from now, 'i fire år' for how long it has lasted.",1],
+   g:["Nej, ikke rigtigt. Når hun ikke er her, savner jeg hende.","Forty frogs say nothing, very loudly.","'Når hun ikke er her, savner jeg hende.' Both rules in one line: 'ikke' before the verb inside the når-clause, and then 'savner jeg', verb before subject. He said it without a single mistake. People only get grammar that right when it hurts."]});
+  await say("f","Kvæk. Det siger han hver dag.",{note:"The frog with the spectacles, from the pond."});
+  c.done.g=1;bump(6,"g",5);
+ },
+ bag:async()=>{
+  await say("m","Åh! Hej! Jeg spiser bare kage.",{note:"Mumle is sitting on the bakery step with a slice of cake and the expression of someone who was not doing anything at all.",think:"Say nothing to the moss. I'm not saying. I'm asking. It's my job now."});
+  await question("m","w","Hvad? Hvad vil du vide?",{da:"Hvornår? Åh. For længe siden. Da jeg var ung og dum.",note:"He waves a hand at the past in general.",think:"'For længe siden': a long time ago. When he was young and stupid. No number. A man who has never filled in a form in his life."});
+  await question("m","l","Og hvad mere?",{da:"Det kommer an på … vejret.",note:"He looks up at the sky. At one particular part of the sky.",think:"'Det kommer an på': it depends on. The weather, he says. He is not looking at the weather."});
+  await question("m","g","Er du færdig?",{da:"Ja, meget! Er DU glad for at være her? Det er vigtigt, at du er glad.",note:"He takes off his hat, writes something inside it, and puts it back on.",think:"It is important that I am glad. He isn't in the ledger. He isn't a stranger and he isn't from here. I have asked three questions and learned that I need better questions."});
+  bump(4,"m",2);
+ }
+};
+// the detective board: two things people told you cannot both be true
+function board(){return new Promise(res=>{const cards=[["s","Fru Sild","Jeg flyttede hertil for tre år siden."],["u","Hr. Sekund","Da jeg kom hertil, var broen allerede væk."],["u","Hr. Sekund","Jeg kom hertil for tredive år siden."],["e","Brobygger Rask","Jeg kom hertil for to år siden, da broen faldt ned."],["g","Grumme","Hun kommer hjem om en måned."],["s","Fru Sild","Da broen faldt ned, kom trolden."]];let pick=[];
+ ui(`<p class="lab">The ledger doesn't add up</p><h2>Find fejlen</h2><p class="nar">Two of these cannot both be true. Tap the two that contradict each other.</p><div class="opts">${cards.map((c,k)=>`<button data-k="${k}"><small>${c[1]}</small>${fog(c[2])}</button>`).join("")}</div><p class="you">The troll at the bridge told me, in English, that he has been asking his question for forty years.</p>`,true);
+ app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;if(pick.includes(k)){pick=pick.filter(x=>x!==k);b.style.borderColor="";return}pick.push(k);b.style.borderColor="var(--gold)";
+  if(pick.length===2){if(pick.includes(1)&&pick.includes(3)){sfx.ok();W.cast=W.t;bump(10);tell([["y","There. The bridge-builder says the bridge fell two years ago, when he arrived. The clockmaker says it was already gone when he came, thirty years ago. One bridge cannot fall twice. Well. This one might."],["y","And the troll has been under it for forty years. I think the bridge-builder has been here rather longer than two."]]).then(res)}
+   else{sfx.bad();toast("Those two can both be true. Unfortunately.",3200);pick=[];app.querySelectorAll("[data-k]").forEach(x=>x.style.borderColor="")}}})})}
+// study pages for chapter two
+NOTES.push(
+ {when:()=>S.c2&&S.c2.st>=1,t:"Chapter 2 · Asking when and how long",h:`<p><b>Hvornår kom du hertil?</b> · When did you come here?</p><p><b>Hvor længe skal du være her?</b> · How long will you be here?</p><p><b>Er du glad for at være her?</b> · Are you happy to be here?</p><p class="dim">In a question the verb comes before the subject: kom du, skal du, er du.</p><p><b>Det ved jeg ikke endnu.</b> · I don't know yet.</p>`},
+ {when:()=>S.c2&&doneN()>=1,t:"Time: for … siden, i, om",h:`<p><b>for tre år siden</b> · three years ago (back from now)</p><p><b>i to uger</b> · for two weeks (how long it lasts)</p><p><b>om en måned</b> · in a month (forward from now)</p><p><b>Hele livet, tror jeg.</b> · My whole life, I think.</p><p><b>Det kommer an på vejret.</b> · It depends on the weather.</p>`},
+ {when:()=>S.c2&&S.c2.done.s,t:"da and når",h:`<p><b>Jeg flyttede hertil, da jeg fik et job.</b> · da: one moment in the past.</p><p><b>Jeg rejser hjem, når broen er færdig.</b> · når: something still to come.</p><p><b>Når det regner, lukker jeg butikken.</b> · når: every time it happens.</p><p class="dim">hvornår is only for asking: Hvornår kom du?</p>`},
+ {when:()=>S.c2&&S.c2.done.u,t:"Word order: the two rules",h:`<p class="dim">1 · In a main clause the verb is always second, whatever comes first.</p><p><b>Jeg savner min seng.</b></p><p><b>Når det regner, savner jeg min seng.</b></p><p><b>Det ved jeg ikke.</b></p><p><b>I dag går uret ikke.</b></p><p class="dim">2 · The small words (ikke, gerne, stadig, altid, også, nogle gange) come after the verb in a main clause, but before it after da, når and fordi.</p><p><b>Jeg har ikke tid.</b> → <b>… fordi jeg ikke har tid.</b></p><p><b>Jeg vil gerne hjem.</b> → <b>… da jeg gerne ville hjem.</b></p><p><b>Når hun ikke er her, savner jeg hende.</b></p>`},
+ {when:()=>S.c2&&S.c2.games.bells,t:"Three vowels",h:`<p><b>blive</b>, <b>vi</b>, <b>siden</b> · [i]</p><p><b>hende</b>, <b>ikke</b>, <b>til</b> · [e]</p><p><b>længe</b>, <b>fem</b>, <b>hjem</b> · [æ]</p><p class="dim">The spelling doesn't always tell you: ikke and til are written with i but said with [e].</p>`});
+
 // ---------- BOOT ----------
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
-window.G={get S(){return S},W,sheetOpen,BEATS,FAIRY,travel,ring};
+window.G={get S(){return S},W,sheetOpen,BEATS,FAIRY,travel,ring,goDist,TALK,DIST,c2begin};
 W.cam=W.px-VW/2;hud();requestAnimationFrame(frame);
 if(!S.landed)intro();
 </script>
