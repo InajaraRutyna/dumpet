@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17132b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<title>Dumpet på Måne Syv</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root{color-scheme:dark;--night:#17132b;--slab:#231d42;--slab2:#2f2758;--line:#463c7a;--ink:#ece8ff;--dim:#a79fd0;--rune:#f2c14e;--moss:#63d8c0;--hex:#ff6f86;--deep:#0f0c20;--onrune:#221a05;
+--display:"Grenze Gotisch",Georgia,serif;--body:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(120% 60% at 80% -10%,#3a2a6e 0%,transparent 60%),radial-gradient(90% 50% at 0% 110%,#1d4a52 0%,transparent 60%),var(--night);background-attachment:fixed;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;overscroll-behavior:none}
+#app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(80px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+h1{font-family:var(--display);font-weight:700;font-size:2.6rem;line-height:1;margin:0;color:var(--rune);text-wrap:balance}
+h2{font-family:var(--display);font-weight:500;font-size:1.55rem;margin:0;line-height:1.1}
+p{margin:0}
+.lab{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.dim{color:var(--dim);font-size:.88rem}
+.art svg{display:block;width:100%;max-height:150px}
+.log{display:flex;flex-direction:column;gap:10px}
+.nar{color:var(--ink)} .you{font-style:italic;color:var(--dim)} .you:before{content:"You: "}
+.ali{font-family:ui-monospace,Menlo,monospace;font-size:.9rem;color:var(--moss)}
+.dk{background:var(--slab);border-left:3px solid var(--rune);padding:10px 12px;border-radius:6px;font-size:1.1rem}
+.dk b{font-family:var(--display);font-weight:500;color:var(--rune);margin-right:4px}
+.term{font-family:ui-monospace,Menlo,monospace;background:var(--deep);border-left:3px solid var(--moss);padding:12px;border-radius:6px}
+.w{border-bottom:1px dotted var(--dim);cursor:pointer}
+.opts{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+button{font:inherit;color:var(--ink);background:var(--slab2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:50px;text-align:left;cursor:pointer;touch-action:manipulation}
+button b{display:block;font-family:var(--display);font-size:1.25rem;font-weight:500;color:var(--rune)}
+button small{color:var(--dim);font-size:.8rem;display:block}
+button.go{background:var(--rune);color:var(--onrune);border-color:var(--rune);font-weight:700;text-align:center}
+button.ghost{background:transparent;text-align:center}
+button.mini{min-height:0;padding:2px 8px;font-size:.8rem;border-radius:8px;display:inline}
+button:disabled{opacity:.45}
+button:focus-visible,input:focus-visible{outline:3px solid var(--rune);outline-offset:2px}
+.card{background:var(--slab);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.foe{display:flex;gap:12px;align-items:center}.foe svg{width:84px;height:84px;flex:none}.foe>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.meter{height:10px;background:var(--deep);border-radius:5px;overflow:hidden}.meter i{display:block;height:100%;background:var(--hex);transition:width .35s}
+.meter.me i{background:var(--moss)}.meter.time{height:14px}.meter.time i{background:var(--rune);transition:none}
+.hud{display:flex;justify-content:space-between;gap:10px;font-weight:700;font-variant-numeric:tabular-nums;align-items:center}
+.tiles{display:flex;flex-wrap:wrap;gap:6px;min-height:50px}
+.tile{min-height:46px;padding:5px 10px 4px;text-align:center;position:relative;line-height:1.15}
+.tile i{display:block;font-style:normal;font-size:.62rem;letter-spacing:.08em;color:var(--dim)}
+.tile small{font-size:.68rem}
+.tile.used{opacity:.25}
+.t-S{border-color:#7fb4ff}.t-V{border-color:var(--hex)}.t-A{border-color:var(--moss)}.t-op{border-color:var(--rune);background:#4a3a1a}.t-inf{border-color:#c69bff}.t-N{border-color:#9fe07a}.t-sted,.t-tid{border-color:#ffb27a}
+.slot{border:1px dashed var(--line);border-radius:12px;padding:8px;background:var(--deep)}
+input[type=text]{font:inherit;color:var(--ink);background:var(--deep);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%}
+.fb{border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px}.fb.ok{background:#1d4a46;border:1px solid var(--moss)}.fb.no{background:#4d2034;border:1px solid var(--hex)}
+.formula{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:var(--rune)}
+.big{font-size:1.25rem;font-weight:700}
+.parry{display:grid;grid-template-columns:1fr 1fr;gap:10px}.parry button{text-align:center;min-height:74px}.parry .U{grid-column:1/3}
+.parry button:before{display:block;color:var(--rune);font-size:1.1rem}.parry .U:before{content:"↑"}.parry .L:before{content:"←"}.parry .R:before{content:"→"}
+#tip{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--rune);color:var(--onrune);font-weight:700;text-align:center;z-index:5}
+.pop{animation:pop .25s}.shake{animation:shake .4s}.float{animation:bob 3s ease-in-out infinite}
+@keyframes pop{from{transform:scale(.96);opacity:.4}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-8px)}50%{transform:translateX(8px)}80%{transform:translateX(-4px)}}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){.pop,.shake,.float{animation:none}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="tip" hidden></div>
+<script>
+"use strict";
+/* ============================================================
+   DUMPET PÅ MÅNE SYV — a grammar-magic RPG for learning Danish.
+   Content is grouped by chapter (CH1 below). Each new chapter adds
+   runes, parry lines, foes and scenes; the engine stays the same.
+   ============================================================ */
+
+// ---------- RUNES: the typed lexicon. t = grammatical type ----------
+const RUNES={
+ jeg:{w:"jeg",t:"S",en:"I"},vi:{w:"vi",t:"S",en:"we"},rum:{w:"rumvæsnerne",t:"S",en:"the aliens"},
+ kom:{w:"kom",t:"VDIR",en:"came"},fly:{w:"flyttede",t:"VDIR",en:"moved"},lan:{w:"landede",t:"VLOC",en:"landed"},boe:{w:"boede",t:"VLOC",en:"lived"},
+ vil:{w:"ville",t:"VMOD",en:"wanted to"},kun:{w:"kunne",t:"VMOD",en:"could"},
+ ikk:{w:"ikke",t:"ADV",en:"not"},ger:{w:"gerne",t:"ADV",en:"gladly"},alt:{w:"altid",t:"ADV",en:"always"},
+ hertil:{w:"hertil",t:"DIR",en:"to here"},her:{w:"her",t:"LOC",en:"here"},
+ igar:{w:"i går",t:"FRONT",en:"yesterday"},inat:{w:"i nat",t:"FRONT",en:"last night"},
+ forat:{w:"for at",t:"FORAT",en:"in order to"},pga:{w:"på grund af",t:"PGA",en:"because of"},fordi:{w:"fordi",t:"FORDI",en:"because"},
+ fin:{w:"finde",t:"INFT",en:"find"},lae:{w:"lære",t:"INFT",en:"learn"},faa:{w:"få",t:"INFT",en:"get"},pro:{w:"prøve",t:"INFT",en:"try"},hav:{w:"have",t:"INFT",en:"have"},
+ stu:{w:"studere",t:"INFI",en:"study"},arb:{w:"arbejde",t:"INFI",en:"work"},try:{w:"trylle",t:"INFI",en:"do magic"},
+ mad:{w:"mad",t:"NP",en:"food"},magi:{w:"magi",t:"NP",en:"magic"},haevn:{w:"hævn",t:"NP",en:"revenge"},job:{w:"et job",t:"NP",en:"a job"},nyt:{w:"noget nyt",t:"NP",en:"something new"},regn:{w:"regnen",t:"NP",en:"the rain"},skib:{w:"et rumskib",t:"NP",en:"a spaceship"},
+ mig:{w:"mig",t:"NP",en:"me"},dig:{w:"dig",t:"NP",en:"you"},ham:{w:"ham",t:"NP",en:"him"}
+};
+const TAG={S:"S",VDIR:"V",VLOC:"V",VMOD:"V",ADV:"A",DIR:"sted",LOC:"sted",FRONT:"tid",FORAT:"op",PGA:"op",FORDI:"op",INFT:"inf",INFI:"inf",NP:"N"};
+const START_DECK=["jeg","jeg","kom","hertil","lan","her","forat","fin","mad","lae","magi","ikk","pga","skib","regn","faa","haevn","arb"];
+
+// ---------- the grammar: a small recursive-descent type checker ----------
+function parse(T){
+ let i=0,e;const f={ops:[],front:false,adv:0,subAdv:false};
+ const bad=m=>({ok:false,err:m});
+ const isV=t=>t==="VDIR"||t==="VLOC"||t==="VMOD";
+ const infp=msg=>{if(T[i]==="INFI"){i++;return null}if(T[i]==="INFT"){i++;if(T[i]==="NP"){i++;return null}return "That infinitive is transitive: it needs an object (N) after it."}return msg};
+ const comp=v=>{
+  if(v==="VDIR"){if(T[i]==="DIR"){i++;return null}return T[i]==="LOC"?"kom / flyttede describe movement, so they take hertil (to here), not her (here).":"kom / flyttede need a destination: hertil."}
+  if(v==="VLOC"){if(T[i]==="LOC"){i++;return null}return T[i]==="DIR"?"landede / boede describe a location, so they take her (here), not hertil (to here).":"landede / boede need a place: her."}
+  return infp("ville / kunne must be followed by an infinitive.")};
+ if(!T.length)return bad("An empty sentence casts nothing.");
+ if(T[i]==="FRONT"){f.front=true;i++;if(!isV(T[i]))return bad("V2 rule: the verb is always second. After a fronted time rune comes the VERB, then the subject.");const v=T[i++];if(T[i]!=="S")return bad("V2 rule: after the verb comes the subject.");i++;if(T[i]==="ADV"){i++;f.adv++}if(e=comp(v))return bad(e)}
+ else{if(T[i]!=="S")return bad("A main clause starts with a subject (S) or a fronted time rune.");i++;if(T[i]==="ADV")return bad("Main clause order is S – V – A: the adverb comes AFTER the verb.");if(!isV(T[i]))return bad("After the subject comes a finite verb (V).");const v=T[i++];if(T[i]==="ADV"){i++;f.adv++}if(e=comp(v))return bad(e)}
+ while(i<T.length){const op=T[i++];
+  if(op==="FORAT"){if(e=infp("for at : INF → purpose. It expects an infinitive, not that."))return bad(e);f.ops.push("FORAT")}
+  else if(op==="PGA"){if(T[i]!=="NP")return bad(T[i]==="S"?"på grund af takes an object form (mig, dig, ham), never a subject form.":"på grund af : N → cause. It expects a noun or object pronoun.");i++;f.ops.push("PGA")}
+  else if(op==="FORDI"){if(T[i]!=="S")return bad("fordi : CLAUSE → reason. A clause starts with its subject.");i++;if(T[i]==="ADV"){i++;f.subAdv=true}if(!isV(T[i]))return bad("fordi-clause order is S – (A) – V: subject, optional adverb, then the verb.");const v=T[i++];if(T[i]==="ADV")return bad("fordi-clause: the adverb comes BEFORE the verb (S – A – V). The mirror image of a main clause.");if(e=comp(v))return bad(e);f.ops.push("FORDI")}
+  else return bad("Unexpected rune. Shape of a spell: main clause, then operators (for at / på grund af / fordi) with their arguments.")}
+ return {ok:true,f};
+}
+const RULES={
+ MAIN:["Main clause","S – V – (A) – …   e.g. jeg kom ikke hertil"],
+ PLACE:["her vs hertil","Movement verbs (kom, flyttede) take hertil. Location verbs (landede, boede) take her."],
+ FORAT:["for at : INF → purpose","for at + infinitive. ×1.5"],
+ PGA:["på grund af : N → cause","på grund af + noun or object pronoun (mig, dig, ham). ×1.5"],
+ FORDI:["fordi : CLAUSE → reason","fordi + S – (A) – V. ×2"],
+ SAV:["Subordinate order S – A – V","Inside a fordi-clause the adverb jumps in FRONT of the verb: fordi jeg ikke kunne … ×1.25"],
+ V2:["V2 inversion","Front a time rune and the verb stays second: i går kom jeg hertil. ×1.5"],
+ CHAIN:["Operator chaining","Operators compose. Two or more in one sentence multiply together."]
+};
+const OPM={FORAT:1.5,PGA:1.5,FORDI:2},OPN={FORAT:"for at",PGA:"på grund af",FORDI:"fordi",FRONT:"V2"};
+
+// ---------- glossary for tap-to-translate in story text ----------
+const GLOSS={hej:"hi",du:"you",er:"are / is",våd:"wet",jeg:"I",kom:"came",hertil:"(to) here",på:"on (på grund af = because of)",grund:"på grund af = because of",af:"of",et:"a",rumskib:"spaceship",ja:"yes",de:"they",smider:"throw",altid:"always",ting:"things",min:"my",sø:"lake",hvad:"what",og:"and",så:"then",verbum:"verb",tak:"thanks / please",fordi:"because",mangler:"are missing",hedder:"am called",her:"here",magi:"magic",lavet:"made",sprog:"language",rigtig:"correct",forkert:"wrong",grammatik:"grammar",stærk:"strong",ingen:"no / none",pas:"pas på = watch out",en:"a",tågeflue:"fog fly",ikke:"not",dårligt:"bad",med:"with / along",til:"to",men:"but",vagten:"the guard",spørger:"asks",alle:"everyone",hvorfor:"why",bzzz:"bzzz",taler:"talk",som:"like",baby:"baby",giv:"give",mig:"me",dine:"your",ord:"words",fremmed:"stranger",log:"log",vi:"we",fandt:"found",menneske:"human",jorden:"Earth",tog:"took",det:"it",kunne:"could",tale:"speak",sproget:"the language",satte:"satte af = dropped off",måne:"moon",nummer:"number",syv:"seven",projekt:"project",måner:"moons",skal:"must / shall",ét:"one",kæreste:"girlfriend / boyfriend",bor:"lives",i:"in",udlandet:"abroad",hun:"she",flyttede:"moved",sit:"her own",job:"job",derfor:"that's why",sur:"grumpy",stop:"stop",din:"your",forstår:"understand",hvem:"who",har:"has",læst:"read",dagbog:"diary",for:"for (for at = in order to)",at:"to",få:"get",hævn:"revenge",over:"over / on",siger:"say",vis:"show",velkommen:"welcome",fremmede:"strangers",fortælle:"tell",uden:"without",god:"good",bliver:"become",frøer:"frogs",frø:"frog",kommer:"come(s)",ind:"in",regnen:"the rain",ville:"wanted to",finde:"find",mad:"food",lære:"learn",arbejde:"work",dum:"stupid",byen:"the town",gerne:"gladly",vil:"want to",rumvæsnerne:"the aliens",syntes:"thought",var:"was",lærer:"am learning",dansk:"Danish",trylle:"do magic",studere:"study",mumle:"Mumle",tågeby:"Fog Town",ham:"him",han:"he",går:"i går = yesterday",nu:"now",dig:"you (object)",kan:"can",se:"see",går_:"",fundet:"found",fjern:"remove",drone:"drone",nej:"no",igen:"again",prøv:"try",godt:"good",meget:"very",sumpen:"the marsh",husk:"remember",verbet:"the verb",først:"first",tid:"time",ud:"out",herfra:"from here",intet:"nothing",tyv:"thief",min_:"",mine:"my (plural)",runer:"runes"};
+
+// ---------- CHAPTER 1 content ----------
+const PARRY=[
+ {d:"Du taler som en baby!",o:["You talk like a baby!","You look like a baby!","You are a baby thief!"],sp:1},
+ {d:"Giv mig dine ord!",o:["Give me your words!","Give me your food!","I give you my word!"],sp:1},
+ {d:"Hvorfor kom du hertil?",o:["Why did you come here?","When did you come here?","How did you get here?"],sp:1},
+ {d:"Du bliver til en frø!",o:["You'll turn into a frog!","You are a good frog!","You stay with the frog!"],sp:1},
+ {d:"Ingen kommer ind uden en god grund.",o:["Nobody gets in without a good reason.","Everyone gets in for a good reason.","Nobody leaves without a reason."],sp:1},
+ {d:"Jeg er sur på grund af regnen.",o:["I'm grumpy because of the rain.","I'm happy in spite of the rain.","I'm wet because it rains."],sp:1},
+ {d:"Du kunne ikke finde arbejde på Jorden!",o:["You couldn't find work on Earth!","You didn't want to work on Earth!","You can find work on Earth!"],sp:1},
+ {d:"Rumvæsnerne ville ikke have dig!",o:["The aliens didn't want you!","The aliens couldn't find you!","The aliens want you back!"],sp:1},
+ {d:"Jeg kom hertil ___ et rumskib.",o:["på grund af","for at","fordi"]},
+ {d:"Jeg vil ind i byen ___ finde mad.",o:["for at","fordi","på grund af"]},
+ {d:"De tog mig ikke med, ___ jeg var dum.",o:["fordi","for at","på grund af"]},
+ {d:"Mumle flyttede hertil ___ studere magi.",o:["for at","på grund af","fordi"]},
+ {d:"Vagten er sur ___ regnen.",o:["på grund af","fordi","for at"]},
+ {d:"Jeg lærer dansk, ___ jeg gerne vil trylle.",o:["fordi","for at","på grund af"]},
+ {d:"Hun kom til byen på grund af ___.",o:["ham","han","at arbejde"]},
+ {d:"… fordi jeg ___ finde arbejde.",o:["ikke kunne","kunne ikke","ikke kan at"]},
+ {d:"I går ___ hertil.",o:["kom jeg","jeg kom","jeg kommer"]},
+ {d:"Jeg landede ___ i nat.",o:["her","hertil","herfra"]}
+];
+const FOES={
+ fly:{n:"Tågeflue",art:"fly",hp:22,dmg:4,xp:15,cr:10,say:"Bzzz! Du taler som en baby!",note:"No defences. Good for experiments."},
+ drone:{n:"Sumpdrone",art:"drone",hp:48,dmg:6,xp:30,cr:20,weak:"FORAT",say:"Fremmed fundet. Fjern fremmed.",note:"Weak to for at (purpose)."},
+ thief:{n:"Runetyv",art:"thief",hp:60,dmg:6,xp:40,cr:30,weak:"PGA",say:"Giv mig dine ord, fremmed!",note:"Weak to på grund af (cause)."},
+ grumme:{n:"Portvagten Grumme",art:"guard",hp:170,dmg:8,xp:120,cr:80,weak:"FORDI",armour:1,boss:1,say:"Ingen kommer ind uden en god grund!",note:"Armour: a sentence with no operator gives no reason, and deals 1. Weak to fordi."}
+};
+const SIGILS={
+ sub:["Subordinator","fordi multiplies ×3 instead of ×2. Sentences with no operator deal half.",60],
+ inv:["Inverter","A sentence with V2 inversion also heals you for 5.",60],
+ breath:["Long Breath","Each word adds +2 base damage instead of +1.",90],
+ glass:["Glass Rune","All damage ×1.3. Your parry window is 2 seconds shorter.",90]
+};
+const WHO={a1:{n:"OFFICER:",en:1},a2:{n:"AIDE:",en:1},m:{n:"Mumle"},g:{n:"Grumme"},r:{n:"Runetyv"},f:{n:"Tågeflue"}};
+const SC={
+ p1:{art:"ship",L:[["n","You were asleep. Then you were on a ship. Nobody asked."],["a1","Subject 4471. Human. Occupation: mathematician."],["a2","Does it speak the moon language?"],["a1","It speaks English and something called LaTeX."],["a2","So, no. Useless for the project. Drop it on Seven."],["y","I have a doctorate."],["a2","We know. We read it. Airlock."]],next:"p2"},
+ p2:{art:"mumle",L:[["n","You land in a lake. The lake is cold, which is the nicest thing you can say about it."],["n","Something small and mossy drags you out by the collar."],["m","Hej. Du er våd."],["y","Danish. An entire universe, and it's Danish."],["n","He waits. English gets you a blank stare, so you assemble an answer from evening-class wreckage."]],
+  ask:"Tell him how you got here",ch:[
+  {t:"Jeg kom hertil på grund af et rumskib.",say:[["m","Et rumskib! Ja, de smider altid ting i min sø."]],to:"p3"},
+  {t:"Jeg kom hertil for at et rumskib.",bad:1,say:[["m","Hvad? 'For at' … og så et verbum, tak."],["n","He looks at you the way you look at students who divide by zero."]]},
+  {t:"Jeg kom hertil fordi et rumskib.",bad:1,say:[["m","Fordi … hvad? Du mangler et verbum."],["n","A clause needs a verb. You knew that. You were in a lake."]]}]},
+ p3:{art:"mumle",L:[["m","Jeg hedder Mumle. Her er magi lavet af sprog."],["m","Rigtig grammatik – stærk magi. Forkert grammatik – ingen magi."],["n","Magic made of grammar. A formal system with consequences. You've had worse days. This morning, for instance."],["n","He presses a handful of warm stones into your palm. Each carries a word and a type: S, V, A, operators that take arguments."],["m","Pas på! En tågeflue!"]],next:()=>startBattle("fly",{tut:1,after:"p4"})},
+ p4:{art:"mumle",L:[["m","Ikke dårligt. Kom med til Tågeby."],["m","Men vagten spørger alle: Hvorfor kom du hertil?"],["n","He explains, with gestures, what happens to strangers who have no good reason. The gesture is a frog."],["n","Tågeby's gate is an hour's walk. Between you and it: a marsh, a relay dish, and whatever lives in that hole."]],next:()=>{S.flags.tut=1;hub()}},
+ t1:{art:"dish",L:[["n","A relay dish, half sunk in the marsh. It intercepts the ship's chatter and translates it into Danish."],["n","Of course it does."],["t","Log 4471: Vi fandt et menneske på Jorden. Vi tog det ikke med, fordi det ikke kunne tale sproget. Vi satte det af på måne nummer syv."]],
+  ask:"Why didn't they take the human?",ch:[
+  {t:"Fordi det ikke kunne tale sproget.",to:"t2"},
+  {t:"På grund af et rumskib.",bad:1,say:[["n","You reread it. Slowly. The ship is how, not why."]]},
+  {t:"For at finde et menneske.",bad:1,say:[["n","That's why they came. Not why they left without you."]]}]},
+ t2:{art:"dish",L:[["n","fordi. A new operator, and a strange one: its argument is a whole clause, and inside that clause the word order changes. 'det ikke kunne', not 'det kunne ikke'."],["n","The runes settle somewhere behind your eyes."],["n","The dish crackles. Untranslated, for once."],["a1","And the human?"],["a2","Still alive. It's talking to a moss."],["a1","Give it a week."],["t","Projekt: Alle måner skal tale ét sprog."],["n","One language for every moon. Someone chose Danish. On purpose."]],next:()=>{gain(["fordi","vil","kun","ger","rum","hav","mig","pro","nyt"]);S.flags.term=1;hub("The relay gave you new runes: fordi, ville, kunne, gerne and more.")}},
+ d1:{art:"thief",L:[["n","A hole in a hillside, lined with stolen signposts. Something inside is sorting words by size."],["r","Giv mig dine ord, fremmed!"]],next:()=>startBattle("thief",{after:"d2"})},
+ d2:{art:"thief",L:[["n","The thief dissolves into loose vowels. In its hoard: a damp notebook with a spear doodled on the cover."],["t","Min kæreste bor i udlandet. Hun flyttede på grund af sit job. Derfor er jeg altid sur. – Grumme"]],
+  ask:"Why did Grumme's girlfriend move?",ch:[
+  {t:"På grund af sit job.",to:"d3"},
+  {t:"Fordi Grumme altid er sur.",bad:1,say:[["n","Tempting, but you have cause and effect backwards. Derfor: that is WHY he is grumpy."]]},
+  {t:"For at bo i Tågeby.",bad:1,say:[["n","Udlandet means abroad. She went the other way."]]}]},
+ d3:{art:"thief",L:[["n","The gate guard keeps a diary. The gate guard is sad."],["n","You file this under 'leverage', feel slightly bad, and refile it under 'empathy'. It stays in the same pocket either way."]],next:()=>{gain(["dig","ham","job","alt","fly","stu"]);S.flags.diary=1;hub("From the hoard: dig, ham, et job, altid, flyttede, studere.")}},
+ g1:{art:"guard",L:[["n","The gate of Tågeby. A sign, in letters the size of your head:"],["t","VELKOMMEN TIL TÅGEBY. Alle fremmede skal fortælle vagten, hvorfor de kom hertil. Fremmede uden en god grund bliver til frøer."],["n","The pond beside the gate is extremely full."],["g","Stop! Hvorfor kom du hertil?"]],
+  ask:"Answer the guard",ch:[
+  {t:"Du er sur på grund af din kæreste. Det forstår jeg.",need:"diary",say:[["g","… Hvem har læst min dagbog?"],["n","He blinks. Twice. The spear lowers an inch."]],set:"soft",to:()=>startBattle("grumme",{hpMul:.75,after:"e1"})},
+  {t:"Jeg kom hertil for at få hævn.",say:[["g","Hævn? Over hvem? Mig?"],["n","Technically true. Tactically poor."]],set:"angry",to:()=>startBattle("grumme",{dmgAdd:2,xpMul:1.5,after:"e1"})},
+  {t:"Jeg kom hertil på grund af et rumskib.",say:[["g","Det siger de alle. Vis mig din magi!"]],to:()=>startBattle("grumme",{after:"e1"})}]},
+ e1:{art:"mumle",L:[["n","The gate opens. Tågeby smells of rain, woodsmoke and irregular verbs."],["m","Velkommen til Tågeby."],["n","Far above, something with too many lights adjusts its orbit."],["a1","It got through the gate."],["a2","…Log it."],["a1","And the Captain?"],["a2","Don't tell the Captain."],["n","End of Chapter 1. Chapter 2 is coming. Until then the marsh still has things in it, and the guard is happy to fight you again."]],next:()=>{S.flags.ch1=1;hub()}},
+ frog:{art:"fly",L:[["n","You are, briefly, a frog."],["n","Mumle fixes it. He does not let it go."],["m","Kvæk, kvæk. Prøv igen."]],next:()=>{S.hp=maxHp();hub()}}
+};
+const ART={
+ fly:`<svg viewBox="0 0 100 100" class="float"><ellipse cx="30" cy="38" rx="22" ry="12" fill="#63d8c0" opacity=".5"/><ellipse cx="70" cy="38" rx="22" ry="12" fill="#63d8c0" opacity=".5"/><ellipse cx="50" cy="58" rx="22" ry="26" fill="#7b5bd6"/><circle cx="41" cy="52" r="7" fill="#ece8ff"/><circle cx="59" cy="52" r="7" fill="#ece8ff"/><circle cx="42" cy="53" r="3" fill="#17132b"/><circle cx="58" cy="53" r="3" fill="#17132b"/><path d="M42 70q8 6 16 0" stroke="#17132b" stroke-width="3" fill="none"/></svg>`,
+ thief:`<svg viewBox="0 0 100 100" class="float"><path d="M50 8 88 92H12z" fill="#3b2f73"/><path d="M50 30 70 74H30z" fill="#0f0c20"/><circle cx="43" cy="56" r="4" fill="#f2c14e"/><circle cx="57" cy="56" r="4" fill="#f2c14e"/><rect x="66" y="60" width="22" height="16" rx="3" fill="#f2c14e"/><path d="M70 66h14M70 71h10" stroke="#221a05" stroke-width="2"/></svg>`,
+ drone:`<svg viewBox="0 0 100 100" class="float"><ellipse cx="50" cy="52" rx="42" ry="14" fill="#463c7a"/><path d="M26 48a24 22 0 0 1 48 0z" fill="#63d8c0"/><circle cx="50" cy="54" r="9" fill="#0f0c20"/><circle cx="50" cy="54" r="5" fill="#ff6f86"/><path d="M40 68 34 90M60 68 66 90M50 68v24" stroke="#f2c14e" stroke-width="3"/></svg>`,
+ guard:`<svg viewBox="0 0 100 100"><rect x="22" y="38" width="56" height="56" rx="8" fill="#463c7a"/><path d="M26 40a24 26 0 0 1 48 0z" fill="#f2c14e"/><rect x="46" y="6" width="8" height="14" fill="#ff6f86"/><path d="M34 52l12 5M66 52l-12 5" stroke="#0f0c20" stroke-width="4"/><circle cx="41" cy="62" r="4" fill="#ece8ff"/><circle cx="59" cy="62" r="4" fill="#ece8ff"/><path d="M40 80q10-7 20 0" stroke="#0f0c20" stroke-width="3" fill="none"/><path d="M86 20v74" stroke="#a79fd0" stroke-width="4"/><path d="M86 8l8 16H78z" fill="#ece8ff"/></svg>`,
+ mumle:`<svg viewBox="0 0 100 100" class="float"><path d="M50 6 72 44H28z" fill="#7b5bd6"/><circle cx="50" cy="66" r="28" fill="#63d8c0"/><circle cx="41" cy="62" r="6" fill="#ece8ff"/><circle cx="59" cy="62" r="6" fill="#ece8ff"/><circle cx="42" cy="63" r="3" fill="#17132b"/><circle cx="60" cy="63" r="3" fill="#17132b"/><path d="M42 80h16" stroke="#17132b" stroke-width="3"/><circle cx="50" cy="16" r="3" fill="#f2c14e"/></svg>`,
+ dish:`<svg viewBox="0 0 300 150"><path d="M0 130q150-30 300 0v20H0z" fill="#1d4a52"/><path d="M150 128 140 70h20z" fill="#463c7a"/><path d="M90 40a62 50 0 0 0 120 30z" fill="#a79fd0"/><path d="M150 55 196 20" stroke="#f2c14e" stroke-width="3"/><circle cx="198" cy="18" r="6" fill="#ff6f86"/><path d="M214 10q14 8 8 24M228 2q22 14 12 40" stroke="#63d8c0" stroke-width="2" fill="none"/></svg>`,
+ ship:`<svg viewBox="0 0 300 150"><path d="M150 62 96 150h108z" fill="#f2c14e" opacity=".22"/><ellipse cx="150" cy="56" rx="92" ry="20" fill="#463c7a"/><path d="M104 50a46 36 0 0 1 92 0z" fill="#63d8c0"/><circle cx="110" cy="60" r="4" fill="#f2c14e"/><circle cx="150" cy="64" r="4" fill="#f2c14e"/><circle cx="190" cy="60" r="4" fill="#f2c14e"/><circle cx="150" cy="128" r="7" fill="#ece8ff"/><path d="M150 135v10M150 138l-8-6M150 138l8-6" stroke="#ece8ff" stroke-width="3"/><circle cx="30" cy="20" r="2" fill="#ece8ff"/><circle cx="262" cy="30" r="2" fill="#ece8ff"/><circle cx="52" cy="96" r="1.5" fill="#ece8ff"/></svg>`
+};
+
+// ============================================================ ENGINE
+const $=s=>document.querySelector(s),app=$("#app"),tip=$("#tip");
+let S={at:"p1",flags:{},hp:30,lvl:1,xp:0,cr:0,deck:START_DECK.slice(),sig:[],own:[],rules:{},marsh:0,motion:true,casts:0};
+try{const o=JSON.parse(localStorage.getItem("dumpet-rpg")||"null");if(o)S=Object.assign(S,o)}catch(e){}
+const save=()=>{try{localStorage.setItem("dumpet-rpg",JSON.stringify(S))}catch(e){}};
+const maxHp=()=>25+5*S.lvl+(0);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const da=s=>esc(s).split(/([A-Za-zÆØÅæøåé]+)/).map(x=>GLOSS[x.toLowerCase()]?`<span class="w" data-w="${x.toLowerCase()}">${x}</span>`:x).join("");
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const norm=s=>s.toLowerCase().replace(/[.,!?;:"'’…()–-]/g," ").replace(/\s+/g," ").trim();
+const ui=h=>{app.innerHTML=h};
+const gain=ids=>{ids.forEach(id=>{if(!S.deck.includes(id))S.deck.push(id)});save()};
+let tipT;const toast=(t,ms)=>{tip.textContent=t;tip.hidden=false;clearTimeout(tipT);tipT=setTimeout(()=>tip.hidden=true,ms||2600)};
+document.addEventListener("click",e=>{const w=e.target.closest(".w[data-w]");if(w){toast(w.textContent+" = "+GLOSS[w.dataset.w]);return}const s=e.target.closest("[data-say]");if(s)speak(s.dataset.say)});
+function speak(t,rate){try{const u=new SpeechSynthesisUtterance(t.replace(/___/g," … "));u.lang="da-DK";u.rate=rate||.9;const v=speechSynthesis.getVoices().find(v=>/^da/i.test(v.lang));if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+try{speechSynthesis.getVoices()}catch(e){}
+// speech recognition: resolves with an array of transcripts, or null when unavailable
+function hear(){return new Promise(res=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return res(null);let done=false;const fin=v=>{if(!done){done=true;res(v)}};
+ try{const r=new SR();r.lang="da-DK";r.maxAlternatives=4;r.onresult=e=>fin([...e.results[0]].map(a=>a.transcript));r.onerror=e=>fin(e.error==="no-speech"?[]:null);r.onend=()=>fin([]);r.start();setTimeout(()=>{try{r.stop()}catch(e){}},9000)}catch(e){fin(null)}})}
+const heardScore=(alts,target)=>{const tw=norm(target).split(" ");return Math.max(0,...alts.map(a=>{const aw=norm(a).split(" ");return tw.filter(w=>aw.includes(w)).length/tw.length}))};
+
+// ---------- scenes ----------
+function go(x){typeof x==="function"?x():scene(x)}
+function scene(id){
+ const sc=SC[id];if(S.flags.tut||id[0]==="p"){S.at=id;save()}
+ const lines=sc.L.slice(),gone={};let k=0,pend=null;
+ const html=([who,txt])=>who==="n"?`<p class="nar">${esc(txt)}</p>`:who==="y"?`<p class="you">${esc(txt)}</p>`:who==="t"?`<p class="term">${da(txt)} <button class="mini" data-say="${esc(txt)}">▶</button></p>`:WHO[who].en?`<p class="ali"><b>${WHO[who].n}</b> ${esc(txt)}</p>`:`<p class="dk"><b>${WHO[who].n}</b> ${da(txt)} <button class="mini" data-say="${esc(txt)}">▶</button></p>`;
+ function draw(){
+  const end=k>=lines.length-1;let foot;
+  if(!end)foot=`<button class="go" id="nx">▸</button>`;
+  else if(pend)foot=`<button class="go" id="nx">Continue</button>`;
+  else if(sc.ch)foot=`<p class="lab">${sc.ask}</p><div class="opts">${sc.ch.map((c,i)=>gone[i]||(c.need&&!S.flags[c.need])?"":`<button data-c="${i}">${esc(c.t)}</button>`).join("")}</div>`;
+  else foot=`<button class="go" id="nx">Continue</button>`;
+  ui(`<div class="art">${ART[sc.art]||""}</div><div class="log">${lines.slice(0,k+1).map(html).join("")}</div>${foot}`);
+  const last=app.querySelector(".log").lastElementChild;last.classList.add("pop");
+  const nx=$("#nx");if(nx)nx.onclick=()=>{if(!end){k++;draw()}else go(pend||sc.next)};
+  app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{const c=sc.ch[+b.dataset.c];
+   if(c.bad){gone[b.dataset.c]=1;lines.push(...c.say);k=lines.length-c.say.length;draw();return}
+   if(c.set){S.flags[c.set]=1;save()}
+   if(c.say){lines.push(["y","“"+c.t+"”"],...c.say);k=lines.length-c.say.length;pend=c.to;draw()}else go(c.to)});
+  (nx||app.lastElementChild).scrollIntoView({block:"end"});
+ }
+ draw();
+}
+
+// ---------- hub ----------
+function hub(msg){
+ S.at="hub";save();const need=40*S.lvl;
+ const loc=(id,name,desc,extra)=>`<button data-l="${id}"><b>${name}</b>${desc}${extra?`<small>${extra}</small>`:""}</button>`;
+ ui(`<p class="lab">Chapter 1 · Porten</p><h1>Outside Tågeby</h1>
+ <div class="hud"><span>♥ ${S.hp}/${maxHp()}</span><span>Lv ${S.lvl} · ${S.xp}/${need} xp</span><span style="color:var(--rune)">◆ ${S.cr}</span></div>
+ ${msg?`<p class="fb ok pop">${esc(msg)}</p>`:""}
+ <div class="opts">
+ ${loc("hut","Mumle's hut","Rest, study the grimoire, fit sigils.",`${Object.keys(S.rules).length}/${Object.keys(RULES).length} rules discovered`)}
+ ${loc("marsh","The Fog Marsh","Things live in it. They can be reasoned with, violently.",`Hunts won: ${S.marsh}`)}
+ ${loc("term","The relay dish",S.flags.term?"It has nothing new to say.":"It hums in a language you almost know.",S.flags.term?"Done":"Reading")}
+ ${loc("den","The hole in the hill",S.flags.diary?"Empty now. Smells of vowels.":"Something inside is sorting words by size.",S.flags.diary?"Done":"A fight, then a find")}
+ ${loc("gate","The gate of Tågeby",S.flags.ch1?"Grumme will spar with you. He says it isn't fun. He is lying.":"The guard wants a reason. A good one.",S.flags.ch1?"Rematch":"Boss · bring fordi")}
+ </div>`);
+ app.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>({hut,marsh:()=>startBattle(S.marsh%2?"drone":"fly",{marsh:1}),term:()=>S.flags.term?toast("Static."):scene("t1"),den:()=>S.flags.diary?toast("Nothing left but consonants."):scene("d1"),gate:()=>scene("g1")})[b.dataset.l]());
+}
+function hut(){
+ const tile=id=>{const r=RUNES[id];return `<span class="tile t-${TAG[r.t]}" style="display:inline-block;border:1px solid;border-radius:10px;margin:2px"><i>${TAG[r.t]}</i>${r.w}<br><small class="dim">${r.en}</small></span>`};
+ const uniq=[...new Set(S.deck)];
+ ui(`<p class="lab">Mumle's hut</p><h1>Grimoire</h1>
+ <div class="card"><p class="lab">Rest</p><button id="rest" class="go">Sleep on the moss · full heal</button></div>
+ <div class="card"><p class="lab">How damage works</p><p class="formula">(3 + words) × operators × bonuses</p><p class="dim">A spell is a Danish sentence. If it type-checks, it fires. Longer and more nested sentences hit harder. Typing a spell from memory gives ×1.25 and may use any rune you own. Saying it aloud gives ×1.25.</p></div>
+ <div class="card"><p class="lab">Rules discovered</p>${Object.keys(RULES).map(k=>S.rules[k]?`<p><b style="color:var(--rune)">${RULES[k][0]}</b><br><span class="dim">${RULES[k][1]}</span></p>`:`<p class="dim">??? — undiscovered. Experiment.</p>`).join("")}</div>
+ <div class="card"><p class="lab">Sigils · fit up to 2</p><div class="opts">${Object.keys(SIGILS).map(k=>{const s=SIGILS[k],own=S.own.includes(k),on=S.sig.includes(k);return `<button data-s="${k}" ${!own&&S.cr<s[2]?"disabled":""}><b>${s[0]}${on?" · fitted":""}</b>${s[1]}<small>${own?(on?"Tap to remove":"Tap to fit"):"Buy for ◆ "+s[2]}</small></button>`}).join("")}</div></div>
+ <div class="card"><p class="lab">Your runes · ${uniq.length}</p><div>${uniq.map(tile).join("")}</div></div>
+ <div class="card"><p class="lab">Settings</p><button id="mo">Tilt-to-parry: ${S.motion?"on":"off"}</button><button id="rs" class="ghost">Erase save and restart</button></div>
+ <button class="go" id="bk">Back outside</button>`);
+ $("#rest").onclick=()=>{S.hp=maxHp();save();toast("You sleep. The moss is judgemental but soft.")};
+ $("#bk").onclick=()=>hub();
+ $("#mo").onclick=()=>{S.motion=!S.motion;save();hut()};
+ let arm=false;$("#rs").onclick=e=>{if(!arm){arm=true;e.target.textContent="Tap again to erase everything";return}try{localStorage.removeItem("dumpet-rpg")}catch(x){}location.reload()};
+ app.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{const k=b.dataset.s;if(!S.own.includes(k)){S.cr-=SIGILS[k][2];S.own.push(k)}else if(S.sig.includes(k))S.sig=S.sig.filter(x=>x!==k);else if(S.sig.length<2)S.sig.push(k);else return toast("Two sigils at most. Remove one first.");save();hut()});
+}
+
+// ---------- battle ----------
+let B;const HAND=12;
+function startBattle(key,opt){
+ const f=FOES[key],max=Math.round(f.hp*(opt.hpMul||1));
+ B={key,f,hp:max,max,opt,line:f.say,cd:0,typed:false,last:false};newHand();drawBattle();
+}
+function newHand(){
+ const deck=S.deck.slice(),take=id=>{const i=deck.indexOf(id);if(i>=0)deck.splice(i,1);return id};
+ const pairs=[["kom","hertil"],["fly","hertil"],["lan","her"],["boe","her"]].filter(p=>deck.includes(p[0])&&deck.includes(p[1])),p=B.opt.tut?["kom","hertil"]:rnd(pairs);
+ const core=[take("jeg"),take(p[0]),take(p[1])];
+ B.hand=shuffle(core.concat(shuffle(deck).slice(0,HAND-3))).map(id=>({id,used:false}));B.sent=[];
+}
+const sentIds=()=>B.sent.map(i=>B.hand[i].id);
+const pretty=ids=>{let s=ids.map(id=>(RUNES[id].t==="FORDI"?", ":" ")+RUNES[id].w).join("").trim();return s.charAt(0).toUpperCase()+s.slice(1)+"."};
+function foeCard(hit){const f=B.f;return `<div class="card"><div class="foe"><span class="${hit?"shake":""}">${ART[f.art]}</span><div><p class="lab">${f.boss?"Boss · ":""}${f.n}</p><div class="meter"><i style="width:${100*Math.max(0,B.hp)/B.max}%"></i></div><p class="dim">${Math.max(0,B.hp)} / ${B.max}</p><p class="dim">${f.note}</p></div></div><p class="dk">${da(B.line)}</p></div>`}
+const meCard=()=>`<div class="hud"><span>♥ ${Math.max(0,S.hp)}/${maxHp()}</span><div class="meter me" style="flex:1"><i style="width:${100*Math.max(0,S.hp)/maxHp()}%"></i></div><span>Lv ${S.lvl}</span></div>`;
+function drawBattle(hit){
+ const tut=B.opt.tut&&S.casts<3?`<p class="fb ok"><b>Mumle taps three stones: jeg · kom · hertil.</b><span class="dim">Tap runes to build a sentence, then cast. Then try extending it: add for at + an infinitive, or på grund af + a noun. Wrong shapes fizzle and tell you why.</span></p>`:"";
+ ui(meCard()+foeCard(hit)+tut+`<p class="lab">Your spell</p><div class="tiles slot" id="sent"></div><div class="tiles" id="hand"></div>
+ <input type="text" id="ty" hidden autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type the whole sentence · ×1.25">
+ <div class="row"><button class="go" id="cast">Cast</button><button class="ghost" id="clr">Clear</button></div>
+ <div class="row"><button id="wr">⌨ Write it</button><button id="mu" ${B.cd>0?"disabled":""}>Mumle: new runes${B.cd>0?" ("+B.cd+")":""}</button></div>`);
+ const paint=()=>{
+  $("#sent").innerHTML=B.sent.map((h,k)=>tileHTML(B.hand[h].id,`data-k="${k}"`)).join("")||`<span class="dim">Tap runes below.</span>`;
+  $("#hand").innerHTML=B.hand.map((h,i)=>tileHTML(h.id,`data-i="${i}" ${h.used?"disabled":""}`,h.used)).join("");
+  $("#sent").querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const h=B.sent.splice(+b.dataset.k,1)[0];B.hand[h].used=false;paint()});
+  $("#hand").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;B.hand[i].used=true;B.sent.push(i);paint()})};
+ paint();
+ $("#clr").onclick=()=>{B.sent.forEach(h=>B.hand[h].used=false);B.sent=[];$("#ty").value="";paint()};
+ $("#wr").onclick=()=>{const t=$("#ty");t.hidden=!t.hidden;if(!t.hidden)t.focus()};
+ $("#mu").onclick=()=>{B.cd=3;newHand();drawBattle()};
+ $("#cast").onclick=cast;
+}
+const tileHTML=(id,attr,used)=>{const r=RUNES[id];return `<button class="tile t-${TAG[r.t]} ${used?"used":""}" ${attr}><i>${TAG[r.t]}</i>${r.w}<small>${r.en}</small></button>`};
+function tokenize(text){
+ const w=norm(text).split(" ").filter(Boolean),own=[...new Set(S.deck)],ids=[];let p=0;
+ while(p<w.length){let hit=null;for(let n=3;n>=1&&!hit;n--){const chunk=w.slice(p,p+n).join(" ");const id=own.find(id=>RUNES[id].w===chunk);if(id){hit=id;p+=n}}
+  if(!hit)return {err:`“${w[p]}” is not a rune you own. Check the spelling, or your grimoire.`};ids.push(hit)}
+ return {ids};
+}
+async function cast(){
+ const ty=$("#ty"),typed=!ty.hidden&&ty.value.trim();let ids;
+ if(typed){const t=tokenize(ty.value);if(t.err)return fizzle(t.err,ty.value);ids=t.ids}else ids=sentIds();
+ if(!ids.length)return toast("Build a sentence first.");
+ const r=parse(ids.map(id=>RUNES[id].t)),text=pretty(ids);S.casts++;
+ if(!r.ok)return fizzle(r.err,text);
+ // optional voice step
+ ui(meCard()+foeCard()+`<div class="card pop"><p class="lab">The spell holds</p><p class="big">${esc(text)} <button class="mini" data-say="${esc(text)}">▶</button></p><p class="dim">Say it aloud for ×1.25.</p><div class="row"><button class="go" id="mic">🎤 Speak it</button><button class="ghost" id="skip">Cast silently</button></div><div id="vo"></div></div>`);
+ const voiced=await new Promise(res=>{
+  $("#skip").onclick=()=>res(false);
+  $("#mic").onclick=async()=>{$("#mic").disabled=true;$("#vo").innerHTML=`<p class="dim">Listening …</p>`;const alts=await hear();
+   if(alts===null){$("#vo").innerHTML=`<p class="dim">This browser won't listen. Say it three times, then be honest:</p><div class="row"><button id="y">It sounded right</button><button id="n">Not yet</button></div>`;$("#y").onclick=()=>res(true);$("#n").onclick=()=>res(false);return}
+   const sc=heardScore(alts,text);if(sc>=.7)return res(true);
+   $("#vo").innerHTML=`<p class="dim">Heard: “${esc(alts[0]||"nothing")}”. Not close enough.</p>`;$("#mic").disabled=false;$("#mic").textContent="🎤 Try again"}});
+ resolveCast(ids,r.f,text,!!typed,voiced);
+}
+function fizzle(err,text){
+ B.line=rnd(["Hvad? Det giver ingen mening.","Ha! Forkert grammatik.","Prøv igen, fremmed."]);
+ ui(meCard()+foeCard()+`<div class="fb no pop"><b>The spell fizzles.</b><span>${esc(text)}</span><span class="dim">${esc(err)}</span><button class="go" id="nx">Brace yourself</button></div>`);
+ $("#nx").onclick=()=>enemyTurn();
+}
+function resolveCast(ids,f,text,typed,voiced){
+ const has=k=>S.sig.includes(k),words=ids.reduce((n,id)=>n+RUNES[id].w.split(" ").length,0);
+ let base=3+words*(has("breath")?2:1),parts=[`(3 + ${words}${has("breath")?"×2":""})`],m=1;
+ const mul=(x,label)=>{m*=x;parts.push(`× ${x} ${label}`)};
+ f.ops.forEach(o=>mul(o==="FORDI"&&has("sub")?3:OPM[o],OPN[o]));
+ if(f.subAdv)mul(1.25,"S–A–V");if(f.front)mul(1.5,"V2");
+ if(!f.ops.length&&has("sub"))mul(.5,"no operator");
+ if(has("glass"))mul(1.3,"glass");if(typed)mul(1.25,"written");if(voiced)mul(1.25,"spoken");
+ if(B.f.weak&&f.ops.includes(B.f.weak))mul(1.5,"weakness");
+ let dmg=Math.round(base*m);if(B.f.armour&&!f.ops.length){dmg=1;parts=["no reason given → armour holds"]}
+ B.hp-=dmg;B.last=f;
+ const found=[];const disc=k=>{if(!S.rules[k]){S.rules[k]=1;found.push(k)}};
+ disc("MAIN");disc("PLACE");f.ops.forEach(disc);if(f.subAdv)disc("SAV");if(f.front)disc("V2");if(f.ops.length>1)disc("CHAIN");
+ let heal=0;if(f.front&&has("inv")){heal=5;S.hp=Math.min(maxHp(),S.hp+5)}
+ S.xp+=found.length*10;save();
+ B.line=B.hp<=0?"…":rnd(["Av!","Det var … rigtig grammatik.","Ikke dårligt, fremmed."]);
+ ui(meCard()+foeCard(true)+`<div class="fb ok pop"><b>${dmg} damage</b><span>${esc(text)}</span><span class="formula">${parts.join(" ")} = ${dmg}</span>${heal?`<span class="dim">Inverter: +5 ♥</span>`:""}${found.map(k=>`<span><b style="color:var(--rune)">Rule discovered: ${RULES[k][0]}</b><br><span class="dim">${RULES[k][1]} · +10 xp</span></span>`).join("")}<button class="go" id="nx">${B.hp<=0?"Finish it":"Their turn"}</button></div>`);
+ $("#nx").onclick=()=>B.hp<=0?(B.f.boss&&!B.final?finisher():win()):enemyTurn();
+}
+// The boss will not fall to tiles: the last word must be written from memory.
+function finisher(){
+ const f=B.f;
+ ui(meCard()+`<div class="card"><div class="foe">${ART[f.art]}<div><p class="lab">${f.n} · the last word</p><h2>Hvorfor kom du hertil?</h2></div></div><p>He is on one knee, and still asking. Write your answer from memory: one sentence with at least two operators, or one fordi-clause containing an adverb.</p><input type="text" id="fw" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Jeg kom hertil …"><button class="go" id="ck">Answer him</button><div id="out"></div></div>`);
+ $("#ck").onclick=()=>{const v=$("#fw").value;if(!v.trim())return;const t=tokenize(v);let err=t.err;let r;
+  if(!err){r=parse(t.ids.map(id=>RUNES[id].t));if(!r.ok)err=r.err;else if(!(r.f.ops.length>=2||(r.f.ops.includes("FORDI")&&r.f.subAdv)))err="Grammatical, but too thin a reason. Two operators, or a fordi-clause with an adverb (ikke, gerne, altid)."}
+  if(err){S.hp-=4;save();$("#out").innerHTML=`<div class="fb no pop"><b>He shakes his head. −4 ♥</b><span class="dim">${esc(err)}</span></div>`;if(S.hp<=0)setTimeout(()=>scene("frog"),1200);return}
+  B.final=true;["MAIN"].concat(r.f.ops).forEach(k=>S.rules[k]=1);
+  $("#out").innerHTML=`<div class="fb ok pop"><b>He lowers the spear.</b><span>${esc(pretty(t.ids))}</span><span class="dk"><b>Grumme</b> ${da("Det er en god grund. Velkommen til Tågeby.")}</span><button class="go" id="nx">Continue</button></div>`;$("#nx").onclick=win};
+}
+function win(){
+ const f=B.f,o=B.opt,xp=Math.round(f.xp*(o.xpMul||1));S.xp+=xp;S.cr+=f.cr;let extra="";
+ if(o.marsh){S.marsh++;if(S.marsh===1){gain(["igar","inat"]);extra+=`<p class="dk"><b>Mumle</b> ${da("Husk: først tid, så verbet!")}</p><p class="dim">New runes: i går, i nat. They go at the FRONT of a sentence. See what that does to the word order.</p>`}
+  else if(S.marsh===2){gain(["boe","vi","try"]);extra+=`<p class="dim">New runes: boede, vi, trylle.</p>`}}
+ let up="";while(S.xp>=40*S.lvl){S.xp-=40*S.lvl;S.lvl++;S.hp=maxHp();up=`<p class="big" style="color:var(--rune)">Level ${S.lvl}. +5 max ♥, fully healed.</p>`}
+ save();
+ ui(`<div class="art">${ART.mumle}</div><p class="lab">Victory</p><h1>${f.n} is gone</h1><p>+${xp} xp · +${f.cr} ◆</p>${up}${extra}<button class="go" id="nx">Continue</button>`);
+ $("#nx").onclick=()=>o.after?scene(o.after):hub();
+}
+function enemyTurn(){
+ if(B.cd>0)B.cd--;
+ const f=B.f,n=f.boss&&B.hp<B.max/2?2:1;let k=0,pool=shuffle(PARRY);
+ const one=async()=>{
+  const it=pool[k],secs=(f.boss?9:11)-(S.sig.includes("glass")?2:0);
+  const r=await parry(it,secs,n>1?`Attack ${k+1} of ${n}`:"Parry");
+  const dmg=f.dmg+(B.opt.dmgAdd||0);let head,cls="ok";
+  if(r.perfect){const c=5+3*S.lvl;B.hp-=c;S.hp=Math.min(maxHp(),S.hp+2);head=`Perfect parry. Counter for ${c}, +2 ♥`}
+  else if(r.ok)head="Parried.";
+  else{S.hp-=dmg;head=(r.late?"Too slow. ":"Wrong. ")+`You take ${dmg}.`;cls="no"}
+  save();B.line=it.d.replace("___",it.o[0]);
+  ui(meCard()+foeCard(r.perfect)+`<div class="fb ${cls} pop"><b>${head}</b><span>${da(it.d.replace("___",it.o[0]))}</span>${it.sp?`<span class="dim">${esc(it.o[0])}</span>`:""}<button class="go" id="nx">Continue</button></div>`);
+  $("#nx").onclick=()=>{if(S.hp<=0)return scene("frog");if(B.hp<=0)return B.f.boss&&!B.final?finisher():win();k++;if(k<n)one();else{newHand();drawBattle()}};
+ };
+ one();
+}
+// Timed parry: three answers at ← ↑ →. Tilt the phone, swipe, or tap.
+function parry(it,secs,label){return new Promise(res=>{
+ const order=shuffle([0,1,2]),pos=["U","L","R"],t0=performance.now();let done=false,base=null,raf;
+ ui(meCard()+`<div class="card"><p class="lab">${label} · ${B.f.n} attacks</p><div class="meter time"><i id="tm" style="width:100%"></i></div><p class="big">${esc(it.d)}</p><p class="dim">${it.sp?"What did they say?":"Fill the gap."} ${S.motion?"Tilt, swipe or tap.":"Swipe or tap."}</p></div>
+ <div class="parry">${order.map((oi,p)=>`<button class="${pos[p]}" data-p="${pos[p]}" data-o="${oi}">${esc(it.o[oi])}</button>`).join("")}</div>`);
+ if(it.sp)speak(it.d,1);
+ const fin=(oi,late)=>{if(done)return;done=true;cancelAnimationFrame(raf);window.removeEventListener("deviceorientation",ori);document.removeEventListener("touchstart",ts);document.removeEventListener("touchend",te);
+  const el=(performance.now()-t0)/1000;res({ok:oi===0,perfect:oi===0&&el<secs*.45,late})};
+ const pick=p=>{const b=app.querySelector(`[data-p="${p}"]`);if(b)fin(+b.dataset.o)};
+ app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>fin(+b.dataset.o));
+ const tick=()=>{const el=(performance.now()-t0)/1000,t=$("#tm");if(t)t.style.width=Math.max(0,100*(1-el/secs))+"%";if(el>=secs)return fin(-1,true);raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);
+ function ori(e){if(!S.motion||e.gamma==null)return;if(!base){base={g:e.gamma,b:e.beta};return}if(performance.now()-t0<500)return;const dg=e.gamma-base.g,db=e.beta-base.b;if(dg<-20)pick("L");else if(dg>20)pick("R");else if(db<-20)pick("U")}
+ window.addEventListener("deviceorientation",ori);
+ let sx,sy;function ts(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY}
+ function te(e){if(sx==null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy))pick(dx<0?"L":"R");else if(dy<-60)pick("U")}
+ document.addEventListener("touchstart",ts,{passive:true});document.addEventListener("touchend",te,{passive:true});
+})}
+
+// ---------- boot ----------
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+window.RUNES=RUNES;window.G={get S(){return S},get B(){return B},parse,tokenize,hub,scene};
+if(S.at==="hub"||!SC[S.at])hub();else scene(S.at);
+</script>
+</body>
+</html>
