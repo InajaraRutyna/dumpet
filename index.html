@@ -20,7 +20,9 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 #pad div{display:flex;gap:10px}
 #app{position:fixed;left:0;right:0;bottom:0;max-height:62%;overflow-y:auto;background:var(--panel);border-top:1px solid rgba(255,215,106,.6);border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
 #app.full{max-height:100%;top:0;border-radius:0;border:0;padding-top:calc(18px + env(safe-area-inset-top,0px))}
-#app>*{flex-shrink:0}
+#app>*,#mp>*{flex-shrink:0}
+#mp{position:fixed;inset:0;z-index:6;overflow-y:auto;background:rgba(5,4,12,.97);padding:calc(56px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
+#hud{z-index:7}
 h1{font-size:2rem;line-height:1.05;margin:0;color:var(--gold);font-weight:400}
 h2{font-size:1.3rem;margin:0;font-weight:400;color:var(--gold)}
 p{margin:0}
@@ -59,6 +61,7 @@ input[type=text]{font:inherit;color:var(--ink);background:#120e26;border:1px sol
 <div id="hud"><div>FORSTAND<div class="bar"><i id="fo" style="background:var(--gold)"></i></div></div><div id="tl">TILLID<div class="bar"><i id="ti" style="background:var(--teal)"></i></div></div><button id="menu" aria-label="menu">☰</button></div>
 <div id="pad"><div><button id="bl" aria-label="walk left">◀</button><button id="br" aria-label="walk right">▶</button></div><button id="bj" aria-label="jump">▲</button></div>
 <div id="app" hidden></div>
+<div id="mp" hidden></div>
 <div id="tip" hidden></div>
 <script>
 "use strict";
@@ -101,7 +104,10 @@ function hear(){return new Promise(res=>{const SR=window.SpeechRecognition||wind
  try{const r=new SR();r.lang="da-DK";r.maxAlternatives=4;r.onresult=e=>fin([...e.results[0]].map(a=>a.transcript));r.onerror=e=>fin(e.error==="no-speech"?[]:null);r.onend=()=>fin([]);r.start();setTimeout(()=>{try{r.stop()}catch(e){}},9000)}catch(e){fin(null)}})}
 function ui(h,full){app.hidden=false;app.classList.toggle("full",!!full);app.innerHTML=h;app.scrollTop=0;$("#pad").hidden=true}
 function closeSheet(){app.hidden=true;app.innerHTML="";$("#pad").hidden=false;W.talk=null}
-const sheetOpen=()=>!app.hidden;
+const mp=$("#mp");
+function uiM(h){mp.hidden=false;mp.innerHTML=h;mp.scrollTop=0;W.L=W.R=false}
+function closeM(){mp.hidden=true;mp.innerHTML=""}
+const sheetOpen=()=>!app.hidden||!mp.hidden;
 function grant(...ws){const fresh=ws.filter(w=>!S.chips.includes(w));S.chips.push(...fresh);W.fresh=fresh;return fresh}
 function bump(f,who,t){if(f)S.fors=Math.max(0,Math.min(100,S.fors+f*.42));if(who&&t&&S.til[who]!=null)S.til[who]=Math.max(0,Math.min(30,S.til[who]+t));hud()}
 function hud(){$("#fo").style.width=Math.round(S.fors)+"%";const who=W.talk&&S.til[W.talk]!=null?W.talk:"m";$("#tl").firstChild.textContent="TILLID · "+NAMES[who].toUpperCase();$("#ti").style.width=(100*S.til[who]/30)+"%"}
@@ -213,7 +219,7 @@ function frame(ts){
  const wantTroll=(S.beat>=TROLL_BEAT&&S.beat<TROLL_BEAT+2&&W.px>4150)?1:0;W.trollUp+=(wantTroll-W.trollUp)*Math.min(1,dt*1.5);
  audioTick(t);
  // ----- camera
- const tb=open&&!app.classList.contains("full")?.33:.72;W.base+=(tb-W.base)*Math.min(1,dt*6);
+ const tb=!app.hidden&&!app.classList.contains("full")?.33:.72;W.base+=(tb-W.base)*Math.min(1,dt*6);
  const focus=W.talk==="t"?(W.px+4515)/2:W.px+W.dir*40;W.cam+=(focus-VW/2-W.cam)*Math.min(1,dt*4);
  const cam=W.cam+(W.shake&&t-W.shake<.4?Math.sin(t*90)*5*(1-(t-W.shake)/.4):0),GY=VH*W.base,gy=x=>GY+ground(x),sx=x=>x-cam,P=palette(W.px);
  // ----- sky, stars, sun or moon
@@ -554,10 +560,10 @@ const NOTES=[
  {beat:18,t:"vil gerne, and cause against purpose",h:`<p><b>Jeg vil gerne købe et brød.</b> · I would like to buy a loaf.</p><p class="dim">vil gerne + basic verb is the polite way to want something.</p><p><b>Hvorfor vil du have en seng?</b> – <b>For at sove.</b> (purpose: an action)</p><p><b>Hvorfor er du træt?</b> – <b>På grund af trolden.</b> (cause: a thing)</p><p class="dim">Both questions start with hvorfor. Choose by what your answer is: a verb takes for at, a noun takes på grund af.</p>`},
  {beat:20,t:"fordi + a whole clause",h:`<p><b>Jeg kom hertil, fordi jeg ville finde mad.</b></p><p><b>Jeg kom hertil, fordi jeg ikke kunne sove.</b></p><p><b>Jeg kom hertil, fordi rumvæsnerne ikke ville have mig.</b></p><p class="dim">fordi = because. What follows is a full clause with its own subject and verb.</p><p class="dim">Word order changes inside it. Main clause: <b>jeg kunne ikke sove</b> (verb, then ikke). After fordi: <b>jeg ikke kunne sove</b> (ikke, then verb). The same goes for gerne and altid.</p>`},
  {beat:22,t:"Three ways to give a reason",h:`<p><b>på grund af</b> + thing · <b>for at</b> + action · <b>fordi</b> + clause</p><p>Jeg er her <b>på grund af</b> et rumskib.</p><p>Jeg er her <b>for at</b> lære dansk.</p><p>Jeg er her, <b>fordi</b> rumvæsnerne ikke ville have mig.</p>`}];
-function notes(){ui(`<p class="lab">Chapter 1</p><h1>Notesbog</h1><p class="dim">What you have worked out so far. New pages appear as the story goes on.</p>${NOTES.map(n=>S.top>=n.beat?`<h2>${n.t}</h2>${n.h}`:`<p class="dim">· a page you haven't reached yet</p>`).join("")}<button class="go" id="bk">Back</button>`,true);$("#bk").onclick=menu;app.querySelectorAll("b").forEach(b=>{b.dataset.say=b.textContent;b.style.color="var(--gold)";b.style.fontWeight="400"})}
-function words(){ui(`<p class="lab">Chapter 1</p><h1>Ordbog</h1><p class="dim">Tap ▶ to hear a word.</p>${S.chips.map(w=>`<p>${esc(w==="NAVN"?S.name:w)} <span class="dim">${w==="NAVN"?"your name":esc(GLOSS[w]||(w==="på grund af"?"because of":w==="for at"?"in order to":""))} · ${S.got.includes(w)?"caught":"given"}${S.used[w]?" · used "+S.used[w]+"×":" · not used yet"}</span> <button class="mini" data-say="${esc(w==="NAVN"?S.name:w)}">▶</button></p>`).join("")}<button class="go" id="bk">Back</button>`,true);$("#bk").onclick=menu}
+function notes(){uiM(`<p class="lab">Chapter 1</p><h1>Notesbog</h1><p class="dim">What you have worked out so far. New pages appear as the story goes on.</p>${NOTES.map(n=>S.top>=n.beat?`<h2>${n.t}</h2>${n.h}`:`<p class="dim">· a page you haven't reached yet</p>`).join("")}<button class="go" id="bk">Back</button>`,true);$("#bk").onclick=menu;mp.querySelectorAll("b").forEach(b=>{b.dataset.say=b.textContent;b.style.color="var(--gold)";b.style.fontWeight="400"})}
+function words(){uiM(`<p class="lab">Chapter 1</p><h1>Ordbog</h1><p class="dim">Tap ▶ to hear a word.</p>${S.chips.map(w=>`<p>${esc(w==="NAVN"?S.name:w)} <span class="dim">${w==="NAVN"?"your name":esc(GLOSS[w]||(w==="på grund af"?"because of":w==="for at"?"in order to":""))} · ${S.got.includes(w)?"caught":"given"}${S.used[w]?" · used "+S.used[w]+"×":" · not used yet"}</span> <button class="mini" data-say="${esc(w==="NAVN"?S.name:w)}">▶</button></p>`).join("")}<button class="go" id="bk">Back</button>`,true);$("#bk").onclick=menu}
 function voice(){const vs=daVoices(),test="Hvorfor kom du hertil, lille fremmed?";
- ui(`<p class="lab">Settings</p><h1>Voice</h1><p class="dim">The voices come from your phone's own Danish speech engine; the game can only change which one it uses, and how deep and how fast it speaks.</p>
+ uiM(`<p class="lab">Settings</p><h1>Voice</h1><p class="dim">The voices come from your phone's own Danish speech engine; the game can only change which one it uses, and how deep and how fast it speaks.</p>
  <p class="lab">Depth · lower is darker</p><input type="range" id="vp" min="0.1" max="1.4" step="0.05" value="${S.vp}">
  <p class="lab">Speed</p><input type="range" id="vr" min="0.6" max="1.3" step="0.02" value="${S.vr}">
  <div class="row"><button id="t1">▶ Test</button><button id="t2">▶ The troll</button><button id="t3">▶ Mumle</button></div>
@@ -565,9 +571,9 @@ function voice(){const vs=daVoices(),test="Hvorfor kom du hertil, lille fremmed?
  <button class="go" id="bk">Back</button>`,true);
  $("#vp").oninput=e=>{S.vp=+e.target.value;save()};$("#vr").oninput=e=>{S.vr=+e.target.value;save()};
  $("#t1").onclick=()=>speak(test);$("#t2").onclick=()=>speak(test,"t");$("#t3").onclick=()=>speak("Kom, vi går til Tågeby.","m");
- app.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{S.vn=vs[+b.dataset.v].name;save();voice();speak(test)});$("#bk").onclick=menu}
+ mp.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{S.vn=vs[+b.dataset.v].name;save();voice();speak(test)});$("#bk").onclick=menu}
 function backup(){let code="";try{code=btoa(unescape(encodeURIComponent(JSON.stringify(S))))}catch(e){}
- ui(`<p class="lab">Settings</p><h1>Your progress</h1><p class="dim">The game saves by itself after every step, on this phone, in this browser. You can close it at any time and carry on later.</p>
+ uiM(`<p class="lab">Settings</p><h1>Your progress</h1><p class="dim">The game saves by itself after every step, on this phone, in this browser. You can close it at any time and carry on later.</p>
  <p class="lab">Backup code</p><p class="dim">Copy this code somewhere safe to keep a copy of your progress, or to move it to another phone.</p><textarea id="bc" rows="4" readonly style="width:100%;font:.7rem monospace;background:#120e26;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px;user-select:text;-webkit-user-select:text">${code}</textarea><button id="cp">Copy the code</button>
  <p class="lab">Restore</p><textarea id="rc" rows="3" placeholder="Paste a backup code here" style="width:100%;font:.7rem monospace;background:#120e26;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px;user-select:text;-webkit-user-select:text"></textarea><button id="rl">Load this code</button>
  <p class="lab">Start again</p><button id="rs" class="ghost">Restart the story from the beginning</button>
@@ -576,19 +582,19 @@ function backup(){let code="";try{code=btoa(unescape(encodeURIComponent(JSON.str
  $("#rl").onclick=()=>{try{const o=JSON.parse(decodeURIComponent(escape(atob($("#rc").value.trim()))));if(!o||o.v!==1)throw 0;localStorage.setItem("dumpet-f1",JSON.stringify(o));location.reload()}catch(e){toast("That code doesn't work. Check that you pasted all of it.",3500)}};
  let arm=false;$("#rs").onclick=e=>{if(!arm){arm=true;e.target.textContent="Tap again: this erases your words and progress";return}const keep={v:1,vp:S.vp,vr:S.vr,vn:S.vn,sound:S.sound,tilt:S.tilt};try{localStorage.setItem("dumpet-f1",JSON.stringify(keep))}catch(x){}location.reload()};
  $("#bk").onclick=menu}
-function travel(i){const p=PLACES[i];S.beat=p.beat;W.px=p.px;W.mx=null;W.cam=W.px-VW/2;if(p.beat<=6)S.lit=0;if(p.beat<=9)S.stones=0;if(p.beat<=12)S.fogClear=0;if(p.beat<=17)S.dawn=0;if(p.beat<=20)S.gate=0;W.mumAway=0;W.bell=null;save();closeSheet();hud();toast(p.n,1800)}
+function travel(i){const p=PLACES[i];S.beat=p.beat;W.px=p.px;W.mx=null;W.cam=W.px-VW/2;if(p.beat<=6)S.lit=0;if(p.beat<=9)S.stones=0;if(p.beat<=12)S.fogClear=0;if(p.beat<=17)S.dawn=0;if(p.beat<=20)S.gate=0;W.mumAway=0;W.bell=null;save();closeM();hud();toast(p.n,1800)}
 function menu(){
- ui(`<p class="lab">Dumpet på Måne Syv</p><h1>Menu</h1><p class="dim">Forstand ${Math.round(S.fors)}/100 · Tillid: ${Object.keys(S.til).filter(k=>S.til[k]).map(k=>NAMES[k]+" "+S.til[k]).join(" · ")||"none yet"}</p>
+ uiM(`<p class="lab">Dumpet på Måne Syv</p><h1>Menu</h1><p class="dim">Forstand ${Math.round(S.fors)}/100 · Tillid: ${Object.keys(S.til).filter(k=>S.til[k]).map(k=>NAMES[k]+" "+S.til[k]).join(" · ")||"none yet"}</p>
  <button class="go" id="bk">Continue</button>
- <p class="lab">Chapter 1 · places</p><div class="opts">${PLACES.map((p,i)=>`<button data-p="${i}" ${S.top<p.beat?"disabled":""}>${p.n}<small>${S.top<p.beat?"Not reached yet":p.en+" · play from here"}</small></button>`).join("")}</div>
+ <p class="lab">Chapter 1 · places</p><div class="opts">${PLACES.map((p,i)=>`<button data-p="${i}" ${S.top<p.beat||W.busy?"disabled":""}>${p.n}<small>${S.top<p.beat?"Not reached yet":W.busy?p.en+" · finish this conversation first":p.en+" · play from here"}</small></button>`).join("")}</div>
  <p class="lab">Chapter 2</p><div class="opts"><button disabled>Not written yet<small>Opens with your next chapter</small></button></div>
  <p class="lab">Study</p><div class="opts"><button id="nb">Notesbog<small>The grammar you have worked out, with examples</small></button><button id="ob">Ordbog<small>Your ${S.chips.length} words</small></button></div>
  <p class="lab">Settings</p><div class="opts"><button id="vo">Voice<small>Deeper, slower, or a different voice</small></button><button id="snd">Sound and music: ${S.sound?"on":"off"}</button><button id="tlt">Tilt the phone to walk: ${S.tilt?"on":"off"}</button><button id="sv">Your progress<small>Saved automatically · backup · restart</small></button></div>`,true);
- $("#bk").onclick=closeSheet;$("#nb").onclick=notes;$("#ob").onclick=words;$("#vo").onclick=voice;$("#sv").onclick=backup;
+ $("#bk").onclick=closeM;$("#nb").onclick=notes;$("#ob").onclick=words;$("#vo").onclick=voice;$("#sv").onclick=backup;
  $("#snd").onclick=()=>{S.sound=S.sound?0:1;save();audioStart();menu()};$("#tlt").onclick=()=>{S.tilt=S.tilt?0:1;save();menu()};
- app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>travel(+b.dataset.p));
+ mp.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>travel(+b.dataset.p));
 }
-$("#menu").onclick=()=>{if(!W.busy&&!sheetOpen()&&S.landed)menu()};
+$("#menu").onclick=()=>{if(!mp.hidden)return closeM();if(S.landed)menu()};
 
 // ---------- BOOT ----------
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
