@@ -170,6 +170,7 @@ const SHROOM=Array.from({length:26},()=>({x:1850+sr()*2000,s:.7+sr()*.9,c:sr()>.
 const FLY=Array.from({length:90},()=>({x:sr()*11700,y:40+sr()*220,p:sr()*6}));
 const STARS=Array.from({length:110},()=>({x:sr(),y:sr()*.5,a:.2+sr()*.7}));
 const LAMPS=[2080,2400,2720];
+const INNX=11480,BOARDX=11590;
 const POND=[9350,9870],STALLS=[[7420,"b"],[7920,"y"],[8420,"i"]];
 const inPond=x=>x>POND[0]&&x<POND[1];
 const HOUSES=Array.from({length:9},(_,i)=>({x:10960+i*95+sr()*20,w:70+sr()*30,h:90+sr()*80}));
@@ -219,7 +220,7 @@ function frame(ts){
   for(const f of FAIRY){if(S.got.includes(f[2]))continue;if(Math.abs(W.px-f[0])<28&&Math.abs((W.py+45)-f[1])<42){S.got.push(f[2]);grant(f[2]);W.pulse[f[2]]=t;for(let i=0;i<14;i++)W.spark.push({x:f[0],y:f[1],vx:(Math.random()-.5)*120,vy:60+Math.random()*120,t});sfx.catch();bump(2);save();toast("✦ "+f[2]+" = "+GLOSS[f[2]],3000);const wd=f[2];setTimeout(()=>speak(wd),350)}}
   if(b&&!W.busy&&!W.bell&&W.px>=b.x-4){const miss=(b.need||[]).filter(w=>!S.got.includes(w));
    if(miss.length){if(t-W.lastHint>6){W.lastHint=t;bark("Fang ordene først!");toast(`Catch the word-light${miss.length>1?"s":""} first: ${miss.length} still flying behind you`,3200)}}
-   else{W.busy=true;W.L=W.R=false;b.run().then(()=>{S.beat++;S.top=Math.max(S.top,S.beat);W.busy=false;closeSheet();save();hud();if(S.ch1&&!S.eve&&!S.c2&&S.beat>=BEATS.length)setTimeout(eveBegin,600)})}}
+   else{W.busy=true;W.L=W.R=false;b.run().then(()=>{S.beat++;S.top=Math.max(S.top,S.beat);W.busy=false;closeSheet();save();hud()})}}
  }else W.walk=0;
  c2buttons(open,t);
  if(W.drop){W.dropT+=dt;if(W.dropT>2.6){W.drop=0;W.px=540;S.landed=1;save()}}
@@ -284,7 +285,13 @@ function frame(ts){
    const openK=W.gateK=(W.gateK||0)+((S.gate?1:0)-(W.gateK||0))*Math.min(1,dt*.8);ctx.fillStyle=rgb(P.mist,.5+.4*openK);ctx.fillRect(x,GY-120,110,128);ctx.fillStyle="#0b0a1c";ctx.beginPath();ctx.moveTo(x,GY-120);ctx.lineTo(x,GY-150);ctx.lineTo(x+110,GY-150);ctx.lineTo(x+110,GY-120);ctx.arc(x+55,GY-120,55,0,Math.PI,true);ctx.fill();
    if(openK<.98){ctx.fillStyle="#05040c";ctx.fillRect(x,GY-176+176*0,110*(1-openK)/1,0);ctx.strokeStyle="#05040c";ctx.lineWidth=4;for(let i=0;i<6;i++){const bx=x+10+i*18;ctx.beginPath();ctx.moveTo(bx,GY-170-openK*170);ctx.lineTo(bx,GY+6-openK*170);ctx.stroke()}}}}
  {const x=sx(10560);if(x>-80&&x<VW+80&&!S.gate){const y=GY,b2=Math.sin(t*1.6)*1.5;ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-22,y);ctx.lineTo(x-24,y-70-b2);ctx.quadraticCurveTo(x,y-90-b2,x+24,y-70-b2);ctx.lineTo(x+22,y);ctx.fill();ctx.beginPath();ctx.arc(x,y-92-b2,15,0,7);ctx.fill();ctx.fillRect(x-17,y-104-b2,34,8);ctx.fillRect(x-3,y-122-b2,6,18);ctx.strokeStyle=BLK;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+34,y);ctx.lineTo(x+34,y-140);ctx.stroke();ctx.beginPath();ctx.moveTo(x+34,y-158);ctx.lineTo(x+41,y-138);ctx.lineTo(x+27,y-138);ctx.fill();eyes(x-2,y-92-b2,6,"#ff8a8a",2.2)}}
- for(const [px2,sc,ec] of [[11050,.55,"#9ff3e0"],[11110,1,"#ffe9b0"],[11300,.95,"#ffe9b0"],[11420,1.05,"#ffe9b0"]]){const x=sx(px2);if(x<-40||x>VW+40)continue;const y=GY,b2=Math.sin(t*1.4+px2)*1.2;ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-12*sc,y);ctx.quadraticCurveTo(x-14*sc,y-56*sc-b2,x,y-62*sc-b2);ctx.quadraticCurveTo(x+14*sc,y-56*sc-b2,x+12*sc,y);ctx.fill();ctx.beginPath();ctx.arc(x,y-72*sc-b2,10*sc,0,7);ctx.fill();eyes(x-2*sc,y-72*sc-b2,3.5*sc,ec,1.5)}
+ {const x=sx(INNX);if(x>-160&&x<VW+160){const y=GY,want=S.ch1&&S.eve!==2&&!S.c2;ctx.fillStyle=BLK;ctx.fillRect(x-70,y-150,140,156);ctx.beginPath();ctx.moveTo(x-84,y-150);ctx.lineTo(x,y-214);ctx.lineTo(x+84,y-150);ctx.fill();ctx.fillRect(x+30,y-236,16,40);
+   ctx.fillStyle="#ffcf7a";ctx.fillRect(x-54,y-116,26,30);ctx.fillRect(x+28,y-116,26,30);ctx.fillRect(x-14,y-62,28,62);glow(x,y-34,70,"rgba(255,207,122,.9)",want?.55+.2*Math.sin(t*3):.3);
+   ctx.fillStyle=BLK;ctx.fillRect(x-100,y-176,34,4);const sw=Math.sin(t*1.3)*.14;ctx.save();ctx.translate(x-96,y-172);ctx.rotate(sw);ctx.fillRect(-18,4,36,30);ctx.fillStyle="#b6ffb0";ctx.beginPath();ctx.arc(0,24,8,Math.PI,0);ctx.fill();ctx.fillRect(-5,15,2,2);ctx.fillRect(3,15,2,2);ctx.restore();
+   if(want)glow(x-96,y-150,34,"rgba(182,255,176,.9)",.35+.25*Math.sin(t*3));
+   for(let k=0;k<4;k++){const a=(t*.3+k*.25)%1;ctx.globalAlpha=(1-a)*.4;ctx.fillStyle=rgb(P.mist);ctx.beginPath();ctx.arc(x+38+Math.sin(k*2+t)*8,y-240-a*70,6+a*16,0,7);ctx.fill()}ctx.globalAlpha=1}}
+ if(S.eve===2){const x=sx(BOARDX);if(x>-60&&x<VW+60){const y=GY;ctx.fillStyle=BLK;ctx.fillRect(x-3,y-80,6,82);ctx.fillRect(x-30,y-112,60,40);ctx.fillStyle="#f1e6c8";ctx.fillRect(x-24,y-106,48,28);ctx.fillStyle=BLK;for(let k=0;k<3;k++)ctx.fillRect(x-19,y-100+k*8,38-k*8,2.5);if(!S.c2)glow(x,y-92,40,"rgba(255,215,106,.9)",.3+.2*Math.sin(t*3))}}
+ for(const [px2,sc,ec] of [[11050,.55,"#9ff3e0"],[11110,1,"#ffe9b0"],[11300,.95,"#ffe9b0"],[11380,1.05,"#ffe9b0"]]){const x=sx(px2);if(x<-40||x>VW+40)continue;const y=GY,b2=Math.sin(t*1.4+px2)*1.2;ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(x-12*sc,y);ctx.quadraticCurveTo(x-14*sc,y-56*sc-b2,x,y-62*sc-b2);ctx.quadraticCurveTo(x+14*sc,y-56*sc-b2,x+12*sc,y);ctx.fill();ctx.beginPath();ctx.arc(x,y-72*sc-b2,10*sc,0,7);ctx.fill();eyes(x-2*sc,y-72*sc-b2,3.5*sc,ec,1.5)}
  if(W.px>19000)drawDistrict(sx,GY,t,P);
  // ground
  ctx.fillStyle=BLK;ctx.beginPath();ctx.moveTo(0,VH);for(let x=0;x<=VW+6;x+=6)ctx.lineTo(x,gy(x+cam));ctx.lineTo(VW,VH);ctx.fill();
@@ -564,7 +571,7 @@ const BEATS=[
   await tell([["n","Behind the bakery, where he thinks nobody can see, the small mossy figure takes something out of his hat. It has lights on it."],["a","“Subject 4471 is inside the walls. Forstand: rising. Faster than the others.”"]]);
   await tell([["a",`“…Yes, Captain. ${S.pro==="han"?"He":"She"} suspects nothing.”`],["n","In perfect English."]]);
   S.ch1=1;
-  await new Promise(res=>{ui(`<p class="lab">End of chapter one</p><h1>Dumpet på Måne Syv</h1><p>Forstand ${Math.round(S.fors)} · words ${S.chips.length} · word-lights ${S.got.length}/${FAIRY.length}</p><p class="dim">You can now say why you came, three ways: på grund af + a thing, for at + an action, and fordi + a whole clause with its own word order.</p><p class="dim">The day is not over. You are wet, hungry and inside the walls: look for somewhere to eat. Every place so far is open from the menu (☰).</p><button class="go" id="nx">Stay in Tågeby</button>`,true);$("#nx").onclick=res});
+  await new Promise(res=>{ui(`<p class="lab">End of chapter one</p><h1>Dumpet på Måne Syv</h1><p>Forstand ${Math.round(S.fors)} · words ${S.chips.length} · word-lights ${S.got.length}/${FAIRY.length}</p><p class="dim">You can now say why you came, three ways: på grund af + a thing, for at + an action, and fordi + a whole clause with its own word order.</p><p class="dim">The day is not over. You are wet and hungry, and further up the street something is cooking.</p><button class="go" id="nx">Stay in Tågeby</button>`,true);$("#nx").onclick=res});
  }}
 ];
 // places you can return to from the menu, unlocked as you reach them
@@ -630,23 +637,21 @@ const doneN=()=>["s","u","e","g"].filter(k=>C2().done[k]).length;
 function c2pal(){const n=S.c2?(S.c2.st>=4?3:S.c2.st>=2?2:doneN()>=2?1:0):2,p=[PAL[6],PAL[5],PAL[0],PAL[2]][n],o={};for(const k of ["sky","far","mist","water","orb","stars"])o[k]=p[k];return o}
 function goDist(id){const d=DIST.find(x=>x.id===id);W.px=d.x+90;W.dir=1;W.mx=null;W.cam=W.px-VW/2;closeM();closeSheet();save();toast(d.n,1600)}
 function c2begin(){C2();closeM();closeSheet();W.busy=true;W.px=DIST[0].x+90;W.cam=W.px-VW/2;
- tell([["n","Chapter two. Tågeby, the next morning."],["n","You slept in a doorway. Mumle has 'things to do'. You have a town, a staff, sixty words, and a strong suspicion about a small mossy person."],["y","The troll said to say nothing to the moss. Fine. I won't say anything. I'll ask."]]).then(()=>tell([["n","A notice on the wall, in letters the size of your hand: ALLE FREMMEDE SKAL TIL RÅDHUSET. SKRANKE 7."],["y","All strangers must go to the town hall. Counter seven. Of course there is a counter."]])).then(()=>{W.busy=false;closeSheet();save()})}
+ tell([["n","Tågeby, the next morning."],["n","You slept in a doorway. Mumle has 'things to do'. You have a town, a staff, sixty words, and a strong suspicion about a small mossy person."],["y","The troll said to say nothing to the moss. Fine. I won't say anything. I'll ask."]]).then(()=>tell([["n","A notice on the wall, in letters the size of your hand: ALLE FREMMEDE SKAL TIL RÅDHUSET. SKRANKE 7."],["y","All strangers must go to the town hall. Counter seven. Of course there is a counter."]])).then(()=>{W.busy=false;closeSheet();save()})}
 // ----- the ☰-free buttons of the town: talk, and the map
 const actB=$("#act"),mapB=$("#mapb");
 function c2buttons(open,t){
  const inC2=W.px>19000,idle=!open&&!W.busy&&!W.drop;
  mapB.hidden=!(inC2&&idle&&S.c2);
  let label="",fn=null;
+ const run=(need,f,room)=>()=>{const miss=need.filter(w=>!S.got.includes(w));if(miss.length)return toast(`Catch the word-light${miss.length>1?"s":""} here first: ${miss.length} still flying`,3200);W.busy=true;W.L=W.R=false;W.pr={};W.room=room;f().catch(e=>console.error(e)).then(()=>{W.busy=false;W.room=null;closeSheet();save();hud()})};
  if(!inC2)W.mood="base";else if(idle)W.mood=DMOOD[curDist().id];
- if(idle&&inC2){const d=curDist(),run=(need,f,room)=>()=>{const miss=need.filter(w=>!S.got.includes(w));if(miss.length)return toast(`Catch the word-light${miss.length>1?"s":""} here first: ${miss.length} still flying`,3200);W.busy=true;W.L=W.R=false;W.pr={};W.room=room;f().catch(e=>console.error(e)).then(()=>{W.busy=false;W.room=null;closeSheet();save();hud();const a=W.after;W.after=null;if(a)setTimeout(a,500)})};
-  if(S.eve===1){if(d.id==="kro"&&Math.abs(W.px-(d.x+560))<90){label="Gå ind i kroen";fn=run([],eveTalk,"inn")}}
-  else if(!S.c2){label="Begin chapter two";fn=c2begin}
-  else if(Math.abs(W.px-(d.x+560))<80){label=d.who==="x"?"Gå til skranke 7":d.id==="bag"&&S.c2&&S.c2.st===3?"Lyt bag bageriet":"Tal med "+NAMES[d.who];fn=run(d.need,TALK[d.id],d.id==="bag"&&S.c2&&S.c2.st===3?"bagN":d.id)}
-  else if(d.id==="torv"&&S.c2&&S.c2.st>=1&&Math.abs(W.px-(d.x+340))<70){label="Ekkobrønden";fn=run([],SPOT.echo,"well")}}
- else if(idle&&S.ch1&&!S.eve&&!S.c2&&!inC2){label="Find somewhere to eat";fn=eveBegin}
- else if(idle&&S.ch1&&!S.c2&&S.eve===1&&!inC2){label="Go to the inn";fn=eveBegin}
- else if(idle&&S.ch1&&!S.c2&&S.eve===2&&!inC2){label="Begin chapter two";fn=c2begin}
- else if(idle&&S.c2&&S.c2.st<5&&!inC2&&S.beat>=BEATS.length){label="Back to Tågeby";fn=()=>{goDist("raad");townMap()}}
+ if(idle&&inC2&&S.c2){const d=curDist();
+  if(Math.abs(W.px-(d.x+560))<80){label=d.who==="x"?"Gå til skranke 7":d.id==="bag"&&S.c2.st===3?"Lyt bag bageriet":"Tal med "+NAMES[d.who];fn=run(d.need,TALK[d.id],d.id==="bag"&&S.c2.st===3?"bagN":d.id)}
+  else if(d.id==="torv"&&S.c2.st>=1&&Math.abs(W.px-(d.x+340))<70){label="Ekkobrønden";fn=run([],SPOT.echo,"well")}}
+ else if(idle&&S.ch1&&!inC2){
+  if(Math.abs(W.px-INNX)<70&&!S.c2){label="Gå ind i kroen";fn=run([],eveTalk,"inn")}
+  else if(S.eve===2&&Math.abs(W.px-BOARDX)<50){label=S.c2?"Til rådhuset":"Læs opslaget";fn=S.c2?()=>goDist("raad"):c2begin}}
  actB.hidden=!label;if(label){actB.textContent=label;actB.onclick=fn}
 }
 mapB.onclick=()=>townMap();
@@ -745,7 +750,7 @@ function listenQ(o){return new Promise(res=>{let i=0;const show=()=>{const it=o.
 // say it aloud: the microphone judges, or you do
 function speakDrill(o){return new Promise(res=>{let i=0;const show=()=>{const it=o.items[i];let tries=0;
   ui(`<p class="lab">${o.title} · ${i+1}/${o.items.length}</p><p class="nar">${esc(o.intro)}</p><p class="dk" data-say="${esc(it[0])}">${fog(it[0])}</p><p class="you">${esc(it[1])}</p><div class="row"><button id="pl">▶ Hør</button><button class="go" id="mic">🎤 Sig det</button></div><div id="vo"></div>`,true);
-  const next=()=>{sfx.bell(i);if(!C2().games.echo)bump(4);i++;i<o.items.length?show():res()};
+  const next=()=>{sfx.bell(i);if(!(S.c2&&S.c2.games.echo))bump(4);i++;i<o.items.length?show():res()};
   const self=msg=>{if(!$("#vo"))return;$("#vo").innerHTML=`<p class="dim">${msg}</p><div class="row"><button id="y">It sounded right</button><button id="n">Next one</button></div>`;$("#y").onclick=next;$("#n").onclick=()=>{i++;i<o.items.length?show():res()}};
   $("#pl").onclick=()=>speak(it[0],o.who);speak(it[0],o.who);
   $("#mic").onclick=async()=>{const m=$("#mic");m.disabled=true;m.textContent="Listening …";const alts=await hear();m.disabled=false;m.textContent="🎤 Sig det";if(alts===null)return self("The microphone isn't available here. Say it aloud three times, then judge yourself.");if(!$("#vo"))return;tries++;if(heardScore(alts,it[0])>=.7)return next();if(tries>=2)return self(`Heard: “${esc(alts[0]||"nothing")}”. Your call.`);$("#vo").innerHTML=`<p class="dim">Heard: “${esc(alts[0]||"nothing")}”. The well stays quiet. Again.</p>`}};show()})}
@@ -998,10 +1003,10 @@ Object.assign(VOICE,{o:[.95,.85],d:[1,.75],v:[.9,1.05],j:[1.1,1.2]});
 Object.assign(IRONY,{o:["Suppen bliver ikke varmere. Sig:","She ladles the soup back into the pot, pointedly."],d:["Jeg kan spille det for dig, hvis det hjælper. Sig:","He plays three slow notes. They do not help."],v:["Min ven, jeg er gammel. Sig:","She checks an hourglass that she carries for this purpose."],j:["Selv jeg kan det, og jeg er lærling. Sig:","He looks delighted not to be the worst in the room."]});
 S.til=Object.assign({o:0,d:0,v:0,j:0},S.til);
 Object.assign(GLOSS,{lavede:"did",før:"before",hele:"the whole",byen:"the town",hørt:"heard",kroen:"the inn",arbejdede:"worked",vaskede:"vaskede op = washed up",op:"vaskede op = washed up",kokken:"the cook",grøn:"green",spille:"play",musik:"music",fisker:"fisherman",flyttede:"moved",blev:"stayed",suppen:"the soup",suppe:"soup",mor:"mother",hos:"with / at (someone's home)",boede:"lived",studerede:"studied",studere:"study",magi:"magic",matematiker:"mathematician",rigtigt:"really",dertil:"(to) there",bedre:"better",sengene:"the beds",kontrakt:"a contract",skåler:"toast",sætning:"sentence",sød:"sweet",søster:"sister",kvækker:"croak",dem:"them",ham:"him",hende:"her",lære:"learn",prøve:"try",ingen:"nobody",spørger:"asks",aften:"evening",fremmedaften:"strangers' evening",først:"first",varm:"warm",varmere:"warmer",spiser:"eat",alle:"everyone",mand:"man",væk:"away",lille:"little",en:"one / a",kok:"cook",gammel:"old",lærling:"apprentice",hjælper:"helps",fik:"got",job:"job",kæreste:"girlfriend / boyfriend",arbejde:"work",født:"born",der:"there",grund:"reason",velbekomme:"enjoy your meal",sover:"sleep",døren:"the door",udenfor:"outside",godnat:"good night",jorden:"Earth",nu:"now",glad:"happy",min:"my",hun:"she",bor:"live(s)",var:"was"});
-function eveBegin(){closeM();closeSheet();S.eve=1;W.px=DIST[3].x+90;W.dir=1;W.mx=null;W.cam=W.px-VW/2;save();W.busy=true;
- tell([["n","Evening comes down over Tågeby like a lid. Mumle has not come back from behind the bakery. You are wet, you have sixty words, and you have not eaten since another planet."],["n","There is one lit sign in the street: a frog, painted green, on a board that creaks. Under it, in letters you can now actually read: KROEN."]]).then(()=>{W.busy=false;closeSheet()})}
+function eveBegin(){closeM();closeSheet();if(S.beat<BEATS.length){S.beat=BEATS.length}W.mumAway=1;W.px=INNX-150;W.dir=1;W.mx=null;W.cam=W.px-VW/2;save();toast("Kroen",1600)}
 async function eveTalk(){
- mood("warm");
+ S.eve=S.eve===2?2:1;mood("warm");
+ await tell([["n","Evening has come down over Tågeby like a lid. Mumle has not come back from behind the bakery. You are wet, you have sixty words, and you have not eaten since another planet."],["n","You push the door under the painted frog."]]);
  await tell([["n","Inside: a long table, a fire, and a pot the size of a bath. Three people look up. A fourth, in the corner, surrounded by plans, does not."]]);
  await say("o","Godaften. Det er fremmedaften. Fremmede spiser først, når de har svaret.",{note:"The innkeeper is broad, calm, and holding a ladle like a sceptre.",think:"Strangers' evening. Strangers eat when they have answered. I know this one. I have a sentence for this. I have been saying it all day."});
  mood("comic");
@@ -1045,8 +1050,9 @@ async function eveTalk(){
  mood("sad");
  await say("o","Velbekomme. Sengene er til dem med kontrakt. Du sover ved døren. Udenfor.",{note:"She says it kindly. It is still outside.",think:"The beds are for people with a contract. I sleep by the door. Outside. I notice she said 'contract' as if everyone here had one."});
  await tell([["n","In the corner, the man with the plans has not looked up once all evening. He is sharpening a pencil that is already very short."],["n","You eat the soup. It is the best thing that has ever happened to you. Then you sleep in a doorway, on a moon, under a painted frog."]]);
- S.eve=2;bump(8,"o",4);W.after=c2begin;
+ S.eve=2;bump(8,"o",4);
  await new Promise(res=>{ui(`<p class="lab">Chapter one · the first evening</p><h1>Kroen</h1><p>Forstand ${Math.round(S.fors)} · words ${S.chips.length}</p><p class="dim">You can now say what you did before, put the verb straight after an opening clause, use ham, hende and dem, and give your own real reason for moving.</p><button class="go" id="nx">Sleep</button>`,true);$("#nx").onclick=res});
+ await tell([["n","Morning. The fog has thinned to ordinary fog. Somebody has put up a notice on a board beside the inn while you slept."]]);
 }
 NOTES.push({when:()=>S.eve===2,t:"Chapter 1 · Before, and the verb in second place",h:`<p><b>Før jeg kom hertil, arbejdede jeg som matematiker.</b></p><p><b>Før jeg flyttede hertil, boede jeg hos min mor.</b></p><p class="dim">A clause in first place pushes the verb ahead of the subject: arbejdede jeg, boede jeg. The same after any opening: I går landede jeg i en sø.</p><p class="dim">Past forms: flyttede (moved), arbejdede (worked), boede (lived), studerede (studied), fik (got).</p>`},
  {when:()=>S.eve===2,t:"Chapter 1 · ham, hende, dem, and how it sounds",h:`<p><b>på grund af ham</b> · <b>på grund af hende</b> · <b>på grund af dem</b></p><p class="dim">jeg/mig · du/dig · han/ham · hun/hende · de/dem</p><p><b>Jeg kom hertil for at lære dansk.</b></p><p class="dim">In speech: for at sounds like 'fo'; på grund af sounds like 'på-grån-a'.</p><p><b>Jeg flyttede dertil for at arbejde.</b> · <b>… på grund af min kæreste.</b> · <b>… fordi jeg fik et job.</b></p>`});
@@ -1155,7 +1161,6 @@ if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceW
 window.G={get S(){return S},W,sheetOpen,BEATS,FAIRY,travel,ring,goDist,TALK,DIST,c2begin,eveBegin};
 W.cam=W.px-VW/2;hud();requestAnimationFrame(frame);
 if(!S.landed)intro();
-else if(S.ch1&&!S.c2){const eve=S.eve!==2;W.busy=true;ui(`<p class="lab">${eve?"Chapter one continues":"Chapter two"}</p><h1>${eve?"Den første aften":"Tågeby"}</h1><p class="dim">${eve?"You are inside the walls, wet and hungry, and the day is not over. Your first evening in town is next.":"You have eaten and slept, after a fashion. The town is waiting."}</p><button class="go" id="nx">Continue the story</button><button class="ghost" id="lt">Not now</button>`,true);$("#nx").onclick=()=>{W.busy=false;eve?eveBegin():c2begin()};$("#lt").onclick=()=>{W.busy=false;closeSheet()}}
 </script>
 </body>
 </html>
