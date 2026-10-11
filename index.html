@@ -106,7 +106,7 @@ const fog=s=>esc(s).replace(FOGRE,x=>{const k=gkey(x.toLowerCase().replace(/\s+/
 let tipT;const toast=(t,ms)=>{tip.textContent=t;tip.hidden=false;clearTimeout(tipT);tipT=setTimeout(()=>tip.hidden=true,ms||2600)};
 document.addEventListener("click",e=>{audioStart();const nn=e.target.closest("[data-n]");if(nn)return toast(NAMES[nn.dataset.n]+" = "+NEN[nn.dataset.n],3200);const w=e.target.closest("[data-w]");if(w){const k=w.dataset.w;toast((k.includes(" ")?k:w.textContent)+" = "+GLOSS[k],3400);if(w.classList.contains("fg")){w.className="w";if(!S.peek.includes(k))S.peek.push(k)}return}const s=e.target.closest("[data-say]");if(s)speak(s.dataset.say,s.dataset.who)});
 const daVoices=()=>{try{return speechSynthesis.getVoices().filter(x=>/^da/i.test(x.lang))}catch(e){return []}};
-function speak(t,who){try{const v=VOICE[who]||[1,1],u=new SpeechSynthesisUtterance(t);u.lang="da-DK";u.rate=Math.max(.5,Math.min(1.6,S.vr*v[0]));u.pitch=Math.max(.1,Math.min(2,S.vp*v[1]));const vs=daVoices(),dv=vs.find(x=>x.name===S.vn)||vs.find(x=>/(^|[^e])male|jeppe|magnus|mand/i.test(x.name))||vs[0];if(dv)u.voice=dv;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function speak(t,who){if(W.ff)return;try{const v=VOICE[who]||[1,1],u=new SpeechSynthesisUtterance(t);u.lang="da-DK";u.rate=Math.max(.5,Math.min(1.6,S.vr*v[0]));u.pitch=Math.max(.1,Math.min(2,S.vp*v[1]));const vs=daVoices(),dv=vs.find(x=>x.name===S.vn)||vs.find(x=>/(^|[^e])male|jeppe|magnus|mand/i.test(x.name))||vs[0];if(dv)u.voice=dv;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
 try{speechSynthesis.getVoices()}catch(e){}
 function hear(){return new Promise(res=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return res(null);let done=false;const fin=v=>{if(!done){done=true;res(v)}};
  try{const r=new SR();r.lang="da-DK";r.maxAlternatives=4;r.onresult=e=>fin([...e.results[0]].map(a=>a.transcript));r.onerror=e=>fin(e.error==="no-speech"?[]:null);r.onend=()=>fin([]);r.start();setTimeout(()=>{try{r.stop()}catch(e){}},9000)}catch(e){fin(null)}})}
@@ -120,7 +120,7 @@ function uiM(h){mp.hidden=false;mp.innerHTML=h;mp.scrollTop=0;W.L=W.R=false}
 function closeM(){mp.hidden=true;mp.innerHTML=""}
 const sheetOpen=()=>!app.hidden||!mp.hidden;
 function grant(...ws){const fresh=ws.filter(w=>!S.chips.includes(w));S.chips.push(...fresh);W.fresh=fresh;return fresh}
-function bump(f,who,t){if(f)S.fors=Math.max(0,Math.min(399,S.fors+f*.42));if(who&&t&&S.til[who]!=null)S.til[who]=Math.max(0,Math.min(30,S.til[who]+t));hud()}
+function bump(f,who,t){if(W.ff)return;if(f)S.fors=Math.max(0,Math.min(399,S.fors+f*.42));if(who&&t&&S.til[who]!=null)S.til[who]=Math.max(0,Math.min(30,S.til[who]+t));hud()}
 function hud(){$("#fo").style.width=Math.round(S.fors%100)+"%";$("#hud").firstElementChild.firstChild.textContent="FORSTAND"+["",""," · II"," · III"," · IV"][Math.floor(S.fors/100)+1];const who=W.talk&&S.til[W.talk]!=null?W.talk:"m";$("#tl").firstChild.textContent="TILLID · "+NAMES[who].toUpperCase();$("#ti").style.width=(100*S.til[who]/30)+"%"}
 
 // ---------- SOUND: everything is synthesised here, nothing is recorded ----------
@@ -136,7 +136,7 @@ function audioStart(){
  A.osc=[0,1,2].map(i=>{const o=c.createOscillator();o.type="triangle";o.frequency.value=146.8;o.detune.value=(i-1)*5;o.connect(A.dg);o.start();return o});
  A.nc=0;A.nk=0;A.no=8;A.step=0;A.next=0;
 }
-function tone(f,dur,vol,type,delay,slide,dest,att){if(!A.c||!S.sound)return;const c=A.c,t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+(att||.02));g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(dest||A.out);o.start(t);o.stop(t+dur+.05)}
+function tone(f,dur,vol,type,delay,slide,dest,att){if(!A.c||!S.sound||W.ff)return;const c=A.c,t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+(att||.02));g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(dest||A.out);o.start(t);o.stop(t+dur+.05)}
 const sfx={catch:()=>[880,1175,1568].forEach((f,i)=>tone(f,.5,.07,"sine",i*.09)),ok:()=>[392,494,587].forEach(f=>tone(f,1.2,.05,"triangle")),bad:()=>tone(120,.35,.09,"sawtooth",0,70),lamp:()=>[1568,2093,2637,3136].forEach((f,i)=>tone(f,.9,.035,"sine",i*.06)),stone:()=>{tone(55,1.4,.22,"sine",0,38);tone(82,.5,.1,"triangle")},caw:()=>{tone(640,.16,.05,"sawtooth",0,380);tone(600,.2,.05,"sawtooth",.22,340)},bell:i=>{const f=[523.3,587.3,659.3,784,880,1046.5][i%6];tone(f,1.6,.09,"triangle");tone(f*2,1,.03,"sine")},clang:()=>{tone(233,.8,.08,"square",0,180);tone(247,.8,.06,"square")},whoosh:()=>tone(900,1.6,.04,"sine",0,120)};
 const _=null,semi=(f,n)=>f*Math.pow(2,n/12);
 /* MUSIC. Every place and every turn of the story has its own piece: key, tempo, instrument and rhythm all change.
@@ -255,7 +255,7 @@ function frame(ts){
   for(const f of FAIRY){if(S.got.includes(f[2]))continue;if(Math.abs(W.px-f[0])<28&&Math.abs((W.py+45)-f[1])<42){S.got.push(f[2]);grant(f[2]);W.pulse[f[2]]=t;for(let i=0;i<14;i++)W.spark.push({x:f[0],y:f[1],vx:(Math.random()-.5)*120,vy:60+Math.random()*120,t});sfx.catch();bump(2);save();toast("✦ "+f[2]+" = "+GLOSS[f[2]],3000);const wd=f[2];setTimeout(()=>speak(wd),350)}}
   if(b&&!W.busy&&!W.bell&&W.px>=b.x-4){const miss=(b.need||[]).filter(w=>!S.got.includes(w));
    if(miss.length){if(t-W.lastHint>6){W.lastHint=t;bark("Fang ordene først!");toast(`Catch the word-light${miss.length>1?"s":""} first: ${miss.length} still flying behind you`,3200)}}
-   else{W.busy=true;W.L=W.R=false;b.run().then(()=>{S.beat++;S.top=Math.max(S.top,S.beat);W.busy=false;closeSheet();save();hud()})}}
+   else{W.busy=true;W.L=W.R=false;cpStart("b"+S.beat);b.run().then(()=>{cpEnd();S.beat++;S.top=Math.max(S.top,S.beat);W.busy=false;closeSheet();save();hud()})}}
  }else W.walk=0;
  c2buttons(open,t);
  if(W.drop){W.dropT+=dt;if(W.dropT>2.6){W.drop=0;W.px=540;S.landed=1;save()}}
@@ -374,7 +374,7 @@ function frame(ts){
 function ring(i,t){const B=W.bell;B.cool=t+.35;if(B.words[i]===B.target[B.rung.length]){B.rung.push(i);sfx.bell(B.rung.length-1);speak(B.words[i],"f");if(B.rung.length===B.target.length){const r=B.res;setTimeout(()=>{W.bell=null;r()},900)}}
  else{const said=B.words[i],at=B.rung.length;B.rung=[];sfx.clang();bump(-1);toast(B.wrong?B.wrong(said,at):"Kvæk! Wrong order. Start again.",3600)}}
 // hang the words of a clause as bells over the pond; ring them in the right order by jumping
-function bells(lead,target,wrong){return new Promise(res=>{const n=target.length;let w;do{w=target.slice().sort(()=>Math.random()-.5)}while(w.join()===target.join());closeSheet();W.bell={lead,target,words:w,xs:w.map((_,i)=>POND[0]+50+i*(POND[1]-POND[0]-100)/(n-1)),rung:[],cool:0,max:POND[1]-10,res,wrong};toast("Jump to ring the bells in the right order",3600)})}
+function bells_(lead,target,wrong){return new Promise(res=>{const n=target.length;let w;do{w=target.slice().sort(()=>Math.random()-.5)}while(w.join()===target.join());closeSheet();W.bell={lead,target,words:w,xs:w.map((_,i)=>POND[0]+50+i*(POND[1]-POND[0]-100)/(n-1)),rung:[],cool:0,max:POND[1]-10,res,wrong};toast("Jump to ring the bells in the right order",3600)})}
 function bark(text){W.bub={text,until:W.t+3.2};speak(text,"m")}
 const hold=(el,k)=>{const on=e=>{e.preventDefault();audioStart();W[k]=true},off=e=>{e.preventDefault();W[k]=false};el.addEventListener("pointerdown",on);el.addEventListener("pointerup",off);el.addEventListener("pointerleave",off);el.addEventListener("pointercancel",off)};
 hold($("#bl"),"L");hold($("#br"),"R");
@@ -383,12 +383,33 @@ addEventListener("keydown",e=>{if(e.target.tagName==="INPUT")return;if(e.key==="
 addEventListener("keyup",e=>{if(e.key==="ArrowLeft")W.L=false;if(e.key==="ArrowRight")W.R=false});
 addEventListener("deviceorientation",e=>{W.tiltV=S.tilt&&e.gamma!=null?(e.gamma>12?1:e.gamma<-12?-1:0):0});
 
+// ---------- CHECKPOINTS: every answered step of a scene is remembered, so leaving mid-scene loses nothing.
+// On return the scene is replayed silently up to the step you were on.
+function cpStart(id){if(S.cp&&S.cp.id===id&&S.cp.r.length){W.ffq=S.cp.r.slice();W.ff=true}else{S.cp={id,r:[]};W.ffq=[];W.ff=false}}
+function cpEnd(){delete S.cp;W.ff=false;W.ffq=[]}
+async function step(run,replay,pick){
+ if(W.sd)return run();
+ if(W.ffq&&W.ffq.length){const v=W.ffq.shift();return replay?replay(v):v}
+ W.ff=false;if(S.cp)save();W.sd=1;let v;try{v=await run()}finally{W.sd=0}
+ if(S.cp)S.cp.r.push(pick?pick(v):v===undefined?null:v);return v}
+function bells(...a){return step(()=>bells_(...a))}
+function say(...a){return step(()=>say_(...a))}
+function tell(...a){return step(()=>tell_(...a))}
+function sorter(...a){return step(()=>sorter_(...a))}
+function gaps(...a){return step(()=>gaps_(...a))}
+function connect(...a){return step(()=>connect_(...a))}
+function place(...a){return step(()=>place_(...a))}
+function order(...a){return step(()=>order_(...a))}
+function listenQ(...a){return step(()=>listenQ_(...a))}
+function speakDrill(...a){return step(()=>speakDrill_(...a))}
+function board(...a){return step(()=>board_(...a))}
+function converse(o){return step(()=>converse_(o),t=>{const r=o.judge(t,0);return r&&r.ok?r:{ok:1}},r=>r.t)}
 // ---------- TALKING ----------
 const NEN={m:"Mumle · a name; it means 'mumble'",r:"the Raven",t:"the Troll",l:"the Lantern",k:"the Bog Wife",b:"the Baker Woman",y:"the Lantern Man",i:"Inn Mother",f:"the Frog",g:"Grumme · a name; it sounds like 'grim'",c:"the Child",x:"Head Clerk Blanket · 'blanket' is a form you fill in",s:"Mrs Sild · 'sild' is herring",u:"Mr Sekund · 'second', as on a clock",e:"Bridge-builder Rask · 'rask' means quick",q:"the Book",o:"Innkeeper Bodil",d:"the Fiddler",v:"Mrs Kvist · 'kvist' is a twig",j:"the Apprentice"};
 const npc=(who,da)=>`<p class="dk pop"><b data-n="${who}">${NAMES[who]}</b>${fog(da)} <button class="mini" data-say="${esc(da)}" data-who="${who}">▶</button></p>`;
 // an NPC speaks; note = what you see them do, think = your own English thought
-function say(who,da,o){o=o||{};return new Promise(res=>{W.talk=who;hud();ui(npc(who,da)+(o.note?`<p class="nar">${esc(o.note)}</p>`:"")+(o.think?`<p class="you">${esc(o.think)}</p>`:"")+`<button class="go" id="nx">▸</button>`);speak(da,who);$("#nx").onclick=res})}
-function tell(lines){return new Promise(res=>{ui(lines.map(l=>l[0]==="y"?`<p class="you pop">${esc(l[1])}</p>`:l[0]==="a"?`<p class="ali pop">${esc(l[1])}</p>`:`<p class="nar pop">${esc(l[1])}</p>`).join("")+`<button class="go" id="nx">▸</button>`);$("#nx").onclick=res})}
+function say_(who,da,o){o=o||{};return new Promise(res=>{W.talk=who;hud();ui(npc(who,da)+(o.note?`<p class="nar">${esc(o.note)}</p>`:"")+(o.think?`<p class="you">${esc(o.think)}</p>`:"")+`<button class="go" id="nx">▸</button>`);speak(da,who);$("#nx").onclick=res})}
+function tell_(lines){return new Promise(res=>{ui(lines.map(l=>l[0]==="y"?`<p class="you pop">${esc(l[1])}</p>`:l[0]==="a"?`<p class="ali pop">${esc(l[1])}</p>`:`<p class="nar pop">${esc(l[1])}</p>`).join("")+`<button class="go" id="nx">▸</button>`);$("#nx").onclick=res})}
 // You speak: tap your words in order, or say it aloud, or write it. Returns the normalised text.
 function utter(o){return new Promise(res=>{
  let comp=[],done=false,raf,t0=performance.now();const fresh=W.fresh||[];
@@ -419,7 +440,7 @@ const ANS={"m|Er du okay?":"ja","m|Hvad hedder du?":()=>"jeg hedder "+S.name,"m|
 const answerFor=o=>{if(o.ans)return o.ans;if(o.who==="l")return /tak/.test(o.hint||"")?"lys tak":"lys";if(o.who==="c")return "på grund af søen";const a=ANS[o.who+"|"+o.da];return typeof a==="function"?a():a||""};
 const IRONY={m:["Hm. Jeg siger det bare, så gør du det efter mig:","He sighs like a very small teacher."],l:["Lygten er ikke døv. Sig bare:","Mumle folds his arms. The lantern, somehow, also folds its arms."],r:["Kra. Skal jeg også flyve for dig? Sig:","The raven inspects one claw, bored."],t:["Jeg har ventet i fyrre år. Jeg kan godt vente lidt endnu. Sig:","The troll settles in, comfortably, like a landslide."],k:["Min suppe bliver kold. Sig bare:","She stirs, pointedly."],b:["Brødet bliver gammelt, min ven. Sig:","She taps the loaf. It already sounds a day older."],y:["Jeg har hele natten. Det har du ikke. Sig:","He adjusts his hat by one degree."],i:["Du er virkelig træt, kan jeg høre. Sig bare:","She pats your arm, which is worse."],g:["Skal jeg hente frøerne? Sig:","He glances at the pond. The pond glances back."],c:["Mor, kan hun ikke tale? Sig:","The child says this at full volume."]};
 // keep asking until the judge is satisfied; the NPC always answers in fluent Danish
-async function converse(o){
+async function converse_(o){
  const ans=answerFor(o);let give=false;
  for(let tries=0;;tries++){
   const u=await utter(Object.assign({},o,{ans},give?{give:ans,secs:0}:{}));let r=u.mode==="late"?(o.late||{who:o.who,da:"For langsomt."}):o.judge(u.text,tries);
@@ -428,7 +449,7 @@ async function converse(o){
   let told="";if(!r.ok&&tries>=2&&!give&&ans){give=true;const ir=IRONY[o.who]||IRONY.m,line=ir[0].replace("hun",hx());r={who:o.who==="l"?"m":o.who,da:line+" "+ans.charAt(0).toUpperCase()+ans.slice(1)+".",note:ir[1]};told=`<p class="fb">Say exactly this: <span lang="da">${fog(ans)}</span> <button class="mini" data-say="${esc(ans)}">▶</button><br><span class="dim">${esc(o.hint||"")}</span></p>`}
   const own=r.ok&&u.mode!=="tap";bump((r.fors||0)*(give&&r.ok?.5:1)+(own?2:0),o.who,r.til||0);
   await new Promise(res=>{ui(`${u.text?`<p class="mine"><b>${esc(S.name||"You")}${u.mode==="voice"?" · spoken":u.mode==="write"?" · written":""}</b><span lang="da">${fog(u.raw||u.text)}</span></p>`:""}${npc(r.who||o.who,r.da)}${r.note?`<p class="nar">${esc(r.note)}</p>`:""}${r.think?`<p class="you">${esc(r.think)}</p>`:""}${told}${own?`<p class="dim">+2 Forstand for ${u.mode==="voice"?"saying":"writing"} it yourself.</p>`:""}<button class="go" id="nx">▸</button>`);speak(r.da,r.who||o.who);$("#nx").onclick=res});
-  if(r.ok)return r;
+  if(r.ok){r.t=u.text;return r}
  }
 }
 
@@ -516,9 +537,9 @@ const BEATS=[
  ,{x:6440,need:["sove"],run:async()=>{
   mood("mystery");
   await tell([["n","Three lights hang over the bog, a little way off the path. They are not word-lights. They are calling to you, all at once, in sweet reasonable voices."],["y","No text on these. Listening only. One of the three might be telling the truth, which is better odds than most seminars."]]);
-  const W3=[["Kom hertil for at sove i mosen!",0],["Kom hertil for at finde vejen!",1],["Kom hertil for at blive våd!",0]].sort(()=>Math.random()-.5);
-  for(;;){const pick=await new Promise(res=>{ui(`<p class="lab">Lygtemændene · listen, then choose which to follow</p>${W3.map((w,i)=>`<div class="row"><button data-l="${i}">▶ Light ${i+1}</button><button class="ghost" data-f="${i}">Follow it</button></div>`).join("")}<button class="ghost" id="show">Show me the words</button><div id="txt"></div>`);
-    app.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>speak(W3[+b.dataset.l][0],"c"));app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>res(+b.dataset.f));$("#show").onclick=()=>{$("#txt").innerHTML=W3.map((w,i)=>`<p class="dk"><b>Light ${i+1}</b>${fog(w[0])}</p>`).join("")}});
+  const W3=await step(async()=>[["Kom hertil for at sove i mosen!",0],["Kom hertil for at finde vejen!",1],["Kom hertil for at blive våd!",0]].sort(()=>Math.random()-.5));
+  for(;;){const pick=await step(()=>new Promise(res=>{ui(`<p class="lab">Lygtemændene · listen, then choose which to follow</p>${W3.map((w,i)=>`<div class="row"><button data-l="${i}">▶ Light ${i+1}</button><button class="ghost" data-f="${i}">Follow it</button></div>`).join("")}<button class="ghost" id="show">Show me the words</button><div id="txt"></div>`);
+    app.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>speak(W3[+b.dataset.l][0],"c"));app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>res(+b.dataset.f));$("#show").onclick=()=>{$("#txt").innerHTML=W3.map((w,i)=>`<p class="dk"><b>Light ${i+1}</b>${fog(w[0])}</p>`).join("")}}));
    if(W3[pick][1]){sfx.ok();bump(6,"m",2);await tell([["n","The light bobs ahead along a line of firm ground. The other two go out, sulking."],["y","'For at finde vejen.' The same purpose I gave the bog-woman. The other two wanted me to sleep in a swamp or get wet. Again."]]);break}
    sfx.bad();bump(-1);await tell([["n",W3[pick][0].includes("sove")?"You follow it. The ground yawns. Mumle hauls you out of the mud by the collar, which is becoming a habit.":"You follow it straight into a pool. Mumle hauls you out by the collar, which is becoming a habit."],["y","That one lied. In fairness, I was warned. In Danish."]])}
   grant("blive");
@@ -647,7 +668,7 @@ function backup(){let code="";try{code=btoa(unescape(encodeURIComponent(JSON.str
  $("#rl").onclick=()=>{try{const o=JSON.parse(decodeURIComponent(escape(atob($("#rc").value.trim()))));if(!o||o.v!==1)throw 0;localStorage.setItem("dumpet-f1",JSON.stringify(o));location.reload()}catch(e){toast("That code doesn't work. Check that you pasted all of it.",3500)}};
  let arm=false;$("#rs").onclick=e=>{if(!arm){arm=true;e.target.textContent="Tap again: this erases your words and progress";return}const keep={v:1,vp:S.vp,vr:S.vr,vn:S.vn,sound:S.sound,tilt:S.tilt};try{localStorage.setItem("dumpet-f1",JSON.stringify(keep))}catch(x){}location.reload()};
  $("#bk").onclick=menu}
-function travel(i){const p=PLACES[i];S.beat=p.beat;W.px=p.px;W.mx=null;W.cam=W.px-VW/2;if(p.beat<=6)S.lit=0;if(p.beat<=9)S.stones=0;if(p.beat<=12)S.fogClear=0;if(p.beat<=17)S.dawn=0;if(p.beat<=20)S.gate=0;W.mumAway=0;W.bell=null;save();closeM();hud();toast(p.n,1800)}
+function travel(i){delete S.cp;const p=PLACES[i];S.beat=p.beat;W.px=p.px;W.mx=null;W.cam=W.px-VW/2;if(p.beat<=6)S.lit=0;if(p.beat<=9)S.stones=0;if(p.beat<=12)S.fogClear=0;if(p.beat<=17)S.dawn=0;if(p.beat<=20)S.gate=0;W.mumAway=0;W.bell=null;save();closeM();hud();toast(p.n,1800)}
 function menu(){
  const cur=W.px>19000?2:1;if(W.mOpen==null)W.mOpen=cur;const open1=W.mOpen===1,open2=W.mOpen===2,c2ok=S.ch1&&(S.eve===2||S.c2);
  uiM(`<p class="lab">Dumpet på Måne Syv</p><h1>Menu</h1><p class="dim">Forstand ${Math.round(S.fors)} · Tillid: ${Object.keys(S.til).filter(k=>S.til[k]).map(k=>NAMES[k]+" "+S.til[k]).join(" · ")||"none yet"}</p>
@@ -692,13 +713,14 @@ function c2buttons(open,t){
  const inC2=W.px>19000,idle=!open&&!W.busy&&!W.drop;
  mapB.hidden=!(inC2&&idle&&S.c2);
  let label="",fn=null;
- const run=(need,f,room)=>()=>{const miss=need.filter(w=>!S.got.includes(w));if(miss.length)return toast(`Catch the word-light${miss.length>1?"s":""} here first: ${miss.length} still flying`,3200);W.busy=true;W.L=W.R=false;W.pr={};W.room=room;f().catch(e=>console.error(e)).then(()=>{W.busy=false;W.room=null;closeSheet();save();hud()})};
+ const run=(need,f,room,cid)=>()=>{const miss=need.filter(w=>!S.got.includes(w));if(miss.length)return toast(`Catch the word-light${miss.length>1?"s":""} here first: ${miss.length} still flying`,3200);W.busy=true;W.L=W.R=false;W.pr={};W.room=room;cpStart(cid);f().catch(e=>console.error(e)).then(()=>{cpEnd();W.busy=false;W.room=null;closeSheet();save();hud()})};
  if(idle&&inC2&&S.c2){const d=curDist();
-  if(Math.abs(W.px-(d.x+560))<80){label=d.who==="x"?"Gå til skranke 7":d.id==="bag"&&S.c2.st===3?"Lyt bag bageriet":"Tal med "+NAMES[d.who];fn=run(d.need,TALK[d.id],d.id==="bag"&&S.c2.st===3?"bagN":d.id)}
-  else if(d.id==="torv"&&S.c2.st>=1&&Math.abs(W.px-(d.x+340))<70){label="Ekkobrønden";fn=run([],SPOT.echo,"well")}}
+  if(Math.abs(W.px-(d.x+560))<80){label=d.who==="x"?"Gå til skranke 7":d.id==="bag"&&S.c2.st===3?"Lyt bag bageriet":"Tal med "+NAMES[d.who];fn=run(d.need,TALK[d.id],d.id==="bag"&&S.c2.st===3?"bagN":d.id,"t:"+d.id+":"+S.c2.st+":"+doneN()+":"+(S.c2.done[d.who]?1:0))}
+  else if(d.id==="torv"&&S.c2.st>=1&&Math.abs(W.px-(d.x+340))<70){label="Ekkobrønden";fn=run([],SPOT.echo,"well","echo")}}
  else if(idle&&S.ch1&&!inC2){
-  if(Math.abs(W.px-INNX)<70&&!S.c2){label="Gå ind i kroen";fn=run([],eveTalk,"inn")}
+  if(Math.abs(W.px-INNX)<70&&!S.c2){label="Gå ind i kroen";fn=run([],eveTalk,"inn","eve")}
   else if(S.eve===2&&Math.abs(W.px-BOARDX)<50){label=S.c2?"Til rådhuset":"Læs opslaget";fn=S.c2?()=>goDist("raad"):c2begin}}
+ if(W.resume&&idle&&S.landed){W.resume=0;if(fn&&S.cp&&S.cp.r.length&&!/^b/.test(S.cp.id)){fn();return}}
  actB.hidden=!label;if(label){const en=label.startsWith("Tal med ")?"Talk to "+label.slice(8):ACT_EN[label]||"";if(actB.dataset.lab!==label){actB.dataset.lab=label;actB.innerHTML=esc(label)+(en?`<small>${esc(en)}</small>`:"")}actB.onclick=fn}
 }
 mapB.onclick=()=>townMap();
@@ -738,12 +760,12 @@ function drawDistrict(sx,GY,t,P){
 }
 // ----- new kinds of play
 // by ear: hear a line, choose its category; the words appear only afterwards
-function sorter(o){return new Promise(res=>{let i=0;const items=o.items.slice().sort(()=>Math.random()-.5);
+function sorter_(o){return new Promise(res=>{let i=0;const items=o.items.slice().sort(()=>Math.random()-.5);
  const show=()=>{const it=items[i];ui(`<p class="lab">${o.title} · ${i+1}/${items.length}</p><p class="nar">${esc(o.intro)}</p><div class="row"><button class="go" id="pl">▶ Lyt · listen</button><button class="ghost" id="tx">Show the words</button></div><p class="dk" id="txt" hidden>${fog(it[0])}</p><div class="opts">${o.cats.map((c,k)=>`<button data-k="${k}">${c}</button>`).join("")}</div>`,true);
   const play=()=>speak(it[0],o.who);$("#pl").onclick=play;$("#tx").onclick=()=>{$("#txt").hidden=false};play();
   app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{if(+b.dataset.k===it[1]){sfx.bell(+b.dataset.k);bump(3,o.who,1);$("#txt").hidden=false;b.style.borderColor="var(--gold)";app.querySelectorAll("[data-k]").forEach(x=>x.disabled=true);setTimeout(()=>{i++;i<items.length?show():res()},1300)}else{sfx.clang();bump(-1);$("#txt").hidden=false;toast(o.wrong?o.wrong(it):"Not that one. Listen again.",3800);play()}})};show()})}
 // word order: drop the small word into the right gap, or choose which way round
-function gaps(o){return new Promise(res=>{let i=0;const show=()=>{const r=o.rounds[i],head=`<p class="lab">${o.title} · ${i+1}/${o.rounds.length}</p>`;
+function gaps_(o){return new Promise(res=>{let i=0;const show=()=>{const r=o.rounds[i],head=`<p class="lab">${o.title} · ${i+1}/${o.rounds.length}</p>`;
   const win=full=>{sfx.bell(i);W.cast=W.t;bump(4,o.who,1);speak(full,o.who);ui(head+`<p class="dk pop">${fog(full)}</p><p class="you">${esc(r.rule)}</p><button class="go" id="nx">▸</button>`,true);$("#nx").onclick=()=>{i++;i<o.rounds.length?show():res()}};
   if(r.opts){ui(head+`<p class="nar">Which way round?</p><p class="dk">${fog(r.lead)} …</p><div class="opts">${r.opts.map((x,k)=>`<button lang="da" data-k="${k}">… ${esc(x)}</button>`).join("")}</div>`,true);
    app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>+b.dataset.k===r.a?win(r.lead+" "+r.opts[r.a]+"."):(sfx.clang(),bump(-1),toast(r.hint,4200)))}
@@ -751,7 +773,7 @@ function gaps(o){return new Promise(res=>{let i=0;const show=()=>{const r=o.roun
    app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{if(+b.dataset.g===r.at){const w=r.words.slice();w.splice(r.at,0,r.adv);win((r.pre?r.pre+" ":"")+w.join(" ")+(r.pre?" …":"."))}else{sfx.clang();bump(-1);toast(r.hint,4200)}})}
  };show()})}
 // connect: join each beginning to the ending it belongs with
-function connect(o){return new Promise(res=>{const R=o.R.map((t,k)=>[t,k]).sort(()=>Math.random()-.5);let sel=null,done=0;
+function connect_(o){return new Promise(res=>{const R=o.R.map((t,k)=>[t,k]).sort(()=>Math.random()-.5);let sel=null,done=0;
  ui(`<p class="lab">${o.title}</p><p class="nar">${esc(o.intro)}</p><div id="cn" style="position:relative;display:grid;grid-template-columns:1fr 1fr;gap:10px 34px"><svg id="ln" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg>${o.L.map((l,k)=>`<button lang="da" data-l="${k}" style="grid-column:1;grid-row:${k+1}">${esc(l)}</button>`).join("")}${R.map((r,k)=>`<button lang="da" data-r="${r[1]}" style="grid-column:2;grid-row:${k+1}">${esc(r[0])}</button>`).join("")}</div><p class="you" id="say" hidden></p>`,true);
  const line=(a,b)=>{const c=$("#cn").getBoundingClientRect(),A=a.getBoundingClientRect(),B=b.getBoundingClientRect();$("#ln").innerHTML+=`<line x1="${A.right-c.left}" y1="${A.top+A.height/2-c.top}" x2="${B.left-c.left}" y2="${B.top+B.height/2-c.top}" stroke="#ffd76a" stroke-width="2.5"/>`};
  app.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{app.querySelectorAll("[data-l]").forEach(x=>x.style.borderColor="");sel=b;b.style.borderColor="var(--gold)"});
@@ -760,7 +782,7 @@ function connect(o){return new Promise(res=>{const R=o.R.map((t,k)=>[t,k]).sort(
   else{sfx.clang();const pastL=o.past[l],pastR=o.past[r];if(pastL!==pastR){bump(-1);toast(pastL?"That beginning is in the past. A past moment takes da, not når.":"That beginning is about now or later. It takes når, not da.",4500)}else toast(o.silly||"Grammatically fine. Factually worrying. Try another.",3800)}})})}
 // the ledger: after someone answers, mark it on the line of time
 const ARR=["for 40 år siden","for 30 år siden","for 4 år siden","for 3 år siden","for 2 år siden"],STAY=["i to uger","om en måned","om to år","hele livet","det ved ingen"];
-function place(who,kind,idx,line){return new Promise(res=>{const list=kind==="a"?ARR:STAY;
+function place_(who,kind,idx,line){return new Promise(res=>{const list=kind==="a"?ARR:STAY;
  ui(`<p class="lab">The ledger · ${kind==="a"?"when they came":"how long they stay"}</p>${npc(who,line)}<p class="nar">${kind==="a"?"Past ⟵ tap where it belongs on the line ⟶ now":"Now ⟵ tap where it belongs on the line ⟶ never"}</p><div class="row" style="gap:4px">${list.map((x,k)=>`<button lang="da" data-k="${k}" style="flex:1 1 30%;text-align:center;font-size:.9rem">${x}</button>`).join("")}</div>`);
  app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{if(+b.dataset.k===idx){C2().tl[who+kind]=idx;sfx.ok();bump(3);res()}else{sfx.bad();bump(-1);toast("That's not what they said. Listen again.",3000);speak(line,who)}})})}
 // ----- questions you can now ask
@@ -777,16 +799,16 @@ async function interview(who,A){
 // ----- more kinds of play
 const heardScore=(alts,target)=>{const tw=norm(target).split(" ");return Math.max(0,...alts.map(a=>{const aw=norm(a).split(" ");return tw.filter(w=>aw.includes(w)).length/tw.length}))};
 // put things in order by tapping them, first to last
-function order(o){return new Promise(res=>{const n=o.items.length;let k=0;const sh=o.items.map((t,i)=>[t,i]).sort(()=>Math.random()-.5);
+function order_(o){return new Promise(res=>{const n=o.items.length;let k=0;const sh=o.items.map((t,i)=>[t,i]).sort(()=>Math.random()-.5);
  ui(`<p class="lab">${o.title}</p><p class="nar">${esc(o.intro)}</p><div class="opts" id="ol"></div><p class="lab">${o.from} ⟶ ${o.to}</p><div class="chips" id="ob">${sh.map(x=>`<button class="chip" data-o="${x[1]}">${esc(x[0])}</button>`).join("")}</div>`,true);
  app.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{if(+b.dataset.o===k){k++;b.disabled=true;b.style.display="none";$("#ol").insertAdjacentHTML("beforeend",`<button disabled style="opacity:1;border-color:var(--gold)">${k}. ${esc(b.textContent)}</button>`);sfx.bell(k);speak(b.textContent.split(" · ")[0],o.who);bump(2);if(k===n)setTimeout(res,1200)}else{sfx.clang();bump(-1);toast(o.wrong||"Not yet. Something else comes before that.",3000)}})})}
 // listen first, answer after: the words stay hidden until you have decided
-function listenQ(o){return new Promise(res=>{let i=0;const show=()=>{const it=o.items[i],ord=it.o.map((x,k)=>[x,k]).sort(()=>Math.random()-.5);
+function listenQ_(o){return new Promise(res=>{let i=0;const show=()=>{const it=o.items[i],ord=it.o.map((x,k)=>[x,k]).sort(()=>Math.random()-.5);
   ui(`<p class="lab">${o.title} · ${i+1}/${o.items.length}</p><p class="nar">${esc(o.intro)}</p><div class="row"><button class="go" id="pl">▶ Lyt · listen</button><button class="ghost" id="tx">Show the words</button></div><p class="dk" id="txt" hidden>${fog(it.da)}</p><p class="dk">${fog(it.q)}</p><div class="opts">${ord.map(x=>`<button lang="da" data-k="${x[1]}">${esc(x[0])}</button>`).join("")}</div>`,true);
   const play=()=>speak(it.da,o.who);$("#pl").onclick=play;$("#tx").onclick=()=>{$("#txt").hidden=false};play();
   app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{if(+b.dataset.k===0){sfx.ok();bump(4,o.who,1);if(it.rec)C2().tl[it.rec[0]]=it.rec[1];ui(`<p class="dk pop">${fog(it.da)}</p>${it.think?`<p class="you">${esc(it.think)}</p>`:""}<button class="go" id="nx">▸</button>`,true);$("#nx").onclick=()=>{i++;i<o.items.length?show():res()}}else{sfx.bad();bump(-1);toast("Listen again.",2200);play()}})};show()})}
 // say it aloud: the microphone judges, or you do
-function speakDrill(o){return new Promise(res=>{let i=0;const show=()=>{const it=o.items[i];let tries=0;
+function speakDrill_(o){return new Promise(res=>{let i=0;const show=()=>{const it=o.items[i];let tries=0;
   ui(`<p class="lab">${o.title} · ${i+1}/${o.items.length}</p><p class="nar">${esc(o.intro)}</p><p class="dk" data-say="${esc(it[0])}">${fog(it[0])}</p><p class="you">${esc(it[1])}</p><div class="row"><button id="pl">▶ Hør · hear it</button><button class="go" id="mic">🎤 Sig det · say it</button></div><div id="vo"></div>`,true);
   const next=()=>{sfx.bell(i);if(!(S.c2&&S.c2.games.echo))bump(4);i++;i<o.items.length?show():res()};
   const self=msg=>{if(!$("#vo"))return;$("#vo").innerHTML=`<p class="dim">${msg}</p><div class="row"><button id="y">It sounded right</button><button id="n">Next one</button></div>`;$("#y").onclick=next;$("#n").onclick=()=>{i++;i<o.items.length?show():res()}};
@@ -847,7 +869,7 @@ const TALK={
     judge:t=>/når det regner savner jeg (min |mit |mine )?[a-zæøå]+/.test(t)?{ok:1,da:"Verbet er nummer to. Paragraf 2. Godt.",fors:12,til:4,note:"He nods, once, to the form rather than to you."}:/jeg savner .+ når det regner/.test(t)?{ok:1,da:"Det er også rigtigt. Rubrik 8.",fors:8,til:3}:/når det regner jeg savner/.test(t)?{da:"Nej. 'Når det regner, SAVNER jeg …' Først verbet, så 'jeg'. Paragraf 2.",fors:1,think:"The whole når-clause counts as position one. So the verb is next. Every time."}:{da:"En hel sætning: Når det regner, …"}});
    mood("dread");
    await say("x","Sidste rubrik. Rubrik 9: Forstand. Sig en sætning: 'Jeg kan ikke tale dansk.'",{note:"He looks at a point just above your head, as if reading something written there.",think:"Box nine. Paragraph one. I know what this box is for now. He wants a sentence. I could give him a good one. Or I could do what forty years of residents have done, and get it wrong on purpose."});
-   const fake=await new Promise(res=>{ui(`<p class="lab">Rubrik 9</p><p class="nar">How do you answer?</p><div class="opts"><button id="c1">Say it properly<small>Jeg kan ikke tale dansk.</small></button><button id="c2">Say it wrong, on purpose<small>Put the words in an order you know is a mistake.</small></button></div>`);$("#c1").onclick=()=>res(false);$("#c2").onclick=()=>res(true)});
+   const fake=await step(()=>new Promise(res=>{ui(`<p class="lab">Rubrik 9</p><p class="nar">How do you answer?</p><div class="opts"><button id="c1">Say it properly<small>Jeg kan ikke tale dansk.</small></button><button id="c2">Say it wrong, on purpose<small>Put the words in an order you know is a mistake.</small></button></div>`);$("#c1").onclick=()=>res(false);$("#c2").onclick=()=>res(true)}));
    grant("kan","tale","dansk");
    if(fake){await converse({who:"x",da:"Sig: Jeg kan ikke tale dansk.",ans:"jeg ikke kan tale dansk",hint:"A mistake on purpose: move 'ikke' to where it does not belong in a main clause: Jeg ikke kan tale dansk.",pool:["jeg","kan","ikke","tale","dansk"],judge:t=>{const w=t.split(" ").sort().join(" ");return w==="dansk ikke jeg kan tale"&&t!=="jeg kan ikke tale dansk"?{ok:1,da:"'Jeg ikke kan.' Det er ordstillingen fra en ledsætning. Man skal kunne grammatik for at lave den fejl.",fors:6,note:"He writes for a long time.",think:"You have to know the grammar to make that mistake. He's right. I chose the exact wrong order that only someone who knows the rule would choose. I have failed at failing."}:t==="jeg kan ikke tale dansk"?{da:"Det var rigtigt. Ville du ikke sige det forkert?",note:"He waits, pen raised."}:{da:"Brug de fem ord."}}})}
    else await converse({who:"x",da:"Sig: Jeg kan ikke tale dansk.",ans:"jeg kan ikke tale dansk",hint:"Main clause: subject, verb, ikke.",pool:["jeg","kan","ikke","tale","dansk"],judge:t=>t==="jeg kan ikke tale dansk"?{ok:1,da:"'Jeg kan ikke tale dansk', siger hun. På perfekt dansk.".replace("hun",hx()),fors:8,note:"He writes for a long time.",think:"I have just told a government official, flawlessly, that I cannot speak. There is a paradox in there with somebody's name on it."}:{da:"Nej. Subjekt, verbum, 'ikke'."}});
@@ -1019,7 +1041,7 @@ const SPOT={echo:async()=>{const c=C2();mood("mystery");
   await speakDrill({who:"s",title:"Ekkobrønden · the echo well",intro:"Listen, then say the line aloud into the well. Danish swallows the small words: say them short and light.",items:[["Hvor længe skal du være her?","'skal' is short, almost 'sga'. 'du' is light. The weight is on LÆNG-e and VÆ-re."],["Jeg skal være her i to år.","'Jeg skal' runs together. Weight on VÆ-re, TO, ÅR."],["Det ved jeg ikke endnu.","'ved' ends soft. 'ikke' is said 'egge'. Weight on VED and EN-nu."],["Jeg vil gerne blive her.","'vil' is short, almost 've'. Weight on GER-ne and BLI-ve."],["Jeg rejser hjem om en måned.","Weight on HJEM and MÅ-ned. 'om en' is quick."]]});
   c.games.echo=1;await tell([["n","The well gives your last sentence back, a little deeper than you said it, and with better vowels."]])}};
 // the detective board: two things people told you cannot both be true
-function board(){return new Promise(res=>{const cards=[["s","Fru Sild","Jeg flyttede hertil for tre år siden."],["u","Hr. Sekund","Da jeg kom hertil, var broen allerede væk."],["u","Hr. Sekund","Jeg kom hertil for tredive år siden."],["e","Brobygger Rask","Jeg kom hertil for to år siden, da broen faldt ned."],["g","Grumme","Hun kommer hjem om en måned."],["s","Fru Sild","Da broen faldt ned, kom trolden."]];let pick=[];
+function board_(){return new Promise(res=>{const cards=[["s","Fru Sild","Jeg flyttede hertil for tre år siden."],["u","Hr. Sekund","Da jeg kom hertil, var broen allerede væk."],["u","Hr. Sekund","Jeg kom hertil for tredive år siden."],["e","Brobygger Rask","Jeg kom hertil for to år siden, da broen faldt ned."],["g","Grumme","Hun kommer hjem om en måned."],["s","Fru Sild","Da broen faldt ned, kom trolden."]];let pick=[];
  ui(`<p class="lab">The ledger doesn't add up</p><h2>Find fejlen <small class="dim">· find the mistake</small></h2><p class="nar">Two of these cannot both be true. Tap the two that contradict each other.</p><div class="opts">${cards.map((c,k)=>`<button data-k="${k}"><small>${c[1]}</small>${fog(c[2])}</button>`).join("")}</div><p class="you">The troll at the bridge told me, in English, that he has been asking his question for forty years.</p>`,true);
  app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;if(pick.includes(k)){pick=pick.filter(x=>x!==k);b.style.borderColor="";return}pick.push(k);b.style.borderColor="var(--gold)";
   if(pick.length===2){if(pick.includes(1)&&pick.includes(3)){sfx.ok();W.cast=W.t;bump(10);tell([["y","There. The bridge-builder says the bridge fell two years ago, when he arrived. The clockmaker says it was already gone when he came, thirty years ago. One bridge cannot fall twice. Well. This one might."],["y","And the troll has been under it for forty years. I think the bridge-builder has been here rather longer than two."]]).then(res)}
@@ -1201,7 +1223,7 @@ function drawRoom(id,t,GY){
 // ---------- BOOT ----------
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 window.G={get S(){return S},W,sheetOpen,BEATS,FAIRY,travel,ring,goDist,TALK,DIST,c2begin,eveBegin};
-W.cam=W.px-VW/2;hud();requestAnimationFrame(frame);
+W.resume=1;W.cam=W.px-VW/2;hud();requestAnimationFrame(frame);
 if(!S.landed)intro();
 </script>
 </body>
