@@ -23,7 +23,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 #app{position:fixed;left:0;right:0;bottom:0;max-height:62%;overflow-y:auto;background:var(--panel);border-top:1px solid rgba(255,215,106,.6);border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
 #app.full{max-height:100%;top:0;border-radius:0;border:0;padding-top:calc(58px + env(safe-area-inset-top,0px))}
 #app>*,#mp>*{flex-shrink:0}
-#mp{position:fixed;inset:0;z-index:6;overflow-y:auto;background:rgba(5,4,12,.97);padding:calc(56px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
+#mp{position:fixed;inset:0;top:calc(54px + env(safe-area-inset-top,0px));z-index:6;overflow-y:auto;background:rgba(5,4,12,.97);box-shadow:0 -80px 0 rgba(5,4,12,.97);padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
 #hud{z-index:7}
 h1{font-size:2rem;line-height:1.05;margin:0;color:var(--gold);font-weight:400}
 h2{font-size:1.3rem;margin:0;font-weight:400;color:var(--gold)}
@@ -39,7 +39,7 @@ p{margin:0}
 .fg{color:#8f95c4;border-bottom:1px dotted #8f95c4}
 .ordb{min-height:0;padding:6px 10px;font-size:.8rem;color:var(--dim)}.ordl{font-size:.95rem;line-height:1.7;border:1px solid var(--line);border-radius:12px;padding:8px 12px}.ordl i{color:var(--dim);font-size:.85rem}
 .row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
-.opts{display:flex;flex-direction:column;gap:8px}
+.opts{display:flex;flex-direction:column;gap:8px}.opts.sub{margin-left:14px;padding-left:10px;border-left:2px solid var(--line)}button.chap{border-color:var(--gold);font-size:1.1rem}
 button{font:inherit;color:var(--ink);background:rgba(58,42,94,.45);border:1px solid var(--line);border-radius:14px;padding:10px 14px;min-height:46px;text-align:left;touch-action:manipulation}
 button small{display:block;color:var(--dim);font:.76rem Verdana,sans-serif}
 button.go{background:var(--gold);color:#221a05;border-color:var(--gold);font-weight:700;text-align:center}
@@ -649,17 +649,22 @@ function backup(){let code="";try{code=btoa(unescape(encodeURIComponent(JSON.str
  $("#bk").onclick=menu}
 function travel(i){const p=PLACES[i];S.beat=p.beat;W.px=p.px;W.mx=null;W.cam=W.px-VW/2;if(p.beat<=6)S.lit=0;if(p.beat<=9)S.stones=0;if(p.beat<=12)S.fogClear=0;if(p.beat<=17)S.dawn=0;if(p.beat<=20)S.gate=0;W.mumAway=0;W.bell=null;save();closeM();hud();toast(p.n,1800)}
 function menu(){
+ const cur=W.px>19000?2:1;if(W.mOpen==null)W.mOpen=cur;const open1=W.mOpen===1,open2=W.mOpen===2,c2ok=S.ch1&&(S.eve===2||S.c2);
  uiM(`<p class="lab">Dumpet på Måne Syv</p><h1>Menu</h1><p class="dim">Forstand ${Math.round(S.fors)} · Tillid: ${Object.keys(S.til).filter(k=>S.til[k]).map(k=>NAMES[k]+" "+S.til[k]).join(" · ")||"none yet"}</p>
  <button class="go" id="bk">Continue</button>
- <p class="lab">Chapter 1 · places</p><div class="opts">${PLACES.map((p,i)=>`<button data-p="${i}" ${S.top<p.beat||W.busy?"disabled":""}>${p.n}<small>${S.top<p.beat?"Not reached yet":W.busy?p.en+" · finish this conversation first":p.en+" · play from here"}</small></button>`).join("")}</div>
- ${S.ch1?`<div class="opts"><button id="evego">Den første aften<small>${S.eve===2?"The inn · play again":"Chapter one continues at the inn"}</small></button></div>`:""}<p class="lab">Chapter 2</p><div class="opts">${!S.ch1?`<button disabled>Tågeby<small>Finish chapter one first</small></button>`:S.eve!==2&&!S.c2?`<button disabled>Tågeby<small>First: the evening at the inn</small></button>`:`<button id="c2go">${S.c2?"Open the town map":"Begin chapter two"}<small>${S.c2?(S.c2.st>=5?"Chapter complete · the town stays open":"Tågeby · questions, a ledger, a counter"):"Inside the walls"}</small></button>`}</div>
+ <div class="opts"><button id="mc1" class="chap">Chapter 1 · Vejen til Tågeby<small>${S.ch1?(S.eve===2?"Complete":"The evening at the inn is still to come"):"The road to Fog Town · in progress"} · ${open1?"tap to close":"tap to open"}</small></button></div>
+ ${open1?`<div class="opts sub">${PLACES.map((p,i)=>`<button data-p="${i}" ${S.top<p.beat||W.busy?"disabled":""}>${p.n}<small>${S.top<p.beat?"Not reached yet":W.busy?p.en+" · finish this conversation first":p.en+" · play from here"}</small></button>`).join("")}<button id="evego" ${S.ch1&&!W.busy?"":"disabled"}>Den første aften<small>${!S.ch1?"The first evening · not reached yet":W.busy?"The first evening · finish this conversation first":S.eve===2?"The first evening, at the inn · play again":"The first evening, at the inn"}</small></button></div>`:""}
+ <div class="opts"><button id="mc2" class="chap" ${c2ok?"":"disabled"}>Chapter 2 · Tågeby<small>${!S.ch1?"Finish chapter one first":!c2ok?"First: the evening at the inn":!S.c2?"Inside the walls · not started":S.c2.st>=5?"Complete · the town stays open":"Fog Town · in progress"}${c2ok?" · "+(open2?"tap to close":"tap to open"):""}</small></button></div>
+ ${open2&&c2ok?`<div class="opts sub">${!S.c2?`<button id="c2go">Begin chapter two<small>Read the notice by the inn</small></button>`:DIST.map(d=>{const m=c2mark(d.id);return `<button data-d="${d.id}" ${W.busy?"disabled":""}>${d.n}<small>${d.en}${W.busy?" · finish this conversation first":m==="!"?" · someone is waiting for you here":m==="✓"?" · done":""}</small></button>`}).join("")+`<button id="c2map" ${W.busy?"disabled":""}>Kort<small>The town map</small></button>`}</div>`:""}
  <p class="lab">Study</p><div class="opts"><button id="nb">Notesbog<small>The grammar you have worked out, with examples</small></button><button id="ob">Ordbog<small>Your ${S.chips.length} words</small></button></div>
  <p class="lab">Settings</p><div class="opts"><button id="vo">Voice<small>Deeper, slower, or a different voice</small></button><button id="pr">People call you: ${S.pro}<small>Tap to switch between hun (she) and han (he)</small></button><button id="snd">Sound and music: ${S.sound?"on":"off"}</button><button id="tlt">Tilt the phone to walk: ${S.tilt?"on":"off"}</button><button id="sv">Your progress<small>Saved automatically · backup · restart</small></button></div>`,true);
- $("#bk").onclick=closeM;if($("#c2go"))$("#c2go").onclick=()=>{if(W.busy)return toast("Finish this conversation first.");if(!S.c2)return c2begin();if(W.px<19000)goDist("raad");townMap()};if($("#evego"))$("#evego").onclick=()=>{if(W.busy)return toast("Finish this conversation first.");eveBegin()};$("#nb").onclick=notes;$("#ob").onclick=words;$("#vo").onclick=voice;$("#sv").onclick=backup;
+ $("#bk").onclick=closeM;$("#mc1").onclick=()=>{W.mOpen=open1?0:1;menu()};$("#mc2").onclick=()=>{W.mOpen=open2?0:2;menu()};
+ if($("#c2go"))$("#c2go").onclick=()=>{if(W.busy)return toast("Finish this conversation first.");c2begin()};if($("#c2map"))$("#c2map").onclick=()=>{if(W.px<19000)goDist("raad");townMap()};if($("#evego"))$("#evego").onclick=()=>eveBegin();
+ mp.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>goDist(b.dataset.d));$("#nb").onclick=notes;$("#ob").onclick=words;$("#vo").onclick=voice;$("#sv").onclick=backup;
  $("#pr").onclick=()=>{S.pro=S.pro==="han"?"hun":"han";save();menu()};$("#snd").onclick=()=>{S.sound=S.sound?0:1;save();audioStart();menu()};$("#tlt").onclick=()=>{S.tilt=S.tilt?0:1;save();menu()};
  mp.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>travel(+b.dataset.p));
 }
-$("#menu").onclick=()=>{if(!mp.hidden)return closeM();if(S.landed)menu()};
+$("#menu").onclick=()=>{if(!mp.hidden)return closeM();if(S.landed){W.mOpen=null;menu()}};
 
 // ============================================================ CHAPTER TWO · Tågeby
 // A hub, not a road: a town map, six districts to walk in, people to question.
@@ -697,8 +702,9 @@ function c2buttons(open,t){
  actB.hidden=!label;if(label){const en=label.startsWith("Tal med ")?"Talk to "+label.slice(8):ACT_EN[label]||"";if(actB.dataset.lab!==label){actB.dataset.lab=label;actB.innerHTML=esc(label)+(en?`<small>${esc(en)}</small>`:"")}actB.onclick=fn}
 }
 mapB.onclick=()=>townMap();
+function c2mark(id){const c=C2();return id==="raad"?(c.st===0||(c.st===1&&doneN()===4)||c.st===4?"!":""):id==="bag"?(c.st===3?"!":""):id==="kro"?(c.st===2?"!":c.done.e?"✓":""):id==="torv"?(c.done.s?"✓":""):id==="ur"?(c.done.u?"✓":""):id==="port"?(c.done.g?"✓":""):""}
 function townMap(){
- const c=C2(),mark=id=>id==="raad"?(c.st===0||(c.st===1&&doneN()===4)||c.st===4?"!":""):id==="bag"?(c.st===3?"!":""):id==="kro"?(c.st===2?"!":c.done.e?"✓":""):id==="torv"?(c.done.s?"✓":""):id==="ur"?(c.done.u?"✓":""):id==="port"?(c.done.g?"✓":""):"";
+ const c=C2(),mark=c2mark;const _old=id=>id==="raad"?(c.st===0||(c.st===1&&doneN()===4)||c.st===4?"!":""):id==="bag"?(c.st===3?"!":""):id==="kro"?(c.st===2?"!":c.done.e?"✓":""):id==="torv"?(c.done.s?"✓":""):id==="ur"?(c.done.u?"✓":""):id==="port"?(c.done.g?"✓":""):"";
  const pos={raad:[160,150],torv:[160,250],ur:[62,196],kro:[258,206],port:[160,372],bag:[256,318]};
  uiM(`<p class="lab">Chapter 2 · Tågeby</p><h1>Kort</h1><p class="dim">Tap a place to go there. ${c.st===0?"Start at the town hall.":c.st===1?`Strangers questioned: ${doneN()}/4`:""}</p>
  <svg viewBox="0 0 320 420" style="width:100%;max-width:420px;align-self:center"><ellipse cx="160" cy="220" rx="150" ry="190" fill="#0b0a1c" stroke="#3a2a5e" stroke-width="6"/><path d="M40 300q120-50 240 10" stroke="#2f5a66" stroke-width="10" fill="none" opacity=".7"/><rect x="138" y="398" width="44" height="18" fill="#05040c" stroke="#ffd76a"/>
