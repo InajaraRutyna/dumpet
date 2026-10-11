@@ -219,7 +219,7 @@ function frame(ts){
   for(const f of FAIRY){if(S.got.includes(f[2]))continue;if(Math.abs(W.px-f[0])<28&&Math.abs((W.py+45)-f[1])<42){S.got.push(f[2]);grant(f[2]);W.pulse[f[2]]=t;for(let i=0;i<14;i++)W.spark.push({x:f[0],y:f[1],vx:(Math.random()-.5)*120,vy:60+Math.random()*120,t});sfx.catch();bump(2);save();toast("✦ "+f[2]+" = "+GLOSS[f[2]],3000);const wd=f[2];setTimeout(()=>speak(wd),350)}}
   if(b&&!W.busy&&!W.bell&&W.px>=b.x-4){const miss=(b.need||[]).filter(w=>!S.got.includes(w));
    if(miss.length){if(t-W.lastHint>6){W.lastHint=t;bark("Fang ordene først!");toast(`Catch the word-light${miss.length>1?"s":""} first: ${miss.length} still flying behind you`,3200)}}
-   else{W.busy=true;W.L=W.R=false;b.run().then(()=>{S.beat++;S.top=Math.max(S.top,S.beat);W.busy=false;closeSheet();save();hud()})}}
+   else{W.busy=true;W.L=W.R=false;b.run().then(()=>{S.beat++;S.top=Math.max(S.top,S.beat);W.busy=false;closeSheet();save();hud();if(S.ch1&&!S.eve&&!S.c2&&S.beat>=BEATS.length)setTimeout(eveBegin,600)})}}
  }else W.walk=0;
  c2buttons(open,t);
  if(W.drop){W.dropT+=dt;if(W.dropT>2.6){W.drop=0;W.px=540;S.landed=1;save()}}
@@ -638,13 +638,15 @@ function c2buttons(open,t){
  mapB.hidden=!(inC2&&idle&&S.c2);
  let label="",fn=null;
  if(!inC2)W.mood="base";else if(idle)W.mood=DMOOD[curDist().id];
- if(idle&&inC2){const d=curDist(),run=(need,f,room)=>()=>{const miss=need.filter(w=>!S.got.includes(w));if(miss.length)return toast(`Catch the word-light${miss.length>1?"s":""} here first: ${miss.length} still flying`,3200);W.busy=true;W.L=W.R=false;W.pr={};W.room=room;f().catch(e=>console.error(e)).then(()=>{W.busy=false;W.room=null;closeSheet();save();hud()})};
+ if(idle&&inC2){const d=curDist(),run=(need,f,room)=>()=>{const miss=need.filter(w=>!S.got.includes(w));if(miss.length)return toast(`Catch the word-light${miss.length>1?"s":""} here first: ${miss.length} still flying`,3200);W.busy=true;W.L=W.R=false;W.pr={};W.room=room;f().catch(e=>console.error(e)).then(()=>{W.busy=false;W.room=null;closeSheet();save();hud();const a=W.after;W.after=null;if(a)setTimeout(a,500)})};
   if(S.eve===1){if(d.id==="kro"&&Math.abs(W.px-(d.x+560))<90){label="Gå ind i kroen";fn=run([],eveTalk,"inn")}}
   else if(!S.c2){label="Begin chapter two";fn=c2begin}
   else if(Math.abs(W.px-(d.x+560))<80){label=d.who==="x"?"Gå til skranke 7":d.id==="bag"&&S.c2&&S.c2.st===3?"Lyt bag bageriet":"Tal med "+NAMES[d.who];fn=run(d.need,TALK[d.id],d.id==="bag"&&S.c2&&S.c2.st===3?"bagN":d.id)}
   else if(d.id==="torv"&&S.c2&&S.c2.st>=1&&Math.abs(W.px-(d.x+340))<70){label="Ekkobrønden";fn=run([],SPOT.echo,"well")}}
- else if(idle&&S.ch1&&!S.eve&&!S.c2&&W.px>10900){label="Find somewhere to eat";fn=eveBegin}
- else if(idle&&S.ch1&&!S.c2&&W.px>10900&&S.eve!==1){label="Begin chapter two";fn=c2begin}
+ else if(idle&&S.ch1&&!S.eve&&!S.c2&&!inC2){label="Find somewhere to eat";fn=eveBegin}
+ else if(idle&&S.ch1&&!S.c2&&S.eve===1&&!inC2){label="Go to the inn";fn=eveBegin}
+ else if(idle&&S.ch1&&!S.c2&&S.eve===2&&!inC2){label="Begin chapter two";fn=c2begin}
+ else if(idle&&S.c2&&S.c2.st<5&&!inC2&&S.beat>=BEATS.length){label="Back to Tågeby";fn=()=>{goDist("raad");townMap()}}
  actB.hidden=!label;if(label){actB.textContent=label;actB.onclick=fn}
 }
 mapB.onclick=()=>townMap();
@@ -1043,7 +1045,7 @@ async function eveTalk(){
  mood("sad");
  await say("o","Velbekomme. Sengene er til dem med kontrakt. Du sover ved døren. Udenfor.",{note:"She says it kindly. It is still outside.",think:"The beds are for people with a contract. I sleep by the door. Outside. I notice she said 'contract' as if everyone here had one."});
  await tell([["n","In the corner, the man with the plans has not looked up once all evening. He is sharpening a pencil that is already very short."],["n","You eat the soup. It is the best thing that has ever happened to you. Then you sleep in a doorway, on a moon, under a painted frog."]]);
- S.eve=2;bump(8,"o",4);
+ S.eve=2;bump(8,"o",4);W.after=c2begin;
  await new Promise(res=>{ui(`<p class="lab">Chapter one · the first evening</p><h1>Kroen</h1><p>Forstand ${Math.round(S.fors)} · words ${S.chips.length}</p><p class="dim">You can now say what you did before, put the verb straight after an opening clause, use ham, hende and dem, and give your own real reason for moving.</p><button class="go" id="nx">Sleep</button>`,true);$("#nx").onclick=res});
 }
 NOTES.push({when:()=>S.eve===2,t:"Chapter 1 · Before, and the verb in second place",h:`<p><b>Før jeg kom hertil, arbejdede jeg som matematiker.</b></p><p><b>Før jeg flyttede hertil, boede jeg hos min mor.</b></p><p class="dim">A clause in first place pushes the verb ahead of the subject: arbejdede jeg, boede jeg. The same after any opening: I går landede jeg i en sø.</p><p class="dim">Past forms: flyttede (moved), arbejdede (worked), boede (lived), studerede (studied), fik (got).</p>`},
@@ -1153,6 +1155,7 @@ if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceW
 window.G={get S(){return S},W,sheetOpen,BEATS,FAIRY,travel,ring,goDist,TALK,DIST,c2begin,eveBegin};
 W.cam=W.px-VW/2;hud();requestAnimationFrame(frame);
 if(!S.landed)intro();
+else if(S.ch1&&!S.c2){const eve=S.eve!==2;W.busy=true;ui(`<p class="lab">${eve?"Chapter one continues":"Chapter two"}</p><h1>${eve?"Den første aften":"Tågeby"}</h1><p class="dim">${eve?"You are inside the walls, wet and hungry, and the day is not over. Your first evening in town is next.":"You have eaten and slept, after a fashion. The town is waiting."}</p><button class="go" id="nx">Continue the story</button><button class="ghost" id="lt">Not now</button>`,true);$("#nx").onclick=()=>{W.busy=false;eve?eveBegin():c2begin()};$("#lt").onclick=()=>{W.busy=false;closeSheet()}}
 </script>
 </body>
 </html>
