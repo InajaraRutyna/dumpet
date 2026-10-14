@@ -163,31 +163,37 @@ const MOODS={
  sad:{bpm:50,key:220,bar:8,ch:[[0,3,7],[-4,0,3],[5,8,12],[-5,-1,2]],mel:[12,_,_,_,10,_,8,_, 8,_,_,_,_,_,7,_, 5,_,_,8,_,_,7,_, 2,_,_,_,-1,_,_,_],mw:"sine",mv:.08,ml:2.6,bass:[0,_,_,_,2,_,_,_],bw:"sine",bv:.06,bl:2,dv:.04,lp:1100},
  mystery:{bpm:60,key:293.7,bar:8,ch:[[0,3,6],[1,4,7]],mel:[12,_,15,_,18,_,21,_, 24,_,21,_,18,_,15,_, 13,_,16,_,19,_,22,_, 25,_,22,_,19,_,16,_],mw:"sine",mv:.05,ml:.9,bass:[0,_,_,_,_,_,_,_],bw:"triangle",bv:.05,bl:1.5,perc:["t",_,_,_,"T",_,_,_],dv:.02,lp:2600},
  dread:{bpm:48,key:155.6,bar:8,ch:[[0,6,13],[0,6,12]],mel:[12,_,_,_,_,_,_,_, 11,_,_,_,_,_,_,_],mw:"sawtooth",mv:.05,ml:4,att:1.2,bass:[_,_,_,_,_,_,_,_],perc:["h",_,_,_,_,_,_,_],dv:.06,lp:520},
+ sleep:{bpm:60,key:349.2,bar:8,ch:[[0,4,7],[-3,0,4],[5,9,12],[-5,-1,2]],mel:[19,_,16,_,12,_,_,_, 17,_,14,_,9,_,_,_, 16,_,12,_,9,_,_,_, 14,_,11,_,7,_,_,_],mw:"sine",mv:.05,ml:1.8,bass:[0,_,_,_,_,_,_,_],bw:"sine",bv:.04,bl:2.4,dv:.015,lp:2600},
  alien:{bpm:152,key:311.1,bar:8,ch:[[0,1,7],[0,5,7]],mel:[0,7,14,7,12,19,14,7, 0,7,14,21,19,14,12,7],mw:"square",mv:.022,ml:.09,bass:[0,_,_,_,_,_,_,_],bw:"sine",bv:.05,bl:1.2,perc:[_,_,"t",_,_,_,"t","t"],dv:.03,lp:4200}};
 const DMOOD={raad:"comic",torv:"warm",ur:"mystery",kro:"sad",port:"sad",bag:"warm"};
 // a scene may set its own mood; when nobody is talking the place decides
 const mood=m=>{W.mood=m;W.ms=1};
-function zoneMood(){const x=W.px;if(x>19000)return DMOOD[curDist().id];if(!S.landed)return "alien";
+function zoneMood(){const x=W.px;if(x>19000)return DMOOD[curDist().id];if(!S.landed)return W.room==="bed"?"sleep":"alien";
  if(x<1850)return "dusk";if(x<3850)return S.lit>=3?"dusk":"dark";if(x>4150&&x<4700&&W.trollUp>.3)return "tense";if(x<5350)return "dusk";if(x<7000)return "eerie";
  if(x<8800)return S.dawn?"dawn":"market";if(x<10380)return "dawn";if(x<10950)return S.gate?"warm":"tense";return S.ch1&&S.eve!==2?"sad":"warm"}
 function audioTick(t){
- if(!A.c)return;const M=MOODS[W.mood]||MOODS.dusk;const now=A.c.currentTime,set=(p,v)=>p.setTargetAtTime(S.sound?v:0,now,.6),px=W.px;
+ if(!A.c)return;const now=A.c.currentTime;
+ // a change of mood never cuts: the old piece fades out (about 2 s), a breath of silence, then the new one fades in
+ if(A.lm==null){A.lm=W.mood;A.ph="in";A.step=0;A.next=now+.2;A.mus.gain.setValueAtTime(0,now);A.mus.gain.setTargetAtTime(2.6,now,1)}
+ else if(W.mood!==A.lm){if(A.ph!=="out"){A.ph="out";A.fo=now+2.6;A.mus.gain.setTargetAtTime(0,now,.6)}
+  else if(now>=A.fo){A.lm=W.mood;A.ph="in";A.step=0;A.next=now+.25;A.mus.gain.setTargetAtTime(2.6,now+.2,1.1)}}
+ else if(A.ph==="out"){A.ph="in";A.mus.gain.setTargetAtTime(2.6,now,.8)}
+ const M=MOODS[A.lm]||MOODS.dusk,set=(p,v)=>p.setTargetAtTime(S.sound?v:0,now,.6),px=W.px;
  const forest=px>1850&&px<3800,lake=Math.max(0,1-Math.abs(px-420)/700),rav=Math.max(0,1-Math.abs(px-4510)/500),ind=W.room?.3:1;
  set(A.wind.g.gain,ind*((forest?.022:.04)+.02*Math.sin(t*.4)));A.wind.fl.frequency.setTargetAtTime(420+260*Math.sin(t*.23)+120*Math.sin(t*.61),now,.5);
- set(A.water.g.gain,ind*(.09*lake+.06*rav));set(A.rumble.g.gain,.3*W.trollUp);set(A.dg.gain,M.dv*1.6);A.lp.frequency.setTargetAtTime(M.lp,now,.4);
+ set(A.water.g.gain,ind*(.09*lake+.06*rav));set(A.rumble.g.gain,.3*W.trollUp);set(A.dg.gain,A.ph==="out"?0:M.dv*1.6);A.lp.frequency.setTargetAtTime(M.lp,now,1.2);
  // the sequencer runs on the audio clock, a little ahead of the picture
- if(A.lm!==W.mood){A.lm=W.mood;A.step=0;A.next=now+.12}
  if(A.next<now-.3)A.next=now+.05;
  const sd=60/M.bpm/2;
  while(S.sound&&A.next<now+.14){const i=A.step++,d=Math.max(0,A.next-now),bi=Math.floor(i/M.bar),ch=M.ch[bi%M.ch.length],k=i%M.bar,pass=Math.floor(i/M.mel.length);
-  if(k===0)A.osc.forEach((o,j)=>o.frequency.setTargetAtTime(semi(M.key/2,ch[j]),now+d,.25));
+  if(k===0)A.osc.forEach((o,j)=>o.frequency.setTargetAtTime(semi(M.key/2,ch[j]),now+d,.6));
   const m=M.mel[i%M.mel.length];if(m!=null)tone(semi(M.key,m)*(M.vib&&pass%2?.5:1),M.ml,M.mv,M.mw,d,0,A.mus,M.att);
   const b=M.bass[k];if(b==="c"){tone(semi(M.key,ch[1]),M.bl,M.bv*.55,M.bw,d,0,A.mus);tone(semi(M.key,ch[2]),M.bl,M.bv*.55,M.bw,d,0,A.mus)}else if(b!=null)tone(semi(M.key/2,ch[b]),M.bl,M.bv,M.bw,d,0,A.mus);
   const p=M.perc&&M.perc[k];if(p==="k"){tone(170,.2,.16,"triangle",d,60)}else if(p==="t"||p==="T"){tone(p==="t"?2100:1500,.035,.03,"square",d)}else if(p==="h"){tone(150,.22,.2,"triangle",d,55);tone(130,.2,.14,"triangle",d+.28,50)}
   A.next+=sd}
  if(forest&&t>A.nk){A.nk=t+.28+Math.random()*.5;if(Math.random()<.6)tone(4100+Math.random()*500,.05,.008,"sine")}
  if(forest&&t>A.no){A.no=t+11+Math.random()*10;tone(370,.5,.03,"sine");tone(311,.7,.03,"sine",.6)}
- if(t>A.nc&&Math.abs(px-3080)<420){A.nc=t+7+Math.random()*8;sfx.caw()}
+ if(t>A.nc&&Math.abs(px-RAVX)<420){A.nc=t+7+Math.random()*8;sfx.caw()}
  if(t>(A.nx||0)){A.nx=t+.5+Math.random()*1.6;
   if(px>5350&&px<7000)tone(80+Math.random()*40,.16,.035,"sine",0,170);                                   // bog bubbles
   else if(px>8800&&px<10950){if(Math.random()<.6){const f=2300+Math.random()*900;tone(f,.07,.02,"sine",0,f*1.3);tone(f*1.1,.07,.02,"sine",.11,f*1.4)}   // dawn birds
@@ -214,7 +220,7 @@ const SHROOM=Array.from({length:26},()=>({x:1850+sr()*2000,s:.7+sr()*.9,c:sr()>.
 const FLY=Array.from({length:90},()=>({x:sr()*11700,y:40+sr()*220,p:sr()*6}));
 const STARS=Array.from({length:110},()=>({x:sr(),y:sr()*.5,a:.2+sr()*.7}));
 const LAMPS=[2080,2400,2720];
-const INNX=11480,BOARDX=11590;
+const INNX=11480,BOARDX=11590,RAVX=3200;
 const POND=[9350,9870],STALLS=[[7420,"b"],[7920,"y"],[8420,"i"]];
 const inPond=x=>x>POND[0]&&x<POND[1];
 const HOUSES=Array.from({length:9},(_,i)=>({x:10960+i*95+sr()*20,w:70+sr()*30,h:90+sr()*80}));
@@ -277,7 +283,7 @@ function frame(ts){
  audioTick(t);
  // ----- camera
  const tb=!app.hidden&&!app.classList.contains("full")?Math.max(.3,Math.min(.72,app.getBoundingClientRect().top/VH-.015)):.72;W.base+=(tb-W.base)*Math.min(1,dt*6);
- const focus=W.drop?390:W.talk==="t"?(W.px+4515)/2:W.px+W.dir*40;W.cam+=(focus-VW/2-W.cam)*Math.min(1,dt*4);
+ const focus=W.drop?390:W.talk==="t"?(W.px+4515)/2:W.talk==="r"&&Math.abs(W.px-RAVX)<300?(W.px+RAVX)/2:W.px+W.dir*40;W.cam+=(focus-VW/2-W.cam)*Math.min(1,dt*4);
  const cam=W.cam+(W.shake&&t-W.shake<.4?Math.sin(t*90)*5*(1-(t-W.shake)/.4):0),GY=VH*W.base,gy=x=>GY+ground(x),sx=x=>x-cam,P=W.px>19000?c2pal():palette(W.px);
  if(W.room){drawRoom(W.room,t,GY);drawSpell(t,VW/2,GY*.42);drawFlash(t);requestAnimationFrame(frame);return}
  // ----- sky, stars, sun or moon
@@ -307,7 +313,7 @@ function frame(ts){
  // near trees (in the world)
  for(const n of NEART){const im=TNEAR[n.k],x=sx(n.x)-im.width/2;if(x<-380||x>VW+20)continue;ctx.drawImage(im,x,gy(n.x)+6-im.height)}
  // standing stone with its word, and the raven
- {const x=sx(2950);if(x>-80&&x<VW+80){const y=gy(2950);ctx.fillStyle="#0b0a1c";ctx.beginPath();ctx.moveTo(x-22,y+4);ctx.lineTo(x-16,y-92);ctx.quadraticCurveTo(x,y-110,x+14,y-92);ctx.lineTo(x+22,y+4);ctx.fill();ctx.save();ctx.translate(x,y-40);ctx.rotate(-Math.PI/2);ctx.font="italic 15px Georgia";ctx.textAlign="center";ctx.shadowColor="#9ff3e0";ctx.shadowBlur=10;ctx.fillStyle="#9ff3e0";ctx.fillText("hvorfor",0,5);ctx.restore();drawRaven(x-2,y-104,t)}}
+ {const x=sx(RAVX);if(x>-80&&x<VW+80){const y=gy(RAVX);ctx.fillStyle="#0b0a1c";ctx.beginPath();ctx.moveTo(x-22,y+4);ctx.lineTo(x-16,y-92);ctx.quadraticCurveTo(x,y-110,x+14,y-92);ctx.lineTo(x+22,y+4);ctx.fill();ctx.save();ctx.translate(x,y-40);ctx.rotate(-Math.PI/2);ctx.font="italic 15px Georgia";ctx.textAlign="center";ctx.shadowColor="#9ff3e0";ctx.shadowBlur=10;ctx.fillStyle="#9ff3e0";ctx.fillText("hvorfor",0,5);ctx.restore();drawRaven(x-2,y-104,t)}}
  // bridge stones rise as you earn them
  for(let i=0;i<3;i++){const bx=RAV[0]+(RAV[1]-RAV[0])*(i+.5)/3,w=(RAV[1]-RAV[0])/3+2;W["st"+i]=(W["st"+i]||0)+((S.stones>i?1:0)-(W["st"+i]||0))*Math.min(1,dt*1.6);const up=W["st"+i];if(up<.01)continue;const y=GY+170*(1-up);ctx.fillStyle="#090716";ctx.fillRect(sx(bx)-w/2,y,w,26);ctx.beginPath();ctx.moveTo(sx(bx)-w/2,y+26);ctx.lineTo(sx(bx),y+60+i%2*10);ctx.lineTo(sx(bx)+w/2,y+26);ctx.fill();ctx.fillRect(sx(bx)-w/2+4,y-7,10,8);ctx.fillRect(sx(bx)+w/2-14,y-7,10,8)}
  // ----- parts two and three: bog, market, pond, gate, town
@@ -381,7 +387,7 @@ function frame(ts){
  if(dark>.01){if(!W.dk){W.dk=document.createElement("canvas");W.dk.width=VW;W.dk.height=VH}const d=W.dk.getContext("2d");d.globalCompositeOperation="source-over";d.clearRect(0,0,VW,VH);d.fillStyle=`rgba(2,2,8,${dark})`;d.fillRect(0,0,VW,VH);d.globalCompositeOperation="destination-out";
   glow(sx(W.px)+19*W.dir,GY+walkY(W.px)-84-W.py,90,"rgba(0,0,0,1)",1,d);glow(W.mxs,W.mys+40,30,"rgba(0,0,0,.8)",1,d);
   LAMPS.forEach((lx,i)=>{if(S.lit>i)glow(sx(lx)+4,gy(lx)-80,230,"rgba(0,0,0,1)",1,d)});
-  for(const f of FAIRY)if(!S.got.includes(f[2]))glow(sx(f[0]),gy(f[0])-f[1],46,"rgba(0,0,0,1)",1,d);glow(sx(2950),gy(2950)-50,70,"rgba(0,0,0,.9)",1,d);
+  for(const f of FAIRY)if(!S.got.includes(f[2]))glow(sx(f[0]),gy(f[0])-f[1],46,"rgba(0,0,0,1)",1,d);glow(sx(RAVX),gy(RAVX)-50,70,"rgba(0,0,0,.9)",1,d);
   ctx.drawImage(W.dk,0,0)}
  if(W.fogK>.02&&W.px<8000){const x=sx(6060);if(x<VW){const fg2=ctx.createLinearGradient(Math.max(-200,x-120),0,Math.max(0,x)+160,0);fg2.addColorStop(0,"rgba(150,210,170,0)");fg2.addColorStop(1,`rgba(150,210,170,${.9*W.fogK})`);ctx.fillStyle=fg2;ctx.fillRect(Math.max(-200,x-120),0,VW+400,VH);for(let i=0;i<6;i++){ctx.globalAlpha=.25*W.fogK;ctx.fillStyle="#d6f0dc";ctx.beginPath();ctx.ellipse(x+80+i*90+Math.sin(t*.3+i)*40,GY-40-i%3*60,120,30,0,0,7);ctx.fill()}ctx.globalAlpha=1}}
  // speech bubble
@@ -535,7 +541,7 @@ const BEATS=[
  {x:2075,run:async()=>{await converse({who:"l",da:"…",note:"A lantern, cold and dark. It seems to be waiting.",hint:"Say the word Mumle gave you: lys.",judge:t=>has(t,"lys")?(S.lit=1,sfx.lamp(),{ok:1,who:"m",da:"Ja! Lys!",fors:3,note:"The lantern yawns open. Gold light spills across the path.",think:"I said one word and a lamp obeyed. At home I can't get a printer to do that."}):{who:"m",da:"Nej, nej. Sig: lys.",note:"The lantern stays asleep."}})}},
  {x:2395,run:async()=>{await converse({who:"l",da:"…",note:"A second lantern, asleep.",hint:"The same word wakes it.",judge:t=>has(t,"lys")?(S.lit=2,sfx.lamp(),{ok:1,who:"m",da:"Godt! En lygte til.",fors:2,note:"It lights. Things with too many legs withdraw politely into the undergrowth."}):{who:"m",da:"Sig: lys.",note:"Nothing happens."}})}},
  {x:2715,run:async()=>{await converse({who:"l",da:"…",note:"A third lantern. This one is asleep with its back to you.",hint:"Mumle says this one is grumpy and wants politeness: say lys and tak.",judge:t=>has(t,"lys","tak")?(S.lit=3,sfx.lamp(),{ok:1,who:"m",da:"Se! Skoven er lys nu.",fors:4,note:"The lantern brightens, flattered. The whole forest opens up in gold.",think:"Manners work on furniture here. Noted."}):has(t,"lys")?{who:"m",da:"Den her er lidt sur. Prøv at sige tak.",note:"The lantern flickers once and goes out again, pointedly."}:{who:"m",da:"Sig: lys. Og tak.",note:"Nothing."}})}},
- {x:3075,need:["fremmed","hvorfor","hertil"],run:async()=>{
+ {x:3130,need:["fremmed","hvorfor","hertil"],run:async()=>{
   mood("comic");
   await say("r","Nå, endnu en fremmed. Hvorfor kom du hertil?",{note:"A raven on the standing stone looks you up and down. It speaks fast, as if words were cheap.",think:"'Hvorfor' is carved on that stone: why. 'Kom … hertil': came here. A bird wants my motives. I have the answer and no word for 'because'. This is what an oral exam looks like from the inside."});
   await say("m",`${Hx()} kom hertil på grund af et rumskib.`,{note:"Mumle answers for you, jerking a thumb at the sky.",think:"'På grund af et rumskib.' He put three small words in front of the spaceship and it became a reason. Because of. Three words where English spends two; Danish is not in a hurry."});
