@@ -42,7 +42,7 @@
       btn: 'Klar ▸'
     });
     const h = E.actor('hero'), x0 = h.wx, D = G.drone || (G.drone = { wx: x0 + 80, y: 372, len: 300, sweep: -0.3, alert: 0 });
-    D.alert = 0;
+    D.alert = 0; if (Math.abs(D.wx - h.wx) > 150) await E.tween(D, 'wx', h.wx + 90, 1.2);
     const gy = () => window.Art.groundAt(h.wx), aim = tx => Math.atan((D.wx - tx) / Math.max(120, gy() - D.y));
     // a fresh order every time, never the same whisper twice in a row
     const seq = []; while (seq.length < 12) { const k = shuffle(Object.keys(CMD))[0]; if (k !== seq[seq.length - 1]) seq.push(k); }
