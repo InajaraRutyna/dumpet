@@ -41,15 +41,16 @@
         <p class="hint">The whisper comes first. Later the words fade, and you only hear them.</p>`,
       btn: 'Klar ▸'
     });
-    const h = E.actor('hero'), x0 = h.x, y0 = h.y, D = G.drone = Object.assign({ x: 262, y: 236, len: 540, sweep: -0.3, alert: 0 }, G.drone || {});
-    D.sweep = -0.3; D.alert = 0;
-    const aim = tx => Math.atan((D.x - tx) / 480);
-    const seq = ['stille', 'ned', 'bag', 'lob', 'ned', 'stille', 'bag', 'lob', 'ned', 'stille', 'bag', 'lob'];
-    const listen = E.daVoices().length > 0;
+    const h = E.actor('hero'), x0 = h.wx, D = G.drone || (G.drone = { wx: x0 + 80, y: 372, len: 300, sweep: -0.3, alert: 0 });
+    D.alert = 0;
+    const gy = () => window.Art.groundAt(h.wx), aim = tx => Math.atan((D.wx - tx) / Math.max(120, gy() - D.y));
+    // a fresh order every time, never the same whisper twice in a row
+    const seq = []; while (seq.length < 12) { const k = shuffle(Object.keys(CMD))[0]; if (k !== seq[seq.length - 1]) seq.push(k); }
+    const listen = E.daVoices().length > 0, HIDE_X = 822;
     let lives = 3, ok = 0, miss = 0, saved = 0;
     for (let r = 0; r < seq.length; r++) {
       const k = seq[r], C = CMD[k], ms = Math.max(2600, 5600 - r * 260), hide = listen && r >= 4;
-      E.tween(D, 'sweep', (r % 2 ? 0.35 : -0.35), 1.2);
+      E.tween(D, 'sweep', aim(h.wx) + (r % 2 ? 0.45 : -0.45), 1.2);
       const res = await new Promise(async done => {
         const c = E.sheet(`<p class="lab">Gem dig <span>${'◆'.repeat(lives)}${'◇'.repeat(3 - lives)} · ${r + 1}/${seq.length}</span></p>
           <p class="hint center">${hide ? 'Listen. Lav is barely breathing the words.' : 'Lav whispers:'}</p>
@@ -59,7 +60,6 @@
           <div class="row"><button class="ghost" id="again">▶ igen</button></div>`, { lift: 1 });
         await E.wait(350);
         E.speak(C.da, 'lav');
-        if (hide) setTimeout(() => { const w = c.querySelector('#wh'); if (w) w.textContent = '· ' + '·'.repeat(Math.min(6, C.da.length / 2)) + ' ·'; }, 50);
         const cl = clockBar(c.querySelector('#tm'), ms);
         c.querySelector('#again').onclick = () => E.speak(C.da, 'lav');
         c.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { cl.stop(); done(b.dataset.a); });
@@ -67,16 +67,17 @@
       });
       if (res === k) {
         ok++; SFX.tick();
-        if (k === 'ned') { E.tween(h, 'sq', 0.7, 0.18); E.tween(h, 'y', y0 + 14, 0.18); }
-        if (k === 'stille') { E.tween(G, 'glow', 0.55, 0.3); E.tween(G, 'glowPool', 0.55, 0.3); }
-        if (k === 'lob') { h.flip = !h.flip; E.tween(h, 'x', h.x < 150 ? 210 : 100, 0.5); }
-        if (k === 'bag') { E.tween(h, 'x', 44, 0.4); E.tween(h, 'alpha', 0.4, 0.4); }
-        await E.tween(D, 'sweep', -aim(h.x) * 0.2 + (h.x < 150 ? -0.4 : 0.45), 0.9);
+        if (k === 'ned') E.tween(h, 'sq', 0.62, 0.18);
+        if (k === 'stille') E.tween(G, 'glow', 0.4, 0.3);
+        if (k === 'lob') { const to = h.wx > x0 + 40 ? x0 - 50 : x0 + 110; E.tween(h, 'wx', to, Math.abs(to - h.wx) / 300, 'lin'); }
+        if (k === 'bag') E.tween(h, 'wx', HIDE_X, Math.abs(HIDE_X - h.wx) / 300, 'lin');
+        await E.wait(450);
+        await E.tween(D, 'sweep', aim(h.wx) + (D.wx > h.wx ? -0.5 : 0.5), 0.9);
         E.sheet(`<p class="whisper" lang="da">${fog(C.da)}</p><p class="center hint">${esc(C.en)}. The beam slides past.</p>`, { lift: 1 });
         await E.wait(900);
       } else {
         miss++; lives--;
-        await E.tween(D, 'sweep', aim(h.x), 0.5);
+        await E.tween(D, 'sweep', aim(h.wx), 0.5);
         D.alert = 1; SFX.found(); G.shake = { t0: E.clock(), dur: 0.5, amp: 0.6 };
         E.sheet(`<p class="lab">Fundet <span>found</span></p><p class="whisper" style="color:var(--bad)">${esc(C.da)}</p><p class="center">${fog(C.da)} = <b>${esc(C.en.toLowerCase())}</b>.${res === 'time' ? ' Too slow.' : ''}</p>`, { lift: 1 });
         await E.wait(1700); D.alert = 0;
@@ -84,15 +85,15 @@
           saved++;
           E.sheet(`<p class="narr">The beam locks onto you. Then Lav kicks a stone into the lake with a loud <b>plop</b>, and the drone turns toward the water, curious.</p><p class="da" lang="da">${fog('Du skylder mig en.')} ${sayBtn('Du skylder mig en.', 'lav')}</p><p class="hint">You owe me one.</p><div class="row end"><button class="go" id="nx">▸</button></div>`, { lift: 1 });
           E.speak('Du skylder mig en.', 'lav');
-          G.splash = { t0: E.clock(), x: 250, y: 740 }; SFX.splash();
-          await E.tween(D, 'sweep', -0.5, 0.8);
+          G.splash = { t0: E.clock(), x: h.x - 150, y: h.y + 14 }; SFX.splash();
+          await E.tween(D, 'sweep', aim(h.wx - 180), 0.8);
           await tapWait(document.querySelector('#sheet .card'), '#nx');
           lives = 3;
         }
       }
       // back to the starting pose
-      E.tween(h, 'sq', 1, 0.3); E.tween(h, 'y', y0, 0.3); E.tween(h, 'alpha', 1, 0.4); E.tween(G, 'glow', 1, 0.5); E.tween(G, 'glowPool', 1, 0.5);
-      if (Math.abs(h.x - x0) > 1 && (k === 'bag')) E.tween(h, 'x', x0, 0.5);
+      E.tween(h, 'sq', 1, 0.3); E.tween(G, 'glow', 1, 0.5);
+      if (k === 'bag') await E.tween(h, 'wx', x0 + 20, Math.abs(x0 + 20 - h.wx) / 260, 'lin');
     }
     E.closeSheet();
     return { ok, miss, saved };
@@ -201,7 +202,7 @@
           <div class="scroll" lang="da"><h4>${fog(o.title)}</h4>${o.text.split('\n').map(p => `<p style="margin:.2em 0 .5em">${fog(p)}</p>`).join('')}</div>
           <div class="row"><button class="mini" id="rd">▶ Læs højt</button><span class="hint">Tap any word you don't know.</span></div>
           <p class="h" style="margin-top:.7em">${Q.da ? fog(Q.q) : esc(Q.q)}</p>
-          <div class="opts" data-ans="${Q.a}">${Q.opts.map((x, k) => `<button data-k="${k}" ${Q.da ? 'lang="da"' : ''}>${Q.da ? fog(x) : esc(x)}</button>`).join('')}</div>
+          <div class="opts" data-ans="${Q.a}">${shuffle(Q.opts.map((x, k) => [x, k])).map(([x, k]) => `<button data-k="${k}" ${Q.da ? 'lang="da"' : ''}>${esc(x)}</button>`).join('')}</div>
           <p class="fb" id="why" hidden></p><div class="row end"><button class="go" id="nx" hidden>▸</button></div>`, { lift: 0 });
         if (i > 0) c.scrollTop = c.querySelector('.h').offsetTop - 60;
         c.querySelector('#rd').onclick = () => E.speak(o.text.replace(/\n/g, ' '), o.who || 'asta');
@@ -268,14 +269,15 @@
      SPEJLBROEN — the bridge is built from sentences in the right order */
   async function bridge(items, P) {
     const h = E.actor('hero'); let miss = 0;
-    const N = 8, pos = i => { const u = (i + 0.5) / N; return [118 + (282 - 118) * u, 600 + (566 - 600) * u + Math.sin(u * Math.PI) * 10]; };
+    const X = window.Art.WX, N = 8, pos = i => X.RAV0 + (X.RAV1 - X.RAV0) * (i + 0.5) / N;
     G.planks = 0; G.crack = null;
     for (let i = 0; i < items.length; i++) {
       const it = items[i]; let tries = 0;
       for (; ;) {
         const ans = await new Promise(res => {
           let comp = [];
-          const pool = shuffle(it.w.map((w, k) => ({ w, k })));
+          let pool = shuffle(it.w.map((w, k) => ({ w, k })));
+          for (let r = 0; r < 12 && pool.every((c, k) => c.k === k); r++) pool = shuffle(pool);
           const c = E.sheet(`<p class="lab">Spejlbroen <span>planke ${i + 1}/${items.length}</span></p>${it.rule ? `<p class="hint">${esc(it.rule)}</p>` : ''}
             <div class="frag" lang="da" style="text-align:left">${fog(it.pre)} <span id="sl"></span>${esc(it.post || '.')}</div>
             ${it.en ? `<p class="hint">${esc(E.fmt(it.en))}</p>` : ''}
@@ -296,7 +298,7 @@
         if (good.includes(E.norm(ans))) {
           G.crack = null; G.planks = i + 1; SFX.plank(); E.learnText(E.fmt(it.pre + ' ' + it.w.join(' ')));
           E.gainPower(tries ? 1 : 3);
-          const [x, y] = pos(Math.min(N - 1, i)); E.tween(h, 'x', x, 0.7); E.tween(h, 'y', y - 2, 0.7);
+          E.tween(h, 'wx', pos(Math.min(N - 1, i)), 0.8, 'lin');
           const full = E.fmt(it.pre + ' ' + it.w.join(' ') + (it.post || '.'));
           E.speak(full);
           const c = E.sheet(`<p class="lab">Planken holder <span>${i + 1}/${items.length}</span></p><p class="da" lang="da">${fog(full)} ${sayBtn(full)}</p>${it.why ? `<p class="hint">${esc(it.why)}</p>` : ''}<div class="row end"><button class="go" id="nx">▸</button></div>`, { lift: 1 });
@@ -323,7 +325,7 @@
   /* =====================================================================
      KLANGSTEN — the sound stones answer the right sounds */
   async function stones() {
-    let miss = 0;
+    let miss = 0; G.stonesLit = 0; const lightUp = () => { G.stonesLit = Math.min(6, (G.stonesLit || 0) + 1); SFX.stone(); };
     // 1 · the letters nobody says
     const SIL = [
       { w: 'for at', mute: [2, 4, 5], say: 'Jeg kom hertil for at finde hjælp.', note: 'for at sounds like one short “fo”.' },
@@ -346,7 +348,7 @@
         const ok = sel.join() === s.mute.join();
         const shown = [...s.w].map((ch, i) => s.mute.includes(i) ? `<s style="opacity:.4">${esc(ch)}</s>` : esc(ch)).join('');
         if (ok || tries >= 1) {
-          if (ok) { SFX.stone(); E.gainPower(2); } else { miss++; SFX.bad(); }
+          lightUp(); if (ok) { E.gainPower(2); } else { miss++; SFX.bad(); }
           const c = E.sheet(`<p class="lab">${ok ? 'Stenen synger' : 'Sådan her'} <span>${ok ? 'the stone sings' : 'like this'}</span></p><div class="frag" lang="da" style="font-size:1.6em">${shown}</div><p class="center">${esc(s.note)} ${sayBtn(s.w)}</p><div class="row end"><button class="go" id="nx">▸</button></div>`, { lift: 1 });
           E.learn(s.w); await tapWait(c, '#nx'); break;
         }
@@ -383,11 +385,11 @@
           const mc = c.querySelector('#mc');
           if (mc) mc.onclick = async () => { mc.disabled = true; mc.textContent = '… lytter'; const alts = await E.hear(); mc.disabled = false; mc.textContent = '🎙 Sig det'; if (alts === null) return res('self'); if (!alts.length) { c.querySelector('#hd').textContent = 'I heard nothing. Try again.'; return; } res(alts.map(E.norm)); };
         });
-        if (r === 'self') { SFX.stone(); E.gainPower(1); break; }
+        if (r === 'self') { if (SAY.indexOf(s) % 2) lightUp(); else SFX.stone(); E.gainPower(1); break; }
         const words = target.split(' '), best = Math.max(...r.map(a => words.filter(w => (' ' + a + ' ').includes(' ' + w + ' ')).length / words.length));
-        if (best >= 0.75) { SFX.stone(); E.gainPower(3); E.castAnim(); E.sheet(`<p class="whisper">✓</p><p class="center hint">The stone heard: “${esc(r[0])}”</p>`, { lift: 1 }); await E.wait(1200); break; }
+        if (best >= 0.75) { if (SAY.indexOf(s) % 2) lightUp(); else SFX.stone(); E.gainPower(3); E.castAnim(); E.sheet(`<p class="whisper">✓</p><p class="center hint">The stone heard: “${esc(r[0])}”</p>`, { lift: 1 }); await E.wait(1200); break; }
         miss++; SFX.bad();
-        if (tries >= 2) { E.sheet(`<p class="center">The stone heard “${esc(r[0])}”. Speech recognition is fussy; that's fine. Moving on.</p>`, { lift: 1 }); await E.wait(2000); break; }
+        if (tries >= 2) { if (SAY.indexOf(s) % 2) lightUp(); E.sheet(`<p class="center">The stone heard “${esc(r[0])}”. Speech recognition is fussy; that's fine. Moving on.</p>`, { lift: 1 }); await E.wait(2000); break; }
         E.toast(`The stone heard “${r[0]}”. Again, slowly.`, 2600);
       }
     }

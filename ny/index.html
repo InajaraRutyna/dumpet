@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, interactive-widget=resizes-visual">
 <meta name="theme-color" content="#0b1712">
 <title>Dumpet på Måne Syv</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -20,16 +20,23 @@
         <div id="kraft" title="Ordkraft: word power"><b>ORDKRAFT</b><i><u></u></i></div>
         <button id="bBook" class="hb txt" aria-label="Word book">Ord</button>
       </div>
+      <div id="goal" hidden></div>
+      <div id="pad" hidden>
+        <button id="pL" aria-label="Walk left">◀</button><button id="pR" aria-label="Walk right">▶</button><button id="pJ" aria-label="Jump">▲</button>
+      </div>
+      <div id="wordpop" hidden></div>
       <div id="panel" hidden></div>
       <div id="sheet" hidden></div>
       <div id="gl" hidden></div>
       <div id="tip" hidden></div>
       <div id="title" hidden></div>
+      <div id="modal" hidden></div>
     </div>
   </div>
 </div>
 <script src="js/art.js"></script>
 <script src="js/engine.js"></script>
+<script src="js/world.js"></script>
 <script src="js/games.js"></script>
 <script src="js/k1a1.js"></script>
 <script>

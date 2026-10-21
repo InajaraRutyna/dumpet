@@ -3,6 +3,7 @@
   'use strict';
   const $ = s => document.querySelector(s), A = window.Art;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
   /* ================= state, saved on the device */
   const KEY = 'dumpet2';
@@ -55,9 +56,12 @@
     }
     G.lift += (target - G.lift) * 0.12;
   }
+  const TICK = [];
+  function onTick(f) { TICK.push(f); }
   function frame() {
     const t = clock();
     runTweens(t);
+    for (const f of TICK) { try { f(t); } catch (e) { console.error(e); } }
     updateLift();
     for (const a of G.cast) { if (a.k === 'skib') a.talk = G.talk === 'skib' && speaking(); else if (a.k === 'hero' && G.night && a._g !== G.glow) refreshHero(); }
     try { stage.draw(t, G); } catch (e) { console.error(e); }
@@ -104,8 +108,9 @@
   document.addEventListener('click', e => {
     audioStart();
     const gl = $('#gl');
-    if (e.target.closest('#gl')) { const b = e.target.closest('[data-say]'); if (b) speak(b.dataset.say); return; }
-    gl.hidden = true;
+    if (e.target.closest('#gl')) { const b = e.target.closest('[data-say]'); if (b) speak(b.dataset.say); e.stopPropagation(); return; }
+    const wasOpen = !gl.hidden; gl.hidden = true;
+    if (wasOpen && !e.target.closest('[data-w],button,input,textarea,select')) { e.stopPropagation(); e.preventDefault(); return; }
     const w = e.target.closest('[data-w]');
     if (w) { e.stopPropagation(); const k = w.dataset.w; pop(w, k.includes(' ') ? k : w.textContent, GLOSS[k], true); if (w.classList.contains('new')) { w.classList.remove('new'); S.words[k] = (S.words[k] || 0) + 1; save(); } return; }
     const sp = e.target.closest('[data-say]'); if (sp) { e.stopPropagation(); speak(sp.dataset.say, sp.dataset.who); }
@@ -124,7 +129,9 @@
       const v = (SPK[who] && SPK[who].voice) || [1, 1], u = new SpeechSynthesisUtterance(fmt(t).replace(/[«»"“”…]/g, ' '));
       u.lang = 'da-DK'; u.rate = Math.max(0.5, Math.min(1.6, S.set.rate * v[0])); u.pitch = Math.max(0.1, Math.min(2, S.set.pitch * v[1]));
       const vs = daVoices(), dv = vs.find(x => x.name === S.set.voice) || vs[0]; if (dv) u.voice = dv;
-      speechSynthesis.cancel(); speechSynthesis.speak(u);
+      const busy = speechSynthesis.speaking || speechSynthesis.pending;
+      speechSynthesis.cancel();
+      if (busy) setTimeout(() => { try { speechSynthesis.speak(u); } catch (e) { } }, 80); else speechSynthesis.speak(u);
       speakingUntil = clock() + Math.min(6, 0.6 + t.length * 0.055);
     } catch (e) { }
   }
@@ -215,9 +222,9 @@
   function choose_(o) {
     return new Promise(res => {
       const p = show((o.who && o.da ? lineHtml(o.who, o.da, o.en) : '') + (o.narr ? `<p class="narr pop">${fmtB(o.narr)}</p>` : '') + (o.think ? `<p class="think pop">${esc(fmt(o.think))}</p>` : '') +
-        `<div class="opts">${o.opts.map((x, i) => `<button data-i="${i}" ${o.da_opts ? 'lang="da"' : ''}>${o.da_opts ? fog(x) : esc(fmt(x))}</button>`).join('')}</div>`);
+        `<div class="opts">${(o.shuffle ? shuffle(o.opts.map((x, i) => [x, i])) : o.opts.map((x, i) => [x, i])).map(([x, i]) => `<button data-i="${i}" ${o.da_opts ? 'lang="da"' : ''}>${esc(fmt(x))}</button>`).join('')}</div>`);
       wireEn(p); if (o.who && o.da) { G.talk = o.who; speak(o.da, o.who); }
-      p.querySelectorAll('.opts button').forEach(b => b.addEventListener('click', e => { if (e.target.closest('[data-w]')) return; res(+b.dataset.i); }));
+      p.querySelectorAll('.opts button').forEach(b => b.addEventListener('click', () => res(+b.dataset.i)));
     });
   }
 
@@ -225,7 +232,10 @@
   function utter(o) {
     return new Promise(res => {
       let comp = [], done = false;
-      const pool = (o.pool || []).map((w, i) => ({ w, i })).sort(() => Math.random() - 0.5);
+      // a real shuffle, and never in the answer's own order
+      const ansW = norm(fmt(o.ans || '')).split(' ');
+      let pool = shuffle((o.pool || []).map((w, i) => ({ w, i })));
+      for (let k = 0; k < 12 && pool.length > 2 && pool.slice(0, 2).map(c => norm(fmt(c.w))).join(' ') === ansW.slice(0, 2).join(' '); k++) pool = shuffle(pool);
       const used = new Set();
       const p = show(`${o.who && o.da ? `<div class="ask">${lineHtml(o.who, o.da, o.en)}</div>` : ''}${o.narr ? `<p class="narr">${fmtB(o.narr)}</p>` : ''}${o.give ? `<p class="fb">Say exactly this: <span lang="da">${fog(o.give)}</span> <button class="mini" data-say="${esc(fmt(o.give))}">▶</button></p>` : ''}
         <div class="slot" id="comp" data-ans="${esc(fmt(o.ans || ''))}"></div>
@@ -298,6 +308,9 @@
     sh.innerHTML = `<div class="card pop">${html}</div>`; sh.hidden = false; return sh.querySelector('.card');
   }
   function closeSheet() { const sh = $('#sheet'); sh.hidden = true; sh.innerHTML = ''; }
+  // menus live on their own layer above everything; closing one returns you exactly where you were
+  function modal(html) { const m = $('#modal'); m.innerHTML = `<div class="card pop">${html}</div>`; m.hidden = false; return m.querySelector('.card'); }
+  function closeModal() { const m = $('#modal'); m.hidden = true; m.innerHTML = ''; }
 
   /* ================= power, HUD */
   function gainPower(n) { if (W.ff) return; S.power = Math.max(0, S.power + n); hud(); save(); }
@@ -307,6 +320,7 @@
   /* ================= SOUND: synthesised, nothing recorded */
   const AU = { c: null };
   function audioStart() {
+    if (AU.c && AU.c.state === 'suspended') { try { AU.c.resume(); } catch (e) { } }
     if (AU.c || !S.set.sound) return; const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
     const c = AU.c = new C();
     AU.out = c.createGain(); AU.out.gain.value = 0.85; AU.out.connect(c.destination);
@@ -393,7 +407,7 @@
 
   /* ================= the heroine on stage */
   const outfitOf = day => day <= 0 ? 'pajamas' : A.ROTATION[(day - 1) % A.ROTATION.length];
-  function heroLook(extra) { let o = A.heroLook(outfitOf(S.day), extra); if (G.night) o = A.nightify(o, G.glow == null ? 1 : G.glow); return o; }
+  function heroLook(extra) { let o = A.heroLook(outfitOf(S.day), extra, S.pro === 'han'); if (G.night) o = A.nightify(o, G.glow == null ? 1 : G.glow); return o; }
   function actor(id) { return G.cast.find(a => a.id === id); }
   function setCast(list) { G.cast = list.map(a => { const b = Object.assign({}, a); if (b.k === 'hero' && !b.o) { b.id = b.id || 'hero'; b.o = heroLook(b.extra || {}); b._g = G.glow; } return b; }); }
   function refreshHero(extra) { const h = actor('hero'); if (!h) return; if (extra) h.extra = Object.assign({}, h.extra || {}, extra); const c = h.o && h.o.cast; h.o = heroLook(h.extra || {}); if (c && (!h.extra || h.extra.cast == null)) h.o.cast = c; h._g = G.glow; }
@@ -408,22 +422,25 @@
   /* ================= chapters, title, menu */
   const CH = [];
   function chapter(o) { CH.push(o); }
+  let RUNNING = false;
   async function runChapter(c, fresh) {
-    closeSheet(); $('#title').hidden = true; $('#hud').hidden = false; hidePanel();
+    if (RUNNING) return; RUNNING = true; G.titleDrift = false; G.drone = null;
+    closeModal(); closeSheet(); $('#title').hidden = true; $('#hud').hidden = false; hidePanel();
     if (fresh) S.cp = null;
     S.cur = c.id; save();
     where(c.label); hud();
     try { await c.run(); } catch (e) { console.error(e); toast('Something went wrong: ' + e.message, 6000); }
+    RUNNING = false;
   }
   function titleScreen() {
-    G.scene = 'title'; G.night = true; G.cast = []; G.fade = 0; mood('night', { wind: 0.03, crickets: 0.5 });
+    G.scene = 'world'; G.night = true; G.glow = 1; G.cast = []; G.fade = 0; G.lift = 0; G.lights = []; G.camX = null; G.titleDrift = true; G.view = { x: 260, z: 1 }; G.drone = { wx: 520, y: 250, len: 460 }; mood('night', { wind: 0.03, crickets: 0.5 });
     hidePanel(); $('#hud').hidden = true;
     const t = $('#title'); t.hidden = false;
     const cont = !!(S.cp && S.cp.r && S.cp.r.length);
     t.innerHTML = `<h1>Dumpet på<br>Måne Syv</h1><p>Taken from your bed. Changed halfway. Dumped on a moon where every word is magic, and every word is Danish.</p>
       ${cont ? `<button class="go" id="tCont">Fortsæt · continue</button>` : ''}<button class="${cont || S.started ? 'ghost' : 'go'}" id="tNew">${S.started ? 'Ny rejse · start again' : 'Begynd · begin'}</button><button class="${!cont && S.started ? 'go' : 'ghost'}" id="tCh">Kapitler · chapters</button><button class="ghost" id="tSet">Indstillinger · settings</button>`;
     t.querySelector('#tNew').onclick = async () => { audioStart(); if (S.started && !confirmBox()) return; t.hidden = true; await newGame(); };
-    if (cont) t.querySelector('#tCont').onclick = () => { audioStart(); const c = CH.find(x => S.cp && x.id === S.cp.id) || CH.find(x => x.id === S.cur) || CH[0]; runChapter(c); };
+    if (cont) t.querySelector('#tCont').onclick = () => { audioStart(); const c = CH.find(x => S.cp && S.cp.id && S.cp.id.startsWith(x.id)) || CH.find(x => x.id === S.cur) || CH[0]; runChapter(c); };
     t.querySelector('#tCh').onclick = () => { audioStart(); chapters(); };
     t.querySelector('#tSet').onclick = () => { audioStart(); settings(); };
   }
@@ -436,27 +453,32 @@
   function whoAreYou() {
     return new Promise(res => {
       $('#title').hidden = true;
-      const c = sheet(`<p class="lab">Before you fall asleep</p><p class="h">Who are you?</p><p class="hint">Your heroine's name. People here will call you by it.</p>
+      const c = modal(`<p class="lab">Before you fall asleep</p><p class="h">Who are you?</p><p class="hint">Your hero's name. People here will call you by it.</p>
         <input class="write" id="nm" maxlength="18" placeholder="Name" autocomplete="off">
-        <p class="hint" style="margin-top:.8em">In Danish, <b>hun</b> = she, <b>han</b> = he. How should the moon talk about you?</p>
+        <p class="hint" style="margin-top:.8em">In Danish, <b>hun</b> = she, <b>han</b> = he. Choose who you are: a woman or a man.</p>
         <div class="row"><button class="ghost" data-p="hun">hun · she</button><button class="ghost" data-p="han">han · he</button></div>
-        <div class="row end"><button class="go" id="ok">Sov godt ▸</button></div>`, { mid: true, dim: true });
+        <div class="row end"><button class="go" id="ok">Sov godt ▸</button></div>`);
       let pro = 'hun'; const mark = () => c.querySelectorAll('[data-p]').forEach(b => b.className = b.dataset.p === pro ? 'go' : 'ghost'); mark();
       c.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { pro = b.dataset.p; mark(); });
-      c.querySelector('#ok').onclick = () => { const n = c.querySelector('#nm').value.trim().replace(/[<>]/g, ''); if (!n) return toast('Write a name first.'); S.name = n.charAt(0).toUpperCase() + n.slice(1); S.pro = pro; save(); closeSheet(); res(); };
+      c.querySelector('#ok').onclick = () => { const n = c.querySelector('#nm').value.trim().replace(/[<>]/g, ''); if (!n) return toast('Write a name first.'); S.name = n.charAt(0).toUpperCase() + n.slice(1); S.pro = pro; save(); closeModal(); res(); };
     });
   }
   function chapters() {
     const groups = {};
     CH.forEach(c => (groups[c.k] = groups[c.k] || []).push(c));
-    const c = sheet(`<div class="menu"><p class="lab">Kapitler <span>chapters</span></p>${Object.keys(groups).map(k => `<p class="sec">${esc(groups[k][0].kTitle)}</p>${groups[k].map(x => `<button class="item" data-id="${x.id}" ${x.locked ? 'disabled' : ''}><span>${esc(x.title)}</span><small>${x.locked ? 'låst' : S.prog[x.id] ? 'done' : ''}</small></button>`).join('')}`).join('')}
-      <div class="row end"><button class="ghost" id="cl">Luk · close</button></div></div>`, { mid: true, dim: true });
-    c.querySelectorAll('[data-id]').forEach(b => b.onclick = async () => { const x = CH.find(y => y.id === b.dataset.id); if (!S.name) { closeSheet(); await whoAreYou(); } runChapter(x, !(S.cp && S.cp.id === x.id)); });
-    c.querySelector('#cl').onclick = () => { closeSheet(); if (!$('#hud').hidden) return; titleScreen(); };
+    const c = modal(`<div class="menu"><p class="lab">Kapitler <span>chapters</span></p>${Object.keys(groups).map(k => `<p class="sec">${esc(groups[k][0].kTitle)}</p>${groups[k].map(x => `<button class="item" data-id="${x.id}" ${x.locked ? 'disabled' : ''}><span>${esc(x.title)}</span><small>${x.locked ? 'låst' : S.prog[x.id] ? 'done' : ''}</small></button>`).join('')}`).join('')}
+      <div class="row end"><button class="ghost" id="cl">Luk · close</button></div></div>`);
+    c.querySelectorAll('[data-id]').forEach(b => b.onclick = async () => {
+      const x = CH.find(y => y.id === b.dataset.id);
+      // a section is already running: start the chosen one cleanly from a fresh page
+      if (RUNNING) { if (!(S.cp && S.cp.id && S.cp.id.startsWith(x.id))) S.cp = null; S.auto = x.id; save(); location.reload(); return; }
+      closeModal(); if (!S.name) await whoAreYou(); runChapter(x, !(S.cp && S.cp.id && S.cp.id.startsWith(x.id)));
+    });
+    c.querySelector('#cl').onclick = () => { closeModal(); if (!$('#hud').hidden) return; titleScreen(); };
   }
   function settings(back) {
     const vs = daVoices();
-    const c = sheet(`<div class="menu"><p class="lab">Indstillinger <span>settings</span></p>
+    const c = modal(`<div class="menu"><p class="lab">Indstillinger <span>settings</span></p>
       <div class="set"><span>Sound</span><button class="ghost" id="sSnd">${S.set.sound ? 'on' : 'off'}</button></div>
       <div class="set"><span>Music volume</span><input type="range" id="sMus" min="0" max="1" step=".05" value="${S.set.music}"></div>
       <div class="set"><span>Voice speed</span><input type="range" id="sRate" min=".5" max="1.3" step=".05" value="${S.set.rate}"></div>
@@ -465,7 +487,7 @@
       <div class="set"><span>Microphone answers</span><button class="ghost" id="sMic">${S.set.mic ? 'on' : 'off'}</button></div>
       <div class="row"><button class="ghost" id="sTest">▶ Test the voice</button></div>
       <p class="hint">No Danish voice? On Android: Settings › Text-to-speech › install Danish. On iPhone: Settings › Accessibility › Spoken Content › Voices › Dansk.</p>
-      <div class="row end"><button class="go" id="cl">Luk · close</button></div></div>`, { mid: true, dim: true });
+      <div class="row end"><button class="go" id="cl">Luk · close</button></div></div>`);
     c.querySelector('#sSnd').onclick = e => { S.set.sound = S.set.sound ? 0 : 1; e.target.textContent = S.set.sound ? 'on' : 'off'; save(); audioStart(); };
     c.querySelector('#sMic').onclick = e => { S.set.mic = S.set.mic ? 0 : 1; e.target.textContent = S.set.mic ? 'on' : 'off'; save(); };
     c.querySelector('#sMus').oninput = e => { S.set.music = +e.target.value; save(); };
@@ -473,21 +495,21 @@
     c.querySelector('#sPitch').oninput = e => { S.set.pitch = +e.target.value; save(); };
     c.querySelector('#sVoice').onchange = e => { S.set.voice = e.target.value; save(); };
     c.querySelector('#sTest').onclick = () => speak('Hej. Jeg hedder Lav. Jeg er en moshjort.', 'lav');
-    c.querySelector('#cl').onclick = () => { closeSheet(); if (back) back(); else if ($('#hud').hidden) titleScreen(); };
+    c.querySelector('#cl').onclick = () => { closeModal(); if (back) back(); else if ($('#hud').hidden) titleScreen(); };
   }
   function book() {
     const ks = Object.keys(S.words).filter(k => GLOSS[k] != null).sort((a, b) => a.localeCompare(b, 'da'));
-    const c = sheet(`<div class="menu"><p class="lab">Ordbog <span>${ks.length} words met</span></p><div class="book">${ks.map(k => `<div><span data-say="${esc(k)}">▶ ${esc(k)}</span><i>${esc(GLOSS[k])}</i></div>`).join('') || '<p class="hint">Tap any Danish word to see what it means. It lands here.</p>'}</div><div class="row end"><button class="go" id="cl">Luk</button></div></div>`, { mid: true, dim: true });
+    const c = modal(`<div class="menu"><p class="lab">Ordbog <span>${ks.length} words met</span></p><div class="book">${ks.map(k => `<div><span data-say="${esc(k)}">▶ ${esc(k)}</span><i>${esc(GLOSS[k])}</i></div>`).join('') || '<p class="hint">Tap any Danish word to see what it means. It lands here.</p>'}</div><div class="row end"><button class="go" id="cl">Luk</button></div></div>`);
     c.querySelector('#cl').onclick = closeSheet;
   }
   function menu() {
-    const c = sheet(`<div class="menu"><p class="lab">Menu</p>
+    const c = modal(`<div class="menu"><p class="lab">Menu</p>
       <button class="item" id="mRes"><span>Fortsæt</span><small>continue</small></button>
       <button class="item" id="mBook"><span>Ordbog</span><small>word book</small></button>
       <button class="item" id="mCh"><span>Kapitler</span><small>chapters</small></button>
       <button class="item" id="mSet"><span>Indstillinger</span><small>settings</small></button>
       <button class="item" id="mRe"><span>Start afsnittet forfra</span><small>restart this section</small></button>
-      <button class="item" id="mTit"><span>Til titelskærmen</span><small>title screen</small></button></div>`, { mid: true, dim: true });
+      <button class="item" id="mTit"><span>Til titelskærmen</span><small>title screen</small></button></div>`);
     c.querySelector('#mRes').onclick = closeSheet;
     c.querySelector('#mBook').onclick = book;
     c.querySelector('#mCh').onclick = chapters;
@@ -501,15 +523,17 @@
     layout(); addEventListener('resize', layout);
     $('#bMenu').onclick = menu; $('#bBook').onclick = book;
     hud();
-    titleScreen();
+    if (window.visualViewport) { const vv = window.visualViewport, upd = () => { const kb = Math.max(0, innerHeight - vv.height - vv.offsetTop); document.documentElement.style.setProperty('--kb', (kb > 80 ? Math.round(kb) : 0) + 'px'); }; vv.addEventListener('resize', upd); vv.addEventListener('scroll', upd); }
     requestAnimationFrame(frame);
+    const auto = S.auto && CH.find(x => x.id === S.auto); S.auto = null; save();
+    if (auto) runChapter(auto); else titleScreen();
     document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
   }
 
   window.E = {
-    S: () => S, G, W, $, esc, fmt, fog, norm, unacc, cap, wait, tween, clock, save, toast, speak, hear, learn, learnText,
+    S: () => S, G, W, $, esc, shuffle, fmt, fog, norm, unacc, cap, wait, tween, clock, save, toast, speak, hear, learn, learnText,
     addGloss, GLOSS, SPK, IRONY, say, alien, tell, choose, converse, utter, step, show, hidePanel, nextBtn, waitNext, lineHtml, wireEn,
-    sheet, closeSheet, gainPower, hud, where, mood, SFX, tone, cpStart, cpEnd, heroLook, actor, setCast, refreshHero, outfitOf, castAnim, speaking, daVoices,
+    sheet, closeSheet, modal, closeModal, onTick, gainPower, hud, where, mood, SFX, tone, cpStart, cpEnd, heroLook, actor, setCast, refreshHero, outfitOf, castAnim, speaking, daVoices,
     chapter, CH, boot, chapters, menu, audioStart, layout, Hun, titleScreen, book
   };
 })();

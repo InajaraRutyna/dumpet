@@ -163,3 +163,23 @@ textarea.write { min-height: 7.5em; resize: vertical; line-height: 1.4; }
 .stones .st.on { border-color: var(--teal); box-shadow: 0 0 16px rgba(122, 255, 207, .45); }
 .stones .st > button:first-child { flex: 1; min-height: 2.8em; border: 0; background: none; font-weight: 600; font-size: 1.15em; border-radius: .4em; }
 .keys button span { font-size: .95em; }
+
+/* ---------- walking */
+#pad { position: absolute; left: 0; right: 0; bottom: max(1.1em, env(safe-area-inset-bottom)); display: flex; gap: .8em; padding: 0 1.1em; pointer-events: none; z-index: 5; }
+#pad button { pointer-events: auto; width: 4.4em; height: 4.4em; border-radius: 50%; border: 1.5px solid var(--line); background: rgba(6, 20, 16, .55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 1.05em; color: var(--ink); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+#pad button.down { background: rgba(60, 220, 180, .35); border-color: var(--teal); }
+#pad #pJ { margin-left: auto; }
+#goal { position: absolute; top: 4.1em; left: 50%; transform: translateX(-50%); max-width: 86%; padding: .45em .9em; border-radius: 2em; background: rgba(6, 20, 16, .62); border: 1px solid rgba(140, 255, 215, .35); font-size: .82em; color: var(--ink2); text-align: center; pointer-events: none; }
+#wordpop { position: absolute; top: 34%; left: 50%; transform: translate(-50%, -50%); padding: .6em 1.1em; border-radius: .6em; background: rgba(8, 30, 24, .85); border: 1px solid var(--teal); text-align: center; pointer-events: none; z-index: 6; box-shadow: 0 0 24px rgba(122, 255, 207, .35); }
+#wordpop b { display: block; font-size: 1.5em; color: #eafff6; text-shadow: 0 0 12px rgba(122, 255, 207, .7); }
+#wordpop span { font-size: .85em; color: var(--ink2); }
+#wordpop.show { animation: wp 2.6s ease-out both; }
+@keyframes wp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.9); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -70%); } }
+/* ---------- menus on their own layer */
+#modal { position: absolute; inset: 0; z-index: 35; display: flex; flex-direction: column; justify-content: center; padding: 4.2em .6em max(.7em, env(safe-area-inset-bottom)); background: rgba(2, 8, 6, .6); }
+#modal .card { position: relative; background: var(--glass); border-radius: .5em; padding: 1em 1.05em; max-height: 100%; overflow-y: auto; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#modal .card::before, #modal .card::after { content: ""; position: absolute; width: 1.1em; height: 1.1em; border: 2px solid var(--teal); pointer-events: none; }
+#modal .card::before { left: -1px; top: -1px; border-right: 0; border-bottom: 0; border-radius: .5em 0 0 0; }
+#modal .card::after { right: -1px; bottom: -1px; border-left: 0; border-top: 0; border-radius: 0 0 .5em 0; }
+/* the keyboard pushes the answer panel up instead of covering it */
+#panel, #sheet { margin-bottom: var(--kb, 0px); }

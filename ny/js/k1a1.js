@@ -45,7 +45,7 @@
     'jorden': 'the Earth', 'lissabon': 'Lisbon', 'berlin': 'Berlin', 'london': 'London', 'kraków': 'Kraków', 'são paulo': 'São Paulo', 'manila': 'Manila', 'lagos': 'Lagos', 'toronto': 'Toronto', 'mumbai': 'Mumbai', 'madrid': 'Madrid', 'sicilien': 'Sicily', 'island': 'Iceland', 'bali': 'Bali', 'kreta': 'Crete', 'fyn': 'Funen (a Danish island)', 'bornholm': 'Bornholm (a Danish island)', 'tyskland': 'Germany', 'bergen': 'Bergen (a city in Norway)',
     // phrases used in the story
     'du lyser': 'you are glowing', 'du er ikke alene': 'you are not alone', 'du skylder mig en': 'you owe me one', 'hvad hedder du': 'what is your name', 'jeg hedder': 'my name is', 'det modsatte': 'the opposite', 'modsatte': 'opposite', 'igen': 'again', 'ikke helt': 'not quite', 'prøv igen': 'try again', 'sig det': 'say it', 'lyt': 'listen', 'lyt efter enden': 'listen to the ending', 'ved ikke': 'don’t know', 'anderledes': 'different (here: irregular)', 'brug mit eget': 'use my own', 'videre': 'on, onward', 'til menuen': 'to the menu', 'fundet': 'found', 'byg': 'build!', 'forfra': 'from the start', 'planken holder': 'the plank holds', 'planken knækker': 'the plank breaks', 'låsen gnister': 'the lock sparks', 'tre nøgler': 'three keys', 'stenen synger': 'the stone sings', 'sådan her': 'like this', 'stumme bogstaver': 'silent letters', 'find lyden': 'find the sound', 'find dem': 'find them', 'færdig': 'done', 'dikter': 'dictate', 'baggrund': 'background', 'sætninger': 'sentences', 'verbet': 'the verb', 'først': 'first', 'jeg sagde det': 'I said it', 'lytter': 'listening', 'skriv her': 'write here', 'hukommelsessmedjen': 'the memory forge', 'hukommelse': 'memory', 'i eller på': 'i or på', 'læs højt': 'read aloud', 'fortsæt': 'continue', 'kapitler': 'chapters', 'indstillinger': 'settings', 'luk': 'close', 'begynd': 'begin', 'sov godt': 'sleep well', 'ny rejse': 'new journey', 'ord mødt': 'words met', 'kapitel': 'chapter', 'afsnit': 'section', 'faldet': 'the fall', 'ankomsten': 'the arrival', 'til titelskærmen': 'to the title screen', 'start afsnittet forfra': 'restart the section', 'svar': 'answer',
-    'tingene': 'the things', 'danskere': 'Danes', 'find': 'find!', 'brug': 'use; need (brug for)', 'a': 'A', 'l': 'L', 'spist': 'eaten (har spist = has eaten)', 'pas på': 'careful; take care of', 'lyden': 'the sound', 'blød': 'soft', 'hører': 'hear(s)', 'ede': 'the ending -ede', 'te': 'the ending -te', 't': 'the letter t', 'd': 'the letter d', 'lav': 'Lav (his name; lav also means low)', 'asta': 'Asta (a name)', 'lund': 'Lund (a surname; lund = grove)', 'birk': 'Birk (her name; birk = birch tree)', 'holm': 'Holm (his name; holm = islet)', 'registreret': 'registered', 'gendannet': 'restored', 'minde gendannet': 'memory restored', 'egne': 'own (plural)', 'egen': 'own', 'fire': 'four', 'interessant': 'interesting', 'sidste': 'last', 'gang': 'time (one time)', 'første': 'first', 'bedste': 'best', 'elev': 'student, pupil', 'værste': 'worst', 'velkommen': 'welcome', 'velkommen til': 'welcome to', 'hm': 'hm', 'lukket': 'closed', 'os': 'us', 'dette': 'this', 'deres': 'their', 'små': 'small (plural)', 'ingen': 'no, none', 'artikel': 'article (en/et)', 'andet': 'other', 'det andet ord': 'the other word', 'hele': 'the whole', 'sætningen': 'the sentence', 'vrag': 'wreck', 'ø': 'island', 'eller': 'or', 'land': 'country', 'i begyndelsen': 'at first, in the beginning', 'høre': 'hear', 'selv en sten': 'even a stone', 'formular 7b': 'form 7B', 'b': 'B', 'dette skibs': 'this ship’s', 'skibs computer': 'ship’s computer', 'ikke herfra': 'not from here', 'vil du': 'do you want to', 'den første': 'the first one', 'stenen': 'the stone', 'gem': 'hide', 'ro': 'calm', 'jeg ved det ikke': 'I don’t know', 'ved': 'know (jeg ved = I know)', 'bip': 'beep', 'spørgsmål et': 'question one', 'artiklen': 'the article', 'tak': 'thanks; please (after a request)', 'hører man': 'one hears', 'mors': 'mother’s', 'min mors frakke': 'my mother’s coat', 'gemmer mig': 'hide (myself)', 'lærte mig': 'taught me', 'ud af': 'out of', 'af deres': 'of their', 'om aftenen': 'in the evening', 'vågen': 'awake', 'huske': 'remember', 'gemte mig': 'hid me', 'himlen': 'the sky', 'falder': 'fall(s)', 'ned': 'down', 'ærligt': 'honest(ly)', 'forkerte': 'wrong (the …)', 'er kommet': 'have come', 'kommet': 'come (past participle)', 'bringer': 'bring(s)', 'spurgte': 'asked', 'kuratorerne': 'the Kurators', 'finde vej': 'find the way', 'fordi-sætning': 'fordi-sentence', 'sætning': 'sentence', 'bygger sig selv': 'builds itself', 'flyve': 'fly', 'i min seng': 'in my bed', 'have selskab': 'have company', 'imponeret': 'impressed', 'kom over': 'got across', 'tingene': 'the things', 'danskere': 'Danes', 'som danskere siger dem': 'the way Danes say them', 'længere': 'further, longer', 'pas på': 'take care of, watch out', 'før-sætning': 'før-clause', 'omvendt': 'inverted, reversed', 'ordstilling': 'word order', 'hurtigere end': 'faster than', 'end': 'than', 'ikke endnu': 'not yet',
+    'tingene': 'the things', 'i morgen': 'tomorrow', 'taler vi': 'we talk', 'låst': 'locked', 'sti': 'path', 'lyd': 'sound', 'synge': 'sing', 'flytter': 'move(s) (to a new home)', 'ikke væk': 'not gone', 'følg': 'follow!', 'her kan du sove': 'you can sleep here', 'danskere': 'Danes', 'find': 'find!', 'brug': 'use; need (brug for)', 'a': 'A', 'l': 'L', 'spist': 'eaten (har spist = has eaten)', 'pas på': 'careful; take care of', 'lyden': 'the sound', 'blød': 'soft', 'hører': 'hear(s)', 'ede': 'the ending -ede', 'te': 'the ending -te', 't': 'the letter t', 'd': 'the letter d', 'lav': 'Lav (his name; lav also means low)', 'asta': 'Asta (a name)', 'lund': 'Lund (a surname; lund = grove)', 'birk': 'Birk (her name; birk = birch tree)', 'holm': 'Holm (his name; holm = islet)', 'registreret': 'registered', 'gendannet': 'restored', 'minde gendannet': 'memory restored', 'egne': 'own (plural)', 'egen': 'own', 'fire': 'four', 'interessant': 'interesting', 'sidste': 'last', 'gang': 'time (one time)', 'første': 'first', 'bedste': 'best', 'elev': 'student, pupil', 'værste': 'worst', 'velkommen': 'welcome', 'velkommen til': 'welcome to', 'hm': 'hm', 'lukket': 'closed', 'os': 'us', 'dette': 'this', 'deres': 'their', 'små': 'small (plural)', 'ingen': 'no, none', 'artikel': 'article (en/et)', 'andet': 'other', 'det andet ord': 'the other word', 'hele': 'the whole', 'sætningen': 'the sentence', 'vrag': 'wreck', 'ø': 'island', 'eller': 'or', 'land': 'country', 'i begyndelsen': 'at first, in the beginning', 'høre': 'hear', 'selv en sten': 'even a stone', 'formular 7b': 'form 7B', 'b': 'B', 'dette skibs': 'this ship’s', 'skibs computer': 'ship’s computer', 'ikke herfra': 'not from here', 'vil du': 'do you want to', 'den første': 'the first one', 'stenen': 'the stone', 'gem': 'hide', 'ro': 'calm', 'jeg ved det ikke': 'I don’t know', 'ved': 'know (jeg ved = I know)', 'bip': 'beep', 'spørgsmål et': 'question one', 'artiklen': 'the article', 'tak': 'thanks; please (after a request)', 'hører man': 'one hears', 'mors': 'mother’s', 'min mors frakke': 'my mother’s coat', 'gemmer mig': 'hide (myself)', 'lærte mig': 'taught me', 'ud af': 'out of', 'af deres': 'of their', 'om aftenen': 'in the evening', 'vågen': 'awake', 'huske': 'remember', 'gemte mig': 'hid me', 'himlen': 'the sky', 'falder': 'fall(s)', 'ned': 'down', 'ærligt': 'honest(ly)', 'forkerte': 'wrong (the …)', 'er kommet': 'have come', 'kommet': 'come (past participle)', 'bringer': 'bring(s)', 'spurgte': 'asked', 'kuratorerne': 'the Kurators', 'finde vej': 'find the way', 'fordi-sætning': 'fordi-sentence', 'sætning': 'sentence', 'bygger sig selv': 'builds itself', 'flyve': 'fly', 'i min seng': 'in my bed', 'have selskab': 'have company', 'imponeret': 'impressed', 'kom over': 'got across', 'tingene': 'the things', 'danskere': 'Danes', 'som danskere siger dem': 'the way Danes say them', 'længere': 'further, longer', 'pas på': 'take care of, watch out', 'før-sætning': 'før-clause', 'omvendt': 'inverted, reversed', 'ordstilling': 'word order', 'hurtigere end': 'faster than', 'end': 'than', 'ikke endnu': 'not yet',
     'kronby': 'Kronby (the town in the tree)', 'kronbys': 'Kronby’s', 'vraget': 'the wreck', 'kurator-skibet': 'the Kurator ship', 'klangstenene': 'the sound stones'
   });
 
@@ -71,7 +71,7 @@
   }
   function setScene(id, o) {
     o = o || {};
-    ['progress', 'anomaly', 'beam', 'lifted', 'fallP', 'locker', 'coatTaken', 'locks', 'lockHi', 'pylonOpen', 'planks', 'crack', 'scan', 'dusk', 'glowPool', 'glowX', 'glowY', 'drone', 'burst', 'fizzle', 'splash', 'flash', 'shake', 'glitch', 'vignette', 'zzz', 'cam'].forEach(k => delete G[k]);
+    ['progress', 'anomaly', 'beam', 'lifted', 'fallP', 'locker', 'coatTaken', 'locks', 'lockHi', 'pylonOpen', 'planks', 'crack', 'scan', 'dusk', 'glowPool', 'glowX', 'glowY', 'drone', 'burst', 'fizzle', 'splash', 'flash', 'shake', 'glitch', 'vignette', 'zzz', 'cam', 'camX', 'camZ', 'lights', 'stonesLit', 'gateOpen'].forEach(k => delete G[k]);
     G.scene = id; G.night = !!o.night; G.glow = o.night ? 1 : null; G.feet = o.feet || 668; G.maxLift = o.maxLift == null ? 260 : o.maxLift;
     Object.assign(G, o.g || {});
     E.setCast(o.cast || []);
@@ -131,9 +131,19 @@
   const cityP = () => { const c = mem().city || CITIES[0]; return (c.p || 'i') + ' ' + c.da; };
 
   /* ======================================================================= */
+  const WLD = () => window.World;
+  // walk until a place; on a restored checkpoint, you are simply there
+  async function go(o) {
+    await E.step(() => WLD().explore(o));
+    const h = E.actor('hero'); if (!h) return;
+    if (h.wx < o.to - 1) h.wx = o.to;
+    if (E.W.ff) { G.view.x = h.wx + 36; G.cast.forEach(a => { if (a.follow) a.wx = h.wx - (a.gap || 62); }); }
+  }
+  const cam = x => { G.camX = x; }, camFree = () => { G.camX = null; };
+
   async function run() {
-    E.cpStart('k1a1');
-    const s = S();
+    E.cpStart('k1a1-2');
+    const s = S(), X = A.WX;
 
     /* ---------- 1 · Earth */
     s.day = 0;
@@ -164,7 +174,7 @@
     /* ---------- 2 · the Kurator ship */
     setScene('ship', {
       feet: 690, maxLift: 160, where: 'Kurator-skibet', g: { progress: 0 },
-      cast: [{ k: 'hero', x: 140, y: 600, s: 1.25, extra: { marks: 0, eyes: 'closed' } },
+      cast: [{ k: 'hero', x: 140, y: 600, s: 1.2, extra: { marks: 0, eyes: 'closed' } },
         { id: 'vex', k: 'kurator', x: 330, y: 690, s: 1.15, o: { point: 1 }, flip: 1 },
         { id: 'plink', k: 'kurator', x: 262, y: 690, s: 1.1, o: { small: 1, tablet: 1, robe: '#9fb39a', ph: 1.3 }, flip: 1 }]
     });
@@ -197,7 +207,7 @@
     const c2 = await E.choose({ narr: 'The crystal in your shoulder answers the voice with a pulse of light.', opts: ['Try to answer', 'Stay silent', 'Look at the aliens'] });
     await E.tell([['n', ['Your mouth opens. Nothing comes out but light.', 'You hold your breath. The crystal doesn’t. It sings.', 'The tall one is staring at you. For the first time, it looks afraid.'][c2]]]);
     await E.tell([['a:plink', 'Lingual resonance, Vex. The last time we saw this was twenty-two years ago, with Specimen Six. And before that, only in the old moon peop—'], ['a:vex', 'Do not finish that sentence.']]);
-    await E.tell([['a:vex', 'Log it as insufficient. Specimen rejected.'], ['a:plink', 'Rejected? But it’s the first one since—'], ['a:vex', 'Insufficient, Plink. Dispose of it somewhere nobody will understand a word it says.']]);
+    await E.tell([['a:vex', 'Log it as insufficient. Specimen rejected.'], ['a:plink', 'Rejected? But it’s the first one since—'], ['a:vex', 'Insufficient, Plink. And wipe its memory. Dispose of it somewhere nobody will understand a word it says.']]);
     await E.tell([['a:plink', '…Moon Seven, then.'], ['n', 'The small one taps its tablet. Before the floor opens, it leans close to the light and whispers:'], ['a:plink', 'Sorry. Truly. Hold your breath.']]);
     E.hidePanel(); E.SFX.whoosh(); E.mood('fall', { wind: 0.12 });
     G.flash = { t0: E.clock(), up: 0.25, hold: 0.3, down: 1 };
@@ -215,59 +225,67 @@
     await E.tween(G, 'fallP', 1, 1.6, 'in');
     E.SFX.splash(); G.flash = { t0: E.clock(), up: 0.08, hold: 0.4, down: 1.6, col: '200,255,235' }; E.mood('silence', { water: 0.05 });
     await E.wait(400);
-    await E.tell([['n', feet ? 'You straighten like a needle and go in clean, deep, into water that tastes of metal and mint.' : 'You hit the water like a slammed door. Everything goes white, then green, then very, very quiet.']]);
+    await E.tell([['n', feet ? 'You straighten like a needle and go in clean and deep, into water that tastes of metal and mint.' : 'You hit the water like a slammed door. Everything goes white, then green, then very, very quiet.']]);
 
-    /* ---------- 4 · the night lake */
+    /* ---------- 4 · the lake, at night: a big open sky */
     await fadeTo(async () => {
-      setScene('lake', { night: true, feet: 720, where: 'Måne Syv · søen', g: { glowPool: 1, glowX: 150, glowY: 720 }, cast: [{ k: 'hero', x: 150, y: 760, s: 1.32, alpha: 0.6 }, { id: 'lav', k: 'deer', x: 380, y: 720, s: 1.2, o: A.DEER_NIGHT, alpha: 0 }] });
-      E.mood('night', { water: 0.03, crickets: 0.45, wind: 0.02 });
+      WLD().enter({ night: true, where: 'Måne Syv · søen', cast: [{ k: 'hero', wx: 130 }, { id: 'lav', k: 'deer', wx: 1060, o: Object.assign({}, A.DEER_NIGHT), alpha: 0 }] });
+      E.mood('night', { water: 0.04, crickets: 0.45, wind: 0.02 });
     }, 1.2);
-    E.tween(E.actor('hero'), 'y', 720, 1.6); E.tween(E.actor('hero'), 'alpha', 1, 1.6);
     await E.tell([
-      ['n', 'You drag yourself out of the water onto moss as soft as carpet. Soaked. Shaking. Alive.'],
-      ['n', 'And glowing. Crystal on your shoulder. Lines of light under the skin of your arm. One eye sees the dark in green.'],
-      ['t', 'Okay. New rule: no panicking until I know which planet this is.']
+      ['n', 'You come up gasping, waist-deep in a black lake. The water is warm. Above you hangs a sky you have never seen: a ringed planet, an aurora, and that enormous arch of light.'],
+      ['n', 'And you are glowing. Crystal on your shoulder. Lines of light under the skin of your arm. One eye sees the dark in green.'],
+      ['t', 'My name is {navn}. That I know. The rest — my job, my street, my own front door — is blurred, like a word on the tip of my tongue.']
     ]);
-    E.tween(E.actor('lav'), 'alpha', 1, 1.2); await E.tween(E.actor('lav'), 'x', 300, 1.6);
-    await E.say('lav', 'Ssh. Du lyser.', { en: 'Shh. You are glowing.', pre: 'Something steps out of the reeds: a deer made of moss and bark, with antlers that end in tiny lights.' });
+    await go({ to: 520, hint: 'Hold ▶ to wade to the shore' });
+    E.tween(E.actor('lav'), 'alpha', 1, 1.4); await WLD().walk('lav', 700, 90);
+    E.actor('lav').look = 'hero'; cam(610);
+    await E.say('lav', 'Ssh. Du lyser.', { en: 'Shh. You are glowing.', pre: 'Something steps out from between the trees: a deer made of moss and bark, with antlers that end in tiny lights.' });
     await E.tell([['t', 'A deer. A talking deer. With fibre-optic antlers. Sure. Why not.']]);
-    G.drone = { x: 470, y: 236, len: 540, sweep: -0.3, alert: 0 }; E.SFX.drone(); E.mood('hunt', { water: 0.03, wind: 0.03 });
-    E.tween(G.drone, 'x', 262, 2.5);
+    G.drone = { wx: 60, y: 372, len: 300, sweep: 0.4, alert: 0 }; E.SFX.drone(); E.mood('hunt', { water: 0.03, wind: 0.03 });
+    E.tween(G.drone, 'wx', 640, 3);
     await E.say('lav', 'Dronen kommer. Den jager alt, der lyser. Gem dig!', { en: 'The drone is coming. It hunts everything that glows. Hide!' });
-    const gd = await E.step(() => Gm.gemDig());
-    E.G.drone && E.tween(G.drone, 'sweep', 0.05, 1.5);
+    await E.step(() => Gm.gemDig());
+    if (G.drone) E.tween(G.drone, 'sweep', 0.05, 1.5);
     await E.tell([
-      ['n', 'The drone stops right above the lake. It turns, slowly. Its beam crawls over the water toward the light you are leaking.'],
+      ['n', 'The drone stops right above the shore. It turns, slowly. Its beam crawls toward the light you are leaking.'],
       ['d:lav', 'Du lyser stadig. Sig ordet for det modsatte af lys: mørke.', 'You are still glowing. Say the word for the opposite of light: mørke (darkness).']
     ]);
     await E.converse({
-      who: 'lav', da: 'Sig det: mørke.', en: 'Say it: mørke (darkness).', pool: ['mørke', 'lys', 'lyser', 'du'], ans: 'mørke', noBurst: true,
+      who: 'lav', da: 'Sig det: mørke.', en: 'Say it: mørke (darkness).', pool: ['mørke', 'lys', 'lyser', 'mørk', 'du'], ans: 'mørke', noBurst: true,
       hint: 'mørke = darkness. Round your lips for the ø, like the vowel in “bird”.',
-      judge: t => /\bm[øo]rk/.test(t) ? { ok: true, who: 'lav', da: '…Godt.', en: '…Good.' } : { ok: false, who: 'lav', da: has(t, 'lys') || has(t, 'lyser') ? 'Nej! Lys er det modsatte. Mørke!' : 'Mørke. Mørke!', en: has(t, 'lys') ? 'No! Light is the opposite. Darkness!' : 'Darkness. Darkness!' }
+      judge: t => /\bm[øo]rke/.test(t) ? { ok: true, who: 'lav', da: '…Godt.', en: '…Good.' } : { ok: false, who: 'lav', da: has(t, 'lys') || has(t, 'lyser') ? 'Nej! Lys er det modsatte. Mørke!' : 'Mørke. Ikke mørk. Mørke!', en: has(t, 'lys') ? 'No! Light is the opposite. Darkness!' : 'Darkness. Not dark. Darkness!' }
     });
-    E.SFX.ok(); E.tween(G, 'glow', 0.15, 2); await E.tween(G, 'glowPool', 0.15, 2);
-    await E.tell([['n', 'The word leaves your mouth, and the light inside you folds itself up like a hand closing. The beam slides over the place where you are standing, and finds nothing.']]);
+    E.SFX.ok(); await E.tween(G, 'glow', 0.15, 2);
+    await E.tell([['n', 'The word leaves your mouth, and the light inside you folds itself up like a hand closing. The beam slides over the place where you stand, and finds nothing.']]);
     E.hidePanel();
-    await E.tween(G.drone, 'x', -80, 3); G.drone = null; E.mood('night', { water: 0.03, crickets: 0.45, wind: 0.02 });
+    if (G.drone) { E.tween(G.drone, 'y', 160, 3); await E.tween(G.drone, 'wx', 1600, 3.2); } G.drone = null;
+    E.mood('night', { water: 0.03, crickets: 0.45, wind: 0.02 });
     await E.tell([['t', 'I said a word I don’t know. And my body obeyed it.']]);
     await E.say('lav', 'Ord er magi her. Men kun, når man forstår dem.', { en: 'Words are magic here. But only when you understand them.' });
     await E.say('lav', 'Jeg hedder Lav. Jeg er en moshjort. Hvad hedder du?', { en: 'My name is Lav. I am a moss deer. What is your name?' });
     await E.converse({
-      who: 'lav', da: 'Hvad hedder du?', en: 'What is your name?', pool: ['Jeg', 'hedder', '{navn}', 'er', 'du'], ans: 'Jeg hedder {navn}', noBurst: true,
-      judge: t => has(t, 'hedder') && !has(t, 'du hedder') ? { ok: true, who: 'lav', da: '{navn}. Et mærkeligt navn. Du er ikke herfra.', en: '{navn}. A strange name. You are not from here.' } : { ok: false, who: 'lav', da: 'Jeg hedder Lav. Og du? Jeg hedder …', en: 'My name is Lav. And you? My name is …' }
+      who: 'lav', da: 'Hvad hedder du?', en: 'What is your name?', pool: ['Jeg', 'hedder', '{navn}', 'er', 'du', 'Lav'], ans: 'Jeg hedder {navn}', noBurst: true,
+      judge: t => has(t, 'hedder') && !has(t, 'du hedder') && !has(t, 'hedder lav') ? { ok: true, who: 'lav', da: '{navn}. Et mærkeligt navn. Du er ikke herfra.', en: '{navn}. A strange name. You are not from here.' } : { ok: false, who: 'lav', da: has(t, 'lav') ? 'Nej, jeg hedder Lav. Og du? Jeg hedder …' : 'Jeg hedder Lav. Og du? Jeg hedder …', en: 'My name is Lav. And you? My name is …' }
     });
     const c3 = await E.choose({ who: 'lav', da: 'Du er en fremmed. Fremmede dør om natten her.', en: 'You are a stranger. Strangers die at night here.', opts: ['Where am I?', 'Can you help me?', 'Why do you speak… whatever this is?'] });
     await E.say('lav', ['Måne Syv. Skoven. Min sø.', 'Måske. Hvis du lærer hurtigt.', 'Jeg taler dansk. Det er månens sprog. Og nu er det også dit.'][c3], { en: ['Moon Seven. The forest. My lake.', 'Maybe. If you learn fast.', 'I speak Danish. It is the moon’s language. And now it is yours too.'][c3] });
-    await E.say('lav', 'Kom. Der ligger et gammelt skib i skoven. Der kan du sove.', { en: 'Come. There is an old ship in the forest. You can sleep there.' });
-    await E.tell([['n', 'You follow the two small lights of his antlers through the dark. You walk for an hour, maybe two. You don’t remember lying down.']]);
+    await E.say('lav', 'Kom. Der ligger et gammelt skib i skoven. Der kan du sove. Følg mig.', { en: 'Come. There is an old ship in the forest. You can sleep there. Follow me.' });
+    camFree(); const lav = E.actor('lav'); lav.look = null; lav.follow = 'hero'; lav.gap = -96;
+    await E.tell([['n', 'Small lights drift between the trees. Each one carries a word. If you touch one, it is yours. Some float high: tap ▲ to jump.']]);
+    await go({ to: X.WRECK_X - 70, hint: 'Follow Lav into the dark forest  ▶', lights: [[900, 60, 'skib', 'ship'], [1120, 150, 'sove', 'sleep'], [1420, 64, 'mørk', 'dark'], [1660, 150, 'gammel', 'old'], [1900, 62, 'minde', 'memory'], [2160, 152, 'krystal', 'crystal']] });
+    lav.follow = null; await WLD().walk('lav', X.WRECK_X + 40, 100); lav.look = 'hero'; cam(X.WRECK_X - 20);
+    await E.tell([['n', 'In a hollow between the roots lies a ship. A small one, crashed long ago, half eaten by moss. One porthole still glows, as if someone had left a lamp on.']]);
+    await E.say('lav', 'Her kan du sove. I morgen taler vi.', { en: 'You can sleep here. Tomorrow we talk.' });
+    await E.tell([['n', 'You climb through the hatch, lie down on a cot that smells of dust and rain, and are asleep before you can be afraid.']]);
 
     /* ---------- 5 · the wreck at dawn, the memory forge */
     await fadeTo(async () => {
-      setScene('cabin', { feet: 660, where: 'Vraget', cast: [{ k: 'hero', x: 160, y: 660, s: 1.32 }, { id: 'skib', k: 'skib', x: 325, y: 420, s: 1, alpha: 0 }] });
+      setScene('cabin', { feet: 660, where: 'Vraget', cast: [{ k: 'hero', x: 160, y: 660, s: 1.12 }, { id: 'skib', k: 'skib', x: 325, y: 420, s: 1, alpha: 0 }] });
       E.mood('wreck', { wind: 0.01, birds: 0.25 });
-    }, 1.4);
+    }, 1.6);
     await E.tell([
-      ['n', 'Morning light through a round window. You are on a cot inside the wreck of a small ship, half swallowed by moss. Notes are pinned to the walls. A locker has two letters scratched into its door: **A.L.**'],
+      ['n', 'Morning light through a round window. Notes pinned to the walls. A locker with two letters scratched into its door: **A.L.**'],
       ['t', 'Not a dream, then. I’m on an alien moon in my pyjamas. Great.']
     ]);
     E.SFX.chime(); await E.tween(E.actor('skib'), 'alpha', 1, 1.2);
@@ -276,15 +294,16 @@
     await E.tell([
       ['n', 'You open your mouth to answer, and nothing is there.'],
       ['t', 'My job. I had a job. A street, a bed, a way of getting to work. I can see the shapes of them, but not the faces. Like a broken mirror.'],
+      ['t', 'The tall one said: wipe its memory.'],
       ['n', 'Where the memories should be, the crystal hums.']
     ]);
-    await E.say('skib', 'Analyse: Krystallen har spist dine minder. Men minder er ord i datid. Hvis du siger dem rigtigt, kommer de tilbage.', { en: 'Analysis: The crystal has eaten your memories. But memories are words in the past tense. If you say them correctly, they come back.' });
+    await E.say('skib', 'Analyse: Dine minder er ikke væk. De er låst. Men minder er ord i datid. Hvis du siger dem rigtigt, kommer de tilbage.', { en: 'Analysis: Your memories are not gone. They are locked. But memories are words in the past tense. If you say them correctly, they come back.' });
     E.mood('wonder', { wind: 0.01 });
     await E.step(() => Gm.teach({
       lab: 'Datid', sub: 'past tense', h: 'Three ways to remember',
       html: `<p>Danish past tense comes in three kinds. SKIB calls it a forge: each verb has its own fire.</p>
-        <div class="book"><div><span><b>-ede</b> ${E.fog('lave → lavede, bo → boede')}</span><i>soft d</i></div><div><span><b>-te</b> ${E.fog('læse → læste, købe → købte')}</span><i>a clean t</i></div><div><span><b>anderledes</b> ${E.fog('gå → gik, være → var, have → havde')}</span><i>irregular</i></div></div>
-        <p class="hint">There is no rule you can trust. Danes learn them by ear, and so will you. If you don't know, tap <b>? Ved ikke</b>: the card comes back later.</p>`
+        <div class="book"><div><span><b>-ede</b> <span lang="da">${E.fog('lave → lavede, bo → boede')}</span></span><i>soft d</i></div><div><span><b>-te</b> <span lang="da">${E.fog('læse → læste, købe → købte')}</span></span><i>a clean t</i></div><div><span><b>anderledes</b> <span lang="da">${E.fog('gå → gik, være → var, have → havde')}</span></span><i>irregular</i></div></div>
+        <p class="hint">There is no rule you can fully trust. Danes learn them by ear, and so will you. If you don't know, tap <b>? Ved ikke</b>: the card comes back later.</p>`
     }));
     await E.step(() => Gm.forgeSort([
       { inf: 'lave', past: 'lavede', g: '1', en: 'make, do' }, { inf: 'arbejde', past: 'arbejdede', g: '1', en: 'work' }, { inf: 'flytte', past: 'flyttede', g: '1', en: 'move house' },
@@ -292,7 +311,7 @@
       { inf: 'læse', past: 'læste', g: '2', en: 'read; study a subject' }, { inf: 'købe', past: 'købte', g: '2', en: 'buy' }, { inf: 'spise', past: 'spiste', g: '2', en: 'eat' }, { inf: 'rejse', past: 'rejste', g: '2', en: 'travel' }, { inf: 'begynde', past: 'begyndte', g: '2', en: 'begin' },
       { inf: 'gå', past: 'gik', g: 'u', en: 'go, walk' }, { inf: 'have', past: 'havde', g: 'u', en: 'have' }, { inf: 'komme', past: 'kom', g: 'u', en: 'come' }, { inf: 'tage', past: 'tog', g: 'u', en: 'take' }, { inf: 'være', past: 'var', g: 'u', en: 'be' }, { inf: 'gøre', past: 'gjorde', g: 'u', en: 'do' }
     ]));
-    await E.say('skib', 'Godt. Nu skal du lytte. I -ede er lyden blød. I -te hører man et t.', { en: 'Good. Now listen. In -ede the d is soft. In -te you hear a t.' });
+    await E.say('skib', 'Godt. Nu skal du lytte. I -ede er lyden blød. I -te hører man et t.', { en: 'Good. Now listen. In -ede the sound is soft. In -te you hear a t.' });
     await E.step(() => Gm.earTest([{ w: 'lavede', g: '1' }, { w: 'læste', g: '2' }, { w: 'boede', g: '1' }, { w: 'købte', g: '2' }, { w: 'spillede', g: '1' }, { w: 'spiste', g: '2' }, { w: 'flyttede', g: '1' }, { w: 'rejste', g: '2' }]));
     E.mood('wreck', { wind: 0.01, birds: 0.2 });
 
@@ -304,11 +323,12 @@
     const st = job.da === 'studerende';
     await E.converse({
       who: 'skib', da: 'Hvad lavede du, før du kom hertil?', en: 'What did you do before you came here?',
-      pool: st ? ['Jeg', 'var', 'er', 'en', 'studerende'] : ['Jeg', 'arbejdede', 'arbejder', 'som', 'en', job.da, 'var'], ans: st ? 'Jeg var studerende' : 'Jeg arbejdede som ' + job.da,
+      pool: st ? ['Jeg', 'var', 'er', 'en', 'studerende', 'som', 'studerer'] : ['Jeg', 'arbejdede', 'arbejder', 'som', 'en', job.da, 'var', 'er'], ans: st ? 'Jeg var studerende' : 'Jeg arbejdede som ' + job.da,
       hint: 'Past tense, and no article: Jeg arbejdede som … / Jeg var …',
-      judge: (t, n, u) => {
-        if (has(t, 'arbejder') || has(t, 'er') && !has(t, 'var')) return { ok: false, who: 'skib', da: 'Nu? Nej. Før. Datid.', en: 'Now? No. Before. Past tense.', fb: 'It is a memory, so it needs the past tense: **arbejdede**, **var**.' };
+      judge: t => {
+        if (has(t, 'arbejder') || has(t, 'studerer') || has(t, 'er') && !has(t, 'var')) return { ok: false, who: 'skib', da: 'Nu? Nej. Før. Datid.', en: 'Now? No. Before. Past tense.', fb: 'It is a memory, so it needs the past tense: **arbejdede**, **var**.' };
         if (has(t, 'som en') || has(t, 'var en') || has(t, 'som et') || has(t, 'var et')) return { ok: false, who: 'skib', da: 'Fejl. Et job har ingen artikel.', en: 'Error. A job has no article.', fb: 'No **en** before a job: Jeg var lærer, Jeg arbejdede som kok.' };
+        if (has(t, 'var som')) return { ok: false, who: 'skib', da: 'Var som? Nej. Jeg var … eller: Jeg arbejdede som …', en: 'Was as? No. I was … or: I worked as …' };
         if (has(t, 'arbejdede som') || has(t, 'var') || has(t, 'læste') || has(t, 'studerede')) return { ok: true, who: 'skib', da: `Registreret: ${job.da}. Minde gendannet.`, en: `Registered: ${job.en}. Memory restored.`, word: st ? 'var' : 'arbejdede' };
         return { ok: false, who: 'skib', da: 'Jeg forstår ikke. Jeg arbejdede som …?', en: 'I don’t understand. I worked as …?' };
       }
@@ -325,12 +345,14 @@
     ]));
     const work = await E.step(() => Gm.pickOne({ lab: 'Hukommelse', sub: 'memory · workplace', h: 'Where did you work?', opts: WORK }));
     mem().work = work; E.save();
+    const ww = work.w.split(' ');
     await E.converse({
-      who: 'skib', da: 'Hvor arbejdede du?', en: 'Where did you work?', pool: ['Jeg', 'arbejdede', 'arbejder', 'i', 'på', work.w].filter(Boolean), ans: 'Jeg arbejdede ' + work.da,
+      who: 'skib', da: 'Hvor arbejdede du?', en: 'Where did you work?', pool: ['Jeg', 'arbejdede', 'arbejder', 'i', 'på', ...ww, ww.length > 1 ? (ww[0] === 'en' ? 'et' : 'en') : 'ude'], ans: 'Jeg arbejdede ' + work.da,
       hint: `Jeg arbejdede ${work.da}.`,
       judge: t => {
         if (has(t, 'arbejder')) return { ok: false, who: 'skib', da: 'Datid, tak.', en: 'Past tense, please.' };
         if (work.p && !has(t, work.p + ' ' + work.w)) { const wrong = work.p === 'i' ? 'på' : 'i'; return { ok: false, who: 'skib', da: has(t, wrong + ' ' + work.w) ? `Ikke ${wrong}. Prøv det andet ord.` : 'Hvor? Sig hele sætningen.', en: has(t, wrong + ' ' + work.w) ? `Not ${wrong}. Try the other little word.` : 'Where? Say the whole sentence.' }; }
+        if (!work.p && !has(t, 'hjemme')) return { ok: false, who: 'skib', da: 'Hvor? Hjemme?', en: 'Where? At home?' };
         if (has(t, 'arbejdede')) return { ok: true, who: 'skib', da: 'Registreret.', en: 'Registered.', word: work.p || 'hjemme' };
         return { ok: false, who: 'skib', da: 'Jeg arbejdede … hvor?', en: 'I worked … where?' };
       }
@@ -342,11 +364,12 @@
     mem().city = city; E.save();
     const cp = city.p || 'i';
     await E.converse({
-      who: 'skib', da: 'Spørgsmål tre: Hvor boede du?', en: 'Question three: Where did you live?', pool: ['Jeg', 'boede', 'bor', 'i', 'på', city.da], ans: `Jeg boede ${cp} ${city.da}`,
+      who: 'skib', da: 'Spørgsmål tre: Hvor boede du?', en: 'Question three: Where did you live?', pool: ['Jeg', 'boede', 'bor', 'i', 'på', 'til', city.da], ans: `Jeg boede ${cp} ${city.da}`,
       hint: `Jeg boede ${cp} ${city.da}.`,
       judge: t => {
         if (has(t, 'bor')) return { ok: false, who: 'skib', da: 'Bor? Nu bor du i et vrag. Datid: boede.', en: 'Live? Right now you live in a wreck. Past tense: boede.' };
         if (!has(t, 'boede')) return { ok: false, who: 'skib', da: 'Jeg boede …?', en: 'I lived …?' };
+        if (has(t, 'til')) return { ok: false, who: 'skib', da: 'Til? Man flytter til en by. Man bor i en by.', en: 'Til? You move to a town. You live in a town.' };
         if (!city.own && !has(t, cp)) return { ok: false, who: 'skib', da: cp === 'på' ? 'En ø. Så hedder det på.' : 'En by eller et land: i.', en: cp === 'på' ? 'An island. So it’s på.' : 'A town or a country: i.' };
         return { ok: true, who: 'skib', da: `Registreret: ${cp} ${city.da}.`, en: `Registered: ${cp} ${city.da}.`, word: 'boede' };
       }
@@ -358,7 +381,7 @@
     mem().hobby = hob; E.save();
     const hv = hob.da.split(' ');
     await E.converse({
-      who: 'skib', da: 'Spørgsmål fire: Hvad lavede du i din fritid?', en: 'Question four: What did you do in your free time?', pool: ['Jeg', ...hv, hob.pres], ans: 'Jeg ' + hob.da,
+      who: 'skib', da: 'Spørgsmål fire: Hvad lavede du i din fritid?', en: 'Question four: What did you do in your free time?', pool: ['Jeg', ...hv, hob.pres, 'har', 'min'], ans: 'Jeg ' + hob.da,
       hint: `Jeg ${hob.da}.`,
       judge: t => has(t, hob.pres) && !has(t, hv[0]) ? { ok: false, who: 'skib', da: 'Det var før. Datid.', en: 'That was before. Past tense.' } : has(t, hv[0]) ? { ok: true, who: 'skib', da: 'Registreret. Interessant.', en: 'Registered. Interesting.', word: hv[0] } : { ok: false, who: 'skib', da: 'I din fritid. Jeg …', en: 'In your free time. I …' }
     });
@@ -369,20 +392,19 @@
     mem().trans = tr; E.save();
     const tv = tr.da.split(' ');
     await E.converse({
-      who: 'skib', da: 'Sidste spørgsmål: Hvordan kom du på arbejde?', en: 'Last question: How did you get to work?', pool: ['Jeg', ...tv, tr.pres], ans: 'Jeg ' + tr.da,
+      who: 'skib', da: 'Sidste spørgsmål: Hvordan kom du på arbejde?', en: 'Last question: How did you get to work?', pool: ['Jeg', ...tv, tr.pres, 'med', 'kom'], ans: 'Jeg ' + tr.da,
       hint: `Jeg ${tr.da}.`,
       judge: t => has(t, tr.pres) && !has(t, tv[0]) ? { ok: false, who: 'skib', da: 'Datid, tak. Det er sidste gang, jeg siger det. Måske.', en: 'Past tense, please. This is the last time I say it. Maybe.' } : has(t, tv[0]) ? { ok: true, who: 'skib', da: 'Registreret.', en: 'Registered.', word: tv[0] } : { ok: false, who: 'skib', da: 'Hvordan? Jeg …', en: 'How? I …' }
     });
     await E.tell([['m', `Every morning, ${tr.m}. You used to complain about it. You would give anything for it now.`]]);
     E.castAnim('minder');
-    await E.say('skib', `Registrering færdig. Før {hun} kom hertil, ${jobLine('{hun}', true)}. {Hun} boede ${cityP()}. Velkommen, {navn}.`, { en: `Registration complete. Before {she} came here, {she} ${st ? 'was a student' : 'worked as a ' + job.en}. {She} lived in ${city.da}. Welcome, {navn}.`, pre: 'The shards settle. Not everything is back, but enough. You remember who you were.' });
+    await E.say('skib', `Registrering færdig. Før {hun} kom hertil, ${jobLine('{hun}', true)}. {Hun} boede ${cityP()}. Velkommen, {navn}.`, { en: `Registration complete. Before {she} came here, {she} ${st ? 'was a student' : 'worked as ' + (/^[aeiou]/i.test(job.en) ? 'an ' : 'a ') + job.en}. {She} lived in ${city.da}. Welcome, {navn}.`, pre: 'The shards settle. Not everything is back, but enough. You remember who you were.' });
     await E.tell([['t', 'Before I came here. As if “here” were a place I moved to. As if I chose it.']]);
 
     /* ---------- 6 · Seks's log, the coat */
     await E.say('skib', 'Du er nummer to. Den første var Seks.', { en: 'You are number two. The first was Six.' });
     await E.tell([['t', 'Six. Specimen Six. The small alien said it: twenty-two years ago.']]);
     await E.say('skib', 'Hun skrev en log. Vil du læse den?', { en: 'She wrote a log. Do you want to read it?' });
-    E.mood('wreck', { wind: 0.01 });
     await E.step(() => Gm.readLog({
       lab: 'Seks’ log', title: 'Log 1', who: 'asta',
       text: 'Jeg hedder Asta Lund. Før de tog mig, boede jeg i Bergen. Jeg var geolog, og jeg arbejdede på et universitet. Jeg elskede sten og krystaller.\nIronisk, ikke? Nu har jeg en krystal i skulderen.\nDe ville skære krystallen ud af mig. Så jeg stjal et af deres små skibe.',
@@ -417,17 +439,26 @@
     if (c4 === 1) await E.tell([['n', 'You close your hand without touching it. Then you think about the beam, the drone, the light burning under your skin. You take it down.']]);
     s.day = 1; G.coatTaken = 1; E.refreshHero(); E.save(); E.SFX.chime(); E.castAnim();
     await E.tell([['n', 'It fits as if it had been waiting for you. Stitched inside the collar, in faded thread: **A.L.**'], ['t', 'Thank you, Asta.']]);
-    await E.say('lav', 'Den frakke har jeg set før.', { en: 'I have seen that coat before.', pre: 'A shadow fills the doorway. Lav, chewing something, looking at the coat for a long time.' });
-    await E.choose({ narr: 'He knew her. Of course he knew her.', opts: ['You taught her. Asta.', 'Say nothing'] }).then(async c => { if (!c) await E.say('lav', 'Hun var min bedste elev. Og min værste. Kom. Kronby ligger bag kløften.', { en: 'She was my best student. And my worst. Come. Kronby lies beyond the ravine.' }); else await E.say('lav', 'Kom. Kronby ligger bag kløften.', { en: 'Come. Kronby lies beyond the ravine.' }); });
 
-    /* ---------- 7 · the pylon */
+    /* ---------- 7 · out into the morning, through the woods */
     await fadeTo(async () => {
-      setScene('pylon', { feet: 670, where: 'Pylonen', g: { locks: [0, 0, 0] }, cast: [{ k: 'hero', x: 120, y: 660, s: 1.32 }, { id: 'lav', k: 'deer', x: 46, y: 676, s: 1.25, o: A.DEER_DAY, flip: 1 }] });
-      E.mood('forest', { birds: 0.55, wind: 0.02 });
+      WLD().enter({ night: false, where: 'Vraget', cast: [{ k: 'hero', wx: X.WRECK_X + 96 }, { id: 'lav', k: 'deer', wx: X.WRECK_X + 190, o: Object.assign({}, A.DEER_DAY), look: 'hero' }] });
+      E.mood('dawn', { birds: 0.6, wind: 0.02 });
     });
+    cam(X.WRECK_X + 150);
+    await E.tell([['n', 'Outside, the night has turned into a morning so green it almost hurts. Birds that sound like glass bells. Light running up the tree trunks like sap.']]);
+    await E.say('lav', 'Den frakke har jeg set før.', { en: 'I have seen that coat before.', pre: 'Lav is waiting by the hatch, chewing something. He looks at the coat for a long time.' });
+    const c5 = await E.choose({ narr: 'He knew her. Of course he knew her.', opts: ['You taught her. Asta.', 'Say nothing'] });
+    await E.say('lav', c5 ? 'Kom. Kronby ligger bag kløften.' : 'Hun var min bedste elev. Og min værste. Kom. Kronby ligger bag kløften.', { en: c5 ? 'Come. Kronby lies beyond the ravine.' : 'She was my best student. And my worst. Come. Kronby lies beyond the ravine.' });
+    camFree(); const lav2 = E.actor('lav'); lav2.look = null; lav2.follow = 'hero'; lav2.gap = 70;
+    E.mood('forest', { birds: 0.55, wind: 0.02 });
+    await go({ to: X.PYLON_X - 120, hint: 'Walk through the woods  ▶', where: 'Skoven', lights: [[X.WRECK_X + 420, 62, 'nøgle', 'key'], [X.WRECK_X + 700, 150, 'lås', 'lock'], [X.WRECK_X + 980, 60, 'grund', 'reason'], [X.WRECK_X + 1260, 152, 'hjælp', 'help'], [X.WRECK_X + 1540, 62, 'sti', 'path']] });
+
+    /* ---------- 8 · the pylon on the meadow */
+    lav2.follow = null; await WLD().walk('lav', X.PYLON_X - 190, 120); lav2.look = 'hero'; cam(X.PYLON_X - 60);
     await E.tell([
-      ['n', 'By day the forest is another world: green on green, light running up the trunks like sap, birds that sound like glass bells.'],
-      ['n', 'The path ends at a stone pylon taller than a house, with three dark sockets: a circle, a triangle, a square.']
+      ['n', 'The trees open onto a meadow, and suddenly there is sky everywhere. In the middle of the path stands a stone pylon taller than a house, with three dark sockets: a circle, a triangle, a square.'],
+      ['n', 'A wall of light hums across the path. When you reach out, it pushes your hand back, politely but firmly.']
     ]);
     await E.say('lav', 'Pylonen lukker stien. Den åbner kun for den, der kan sige hvorfor.', { en: 'The pylon closes the path. It only opens for someone who can say why.' });
     await E.say('lav', 'Tre låse. Tre nøgler: på grund af, for at, fordi.', { en: 'Three locks. Three keys: because of, in order to, because.' });
@@ -439,7 +470,7 @@
         <div><span><b>□ <span lang="da">${E.fog('fordi')}</span></b> + a whole sentence</span><i lang="da">${E.fog('Hun lærte SKIB dansk, fordi hun ikke ville være alene.')}</i></div></div>
         <p class="hint">Look at what comes right after the gap. A thing? A verb? Or someone doing something?</p>`
     }));
-    await E.step(() => Gm.threeKeys([
+    await E.step(() => Gm.threeKeys(Gm.shuffle([
       { a: 'Jeg faldt i søen', b: 'to aliens.', k: 'pga', en: 'I fell into the lake because of two aliens.', why: 'to aliens is a thing (who did it), not a sentence.' },
       { a: 'Lav gemte mig bag et træ', b: 'redde mig.', k: 'fa', en: 'Lav hid me behind a tree to save me.', why: 'redde is a verb: for at redde.' },
       { a: 'Jeg lyste om natten,', b: 'min krystal var vågen.', k: 'fd', en: 'I glowed at night because my crystal was awake.', why: 'min krystal var vågen is a whole sentence: subject + verb.' },
@@ -449,11 +480,11 @@
       { a: 'Jeg kan ikke huske mit liv', b: 'krystallen.', k: 'pga', en: 'I can’t remember my life because of the crystal.', why: 'krystallen is a thing.' },
       { a: 'Lav taler kun dansk,', b: 'han ikke kan lide engelsk.', k: 'fd', en: 'Lav only speaks Danish because he doesn’t like English.', why: 'A whole sentence. And look: ikke stands before kan.' },
       { a: 'Asta stjal et skib', b: 'flygte.', k: 'fa', en: 'Asta stole a ship to escape.', why: 'flygte is a verb.' }
-    ]));
+    ])));
     await E.say('lav', 'Nu din egen nøgle. Pylonen spørger: Hvorfor kom du hertil?', { en: 'Now your own key. The pylon asks: Why did you come here?' });
-    const why = await E.converse({
+    await E.converse({
       who: 'lav', da: 'Hvorfor kom du hertil?', en: 'Why did you come here?',
-      pool: ['Jeg', 'kom', 'hertil', 'på grund af', 'to aliens', 'for at', 'finde', 'hjælp', 'fordi', 'de', 'smed', 'mig', 'ud'], ans: 'Jeg kom hertil på grund af to aliens',
+      pool: ['Jeg', 'kom', 'hertil', 'på grund af', 'to aliens', 'for at', 'finde', 'hjælp', 'fordi', 'de', 'smed', 'mig', 'ud', 'at'], ans: 'Jeg kom hertil på grund af to aliens',
       hint: 'Use one key: på grund af + a thing, for at + a verb, or fordi + a sentence.',
       judge: t => {
         const r = reason(t);
@@ -462,54 +493,58 @@
         return { ok: false, who: 'lav', da: 'Hvorfor? Brug en nøgle.', en: 'Why? Use a key.', fb: 'Use på grund af, for at or fordi.' };
       }
     });
-    G.locks = [1, 1, 1]; E.SFX.door(); E.hidePanel(); await E.tween(G, 'pylonOpen', 1, 2.2);
-    await E.tell([['n', 'The three sockets blaze. With a sound like a giant clearing its throat, the pylon sinks into the moss, and the path is open.']]);
+    G.locks = [1, 1, 1]; E.SFX.door(); E.hidePanel(); await E.tween(G, 'pylonOpen', 1, 2.4);
+    await E.tell([['n', 'The three sockets blaze. With a sound like a giant clearing its throat, the pylon sinks into the moss, and the wall of light goes out.']]);
 
-    /* ---------- 8 · the warden */
-    await fadeTo(async () => {
-      setScene('path', { feet: 680, where: 'Stien', cast: [{ k: 'hero', x: 120, y: 660, s: 1.32 }, { id: 'lav', k: 'deer', x: 212, y: 680, s: 1.2, o: A.DEER_DAY }, { id: 'birk', k: 'npc', x: 440, y: 662, s: 1.32, o: A.NPC.birk, flip: 1, alpha: 0 }] });
-      E.mood('forest', { birds: 0.45, wind: 0.02 });
-    });
-    await E.tell([['n', 'The path climbs between roots as big as walls. Lav stops. His ears turn.']]);
-    E.mood('tense', { wind: 0.02 }); E.SFX.clang();
-    E.tween(E.actor('birk'), 'alpha', 1, 0.6); await E.tween(E.actor('birk'), 'x', 290, 0.9, 'out');
-    await E.say('birk', 'Stop! Hvem er du? Fremmede bringer droner.', { en: 'Stop! Who are you? Strangers bring drones.', pre: 'Someone in bronze armour steps out from behind a trunk, the glowing tip of a staff pointed at your chest.' });
+    /* ---------- 9 · the warden */
+    camFree(); lav2.look = null; lav2.follow = 'hero'; lav2.gap = 70;
+    await go({ to: 5040, hint: 'Follow the path  ▶', lights: [[X.PYLON_X + 160, 62, 'fremmed', 'stranger'], [X.PYLON_X + 360, 150, 'hvorfor', 'why'], [X.PYLON_X + 560, 62, 'før', 'before']] });
+    lav2.follow = null;
+    G.cast.push({ id: 'birk', k: 'npc', wx: 5420, o: Object.assign({}, A.NPC.birk), flip: 1, look: 'hero' });
+    E.mood('tense', { wind: 0.02 }); E.SFX.clang(); cam(5150);
+    await WLD().walk('birk', 5190, 260);
+    await E.say('birk', 'Stop! Hvem er du? Fremmede bringer droner.', { en: 'Stop! Who are you? Strangers bring drones.', pre: 'Someone in bronze armour comes running down the path and plants the glowing tip of a staff a hand’s width from your chest.' });
     await E.say('lav', 'Ro på, Birk. {Hun} er med mig.', { en: 'Easy, Birk. {She} is with me.' });
     await E.say('birk', 'Med dig? Du hjælper aldrig nogen, Lav.', { en: 'With you? You never help anyone, Lav.' });
     await E.say('lav', 'Jeg hjælper. Jeg er bare sarkastisk imens.', { en: 'I help. I’m just sarcastic while I do it.' });
     await E.converse({
       who: 'birk', da: 'Hvad lavede du, før du kom hertil?', en: 'What did you do before you came here?',
-      pool: st ? ['Jeg', 'var', 'er', 'studerende', cp, city.da] : ['Jeg', 'arbejdede', 'arbejder', 'som', job.da, cp, city.da], ans: st ? `Jeg var studerende ${cp} ${city.da}` : `Jeg arbejdede som ${job.da} ${cp} ${city.da}`,
+      pool: st ? ['Jeg', 'var', 'er', 'studerende', cp, city.da, 'en', 'som'] : ['Jeg', 'arbejdede', 'arbejder', 'som', job.da, cp, city.da, 'en', 'var'], ans: st ? `Jeg var studerende ${cp} ${city.da}` : `Jeg arbejdede som ${job.da} ${cp} ${city.da}`,
       hint: 'Past tense, like with SKIB: Jeg arbejdede som … / Jeg var …',
-      judge: t => (has(t, 'arbejdede') || has(t, 'var') || has(t, 'læste') || has(t, 'studerede') || has(t, 'boede')) && !has(t, 'arbejder') ? { ok: true, who: 'birk', da: 'Hm. Det lyder spændende. Men det hjælper dig ikke her.', en: 'Hm. That sounds exciting. But it doesn’t help you here.', word: 'før' } : { ok: false, who: 'birk', da: 'Før. Jeg spurgte om før.', en: 'Before. I asked about before.', fb: 'Past tense: arbejdede, var, boede.' }
+      judge: t => {
+        if (has(t, 'som en') || has(t, 'var en')) return { ok: false, who: 'birk', da: 'En? Et job har ingen artikel her.', en: 'A? A job has no article here.' };
+        return (has(t, 'arbejdede') || has(t, 'var') || has(t, 'læste') || has(t, 'studerede') || has(t, 'boede')) && !has(t, 'arbejder') ? { ok: true, who: 'birk', da: 'Hm. Det lyder spændende. Men det hjælper dig ikke her.', en: 'Hm. That sounds exciting. But it doesn’t help you here.', word: 'før' } : { ok: false, who: 'birk', da: 'Før. Jeg spurgte om før.', en: 'Before. I asked about before.', fb: 'Past tense: arbejdede, var, boede.' };
+      }
     });
     await E.converse({
       who: 'birk', da: 'Og hvorfor kom du hertil?', en: 'And why did you come here?',
-      pool: ['Jeg', 'kom', 'hertil', 'fordi', 'for at', 'på grund af', 'Kuratorerne', 'de', 'smed', 'mig', 'ud', 'finde', 'hjælp'], ans: 'Jeg kom hertil på grund af Kuratorerne',
+      pool: ['Jeg', 'kom', 'hertil', 'fordi', 'for at', 'på grund af', 'Kuratorerne', 'de', 'smed', 'mig', 'ud', 'finde', 'hjælp', 'at'], ans: 'Jeg kom hertil på grund af Kuratorerne',
       hint: 'Any of the three keys works.',
       judge: t => { const r = reason(t); return r.ok ? { ok: true, who: 'birk', da: 'Hm. Alle fremmede har en grund.', en: 'Hm. All strangers have a reason.', word: { pga: 'på grund af', fa: 'for at', fd: 'fordi' }[r.ok] } : { ok: false, who: 'birk', da: 'Det er ikke en grund.', en: 'That is not a reason.', fb: r.bad || 'Use på grund af, for at or fordi.' }; }
     });
     await E.step(() => Gm.teach({ lab: 'fordi', sub: 'word order', h: 'Inside fordi, ikke jumps forward', html: `<p>In a normal sentence, <b lang="da">${E.fog('ikke')}</b> and <b lang="da">${E.fog('gerne')}</b> come after the verb:</p><p lang="da">${E.fog('Jeg kan ikke finde vej. Jeg vil gerne lære dansk.')}</p><p>Inside a <b lang="da">${E.fog('fordi')}</b>-sentence they jump in front of it:</p><p lang="da">${E.fog('…, fordi jeg ikke kan finde vej. …, fordi jeg gerne vil lære dansk.')}</p>` }));
-    for (; ;) {
-      const c = await E.choose({ who: 'birk', da: 'Hvorfor skal jeg hjælpe dig?', en: 'Why should I help you?', da_opts: true, opts: ['Fordi jeg ikke kan finde vej.', 'Fordi jeg vil gerne lære dansk.', 'Fordi jeg kan ikke finde vej.', 'Fordi jeg gerne vil lære dansk.'] });
-      if (c === 0 || c === 3) { E.gainPower(3); await E.say('birk', 'Hm. Godt sagt. Jeg er Birk, skovens vogter.', { en: 'Hm. Well said. I am Birk, warden of the forest.' }); break; }
+    for (let n = 0; ; n++) {
+      const c = await E.choose({ who: 'birk', da: 'Hvorfor skal jeg hjælpe dig?', en: 'Why should I help you?', da_opts: true, shuffle: true, opts: ['Fordi jeg ikke kan finde vej.', 'Fordi jeg vil gerne lære dansk.', 'Fordi jeg kan ikke finde vej.', 'Fordi jeg gerne vil lære dansk.', 'Fordi kan jeg ikke finde vej.'] });
+      if (c === 0 || c === 3) { E.gainPower(n ? 1 : 3); await E.say('birk', 'Hm. Godt sagt. Jeg er Birk, skovens vogter.', { en: 'Hm. Well said. I am Birk, warden of the forest.' }); break; }
       E.SFX.bad();
-      await E.say('birk', 'Du taler som en drone. I en fordi-sætning står ikke og gerne før verbet.', { en: 'You talk like a drone. In a fordi-sentence, ikke and gerne stand before the verb.' });
+      await E.say('birk', n >= 2 ? 'Har du sand i ørerne? Sig: Fordi jeg ikke kan finde vej.' : 'Du taler som en drone. I en fordi-sætning står ikke og gerne før verbet.', { en: n >= 2 ? 'Do you have sand in your ears? Say: Because I can’t find the way.' : 'You talk like a drone. In a fordi-sentence, ikke and gerne stand before the verb.' });
     }
     await E.say('birk', 'Vent. Den frakke … Hvor har du den fra?', { en: 'Wait. That coat … Where did you get it?', pre: 'Her eyes drop to the coat. Something changes in her face.' });
-    G.drone = { x: 420, y: 150, len: 300, sweep: 0.4, alert: 1 }; E.SFX.found(); E.mood('hunt', { wind: 0.03 }); G.shake = { t0: E.clock(), dur: 0.5 };
-    E.tween(G.drone, 'x', 300, 1.2);
+    G.drone = { wx: 5600, y: 340, len: 300, sweep: 0.4, alert: 1 }; E.SFX.found(); E.mood('hunt', { wind: 0.03 }); G.shake = { t0: E.clock(), dur: 0.5 };
+    E.tween(G.drone, 'wx', 5260, 1.2);
     await E.say('birk', 'Dronen! Den har set os. Jeg leder den væk. Løb til broen!', { en: 'The drone! It has seen us. I’ll lead it away. Run to the bridge!' });
-    E.hidePanel(); E.actor('birk').flip = 0; E.tween(E.actor('birk'), 'x', 470, 1.2, 'in'); E.tween(G.drone, 'x', 520, 1.8, 'in');
-    await E.say('lav', 'Kom!', { en: 'Come on!' });
+    E.hidePanel(); const birk = E.actor('birk'); birk.look = null;
+    WLD().walk('birk', 5900, 300).then(() => { birk.hidden = true; }); E.tween(G.drone, 'wx', 6300, 2.4, 'in').then(() => { G.drone = null; });
+    camFree(); lav2.follow = 'hero'; lav2.gap = -80;
+    WLD().WD.speed = 230;
+    await go({ to: X.RAV0 - 26, hint: 'Run to the ravine!  ▶' });
+    WLD().WD.speed = 150; G.drone = null;
 
-    /* ---------- 9 · the mirror bridge */
-    await fadeTo(async () => {
-      setScene('bridge', { feet: 604, where: 'Spejlbroen', g: { planks: 0 }, cast: [{ k: 'hero', x: 62, y: 604, s: 1.15 }, { id: 'lav', k: 'deer', x: 160, y: 604, s: 1, o: A.DEER_DAY }] });
-      E.mood('tense', { wind: 0.05 });
-    }, 0.6);
+    /* ---------- 10 · the mirror bridge over the ravine */
+    lav2.follow = null; cam((X.RAV0 + X.RAV1) / 2); E.mood('tense', { wind: 0.06 });
     await E.tell([['n', 'The path ends at a ravine. Far below runs a river of light. Across it: nothing. No bridge. Only a shimmer in the air, like heat over a summer road.']]);
-    E.hidePanel(); const lv = E.actor('lav'); lv.flip = 1; E.tween(lv, 'y', 520, 0.45, 'out').then(() => E.tween(lv, 'y', 568, 0.45, 'in')); await E.tween(lv, 'x', 340, 0.9, 'lin'); lv.flip = 0;
+    E.hidePanel(); lav2.autoFlip = false; lav2.flip = true;
+    E.tween(lav2, 'wy', -70, 0.45, 'out').then(() => E.tween(lav2, 'wy', 0, 0.45, 'in')); await E.tween(lav2, 'wx', X.RAV1 + 60, 0.9, 'lin'); lav2.flip = false; lav2.autoFlip = true; lav2.look = 'hero';
     await E.say('lav', 'Broen er et spejl. Den bygger sig selv af sætninger. Men kun hvis ordene står rigtigt.', { en: 'The bridge is a mirror. It builds itself out of sentences. But only if the words stand right.', pre: 'Lav jumps. He lands on the far side as if the gap were nothing.' });
     await E.step(() => Gm.teach({
       lab: 'Spejlbroen', sub: 'word order', h: 'Where does the verb stand?',
@@ -519,39 +554,38 @@
         <div><span lang="da">${E.fog('Før jeg kom hertil, boede jeg ' + cityP() + '.')}</span><i>a før-sentence first: verb, then subject</i></div>
         <div><span lang="da">${E.fog('…, men jeg kan ikke flyve.')}</span><i>men, så, for: nothing changes</i></div></div>`
     }));
-    const jobW = st ? ['var', 'jeg', 'studerende'] : ['arbejdede', 'jeg', 'som ' + job.da];
+    const jobW = st ? ['var', 'jeg', 'studerende'] : ['arbejdede', 'jeg', 'som', job.da];
     await E.step(() => Gm.bridge([
       { pre: 'Jeg tog frakken, fordi', w: ['jeg', 'ikke', 'ville', 'lyse'], en: 'I took the coat because I didn’t want to glow.', hint: 'Inside a fordi-sentence, ikke stands before the verb: fordi jeg ikke ville …', why: 'fordi jeg ikke ville: ikke jumps in front of ville.' },
-      { pre: 'Før jeg faldt i søen,', w: ['sov', 'jeg', 'i min seng'], en: 'Before I fell into the lake, I was sleeping in my bed.', hint: 'After a før-sentence, the verb comes first: sov jeg …', why: 'The før-sentence takes the first place, so the verb sov takes the second.' },
+      { pre: 'Før jeg faldt i søen,', w: ['sov', 'jeg', 'i', 'min', 'seng'], en: 'Before I fell into the lake, I was sleeping in my bed.', hint: 'After a før-sentence, the verb comes first: sov jeg …', why: 'The før-sentence takes the first place, so the verb sov takes the second.' },
       { pre: 'Lav hjalp mig, fordi', w: ['han', 'gerne', 'ville', 'have', 'selskab'], en: 'Lav helped me because he would like some company.', hint: 'gerne also jumps in front of the verb: fordi han gerne ville …', why: 'fordi han gerne ville: gerne before the verb.' },
       { pre: 'Asta var modig, men', w: ['hun', 'kunne', 'ikke', 'flygte'], en: 'Asta was brave, but she couldn’t escape.', hint: 'men changes nothing. Normal order: hun kunne ikke …', why: 'men keeps the normal order: subject, verb, ikke.' },
-      { pre: 'Før jeg kom hertil,', w: ['boede', 'jeg', `${cp} ${city.da}`], en: 'Before I came here, I lived in ' + city.da + '.', hint: 'Verb first after the før-sentence: boede jeg …', why: 'boede jeg: verb, then subject.' },
-      { pre: 'Jeg skal til Kronby, for', w: ['jeg', 'har', 'brug for', 'hjælp'], en: 'I have to get to Kronby, for I need help.', hint: 'for (= because) changes nothing: for jeg har …', why: 'for joins two normal sentences: jeg har.' },
+      { pre: 'Før jeg kom hertil,', w: ['boede', 'jeg', cp, city.da], en: 'Before I came here, I lived in ' + city.da + '.', hint: 'Verb first after the før-sentence: boede jeg …', why: 'boede jeg: verb, then subject.' },
+      { pre: 'Jeg skal til Kronby, for', w: ['jeg', 'har', 'brug', 'for', 'hjælp'], en: 'I have to get to Kronby, for I need help.', hint: 'for (= because) changes nothing: for jeg har …', why: 'for joins two normal sentences: jeg har.' },
       { pre: 'Birk stoppede mig, fordi', w: ['hun', 'ikke', 'kunne', 'lide', 'fremmede'], en: 'Birk stopped me because she didn’t like strangers.', hint: 'fordi: ikke before the verb kunne.', why: 'fordi hun ikke kunne: ikke first, then the verb.' },
-      { pre: 'Før de tog mig,', w: jobW, en: 'Before they took me, I ' + (st ? 'was a student.' : 'worked as a ' + job.en + '.'), hint: 'Verb first: ' + jobW[0] + ' jeg …', why: 'Your own memory, in the right order.' }
+      { pre: 'Før de tog mig,', w: jobW, en: 'Before they took me, I ' + (st ? 'was a student.' : 'worked as ' + (/^[aeiou]/i.test(job.en) ? 'an ' : 'a ') + job.en + '.'), hint: 'Verb first: ' + jobW[0] + ' jeg …', why: 'Your own memory, in the right order.' }
     ], { mid: ['Halvvejs. Kig ikke ned.', 'Halfway. Don’t look down.'] }));
-    E.SFX.chime(); E.tween(E.actor('hero'), 'x', 320, 1.2); await E.tween(E.actor('hero'), 'y', 568, 1.2);
+    E.SFX.chime(); await WLD().walk('hero', X.RAV1 + 10, 110);
     await E.say('lav', 'Du kom over. Jeg er næsten imponeret.', { en: 'You made it across. I am almost impressed.' });
 
-    /* ---------- 10 · the sound stones */
-    await fadeTo(async () => {
-      setScene('path', { feet: 680, where: 'Klangstenene', cast: [{ k: 'hero', x: 120, y: 660, s: 1.32 }, { id: 'lav', k: 'deer', x: 280, y: 680, s: 1.25, o: A.DEER_DAY }] });
-      E.mood('wonder', { birds: 0.3, wind: 0.03 });
-    });
-    await E.tell([['n', 'On the other side the forest opens into a clearing of tall grey stones. When the wind passes, they hum, each with its own note.']]);
+    /* ---------- 11 · the sound stones */
+    camFree(); lav2.look = null; lav2.follow = 'hero'; lav2.gap = 70; E.mood('wonder', { birds: 0.3, wind: 0.03 });
+    await go({ to: X.STONES_X - 150, hint: 'Walk on  ▶', lights: [[X.RAV1 + 260, 62, 'lyd', 'sound'], [X.RAV1 + 470, 150, 'synge', 'sing'], [X.RAV1 + 640, 62, 'sten', 'stone']] });
+    lav2.follow = null; await WLD().walk('lav', X.STONES_X + 40, 100); lav2.look = 'hero'; cam(X.STONES_X - 40);
+    await E.tell([['n', 'The forest opens into a clearing of tall grey stones. When the wind passes, they hum, each one on its own note. The sun is low now, and everything is gold.']]);
     await E.say('lav', 'Klangsten. De svarer kun, når man siger tingene rigtigt. Som danskere siger dem.', { en: 'Sound stones. They only answer when you say things right. The way Danes say them.' });
     await E.step(() => Gm.stones());
+    G.stonesLit = 6;
     await E.say('lav', 'Ikke dårligt. Her går jeg ikke længere. Byer lugter af mennesker.', { en: 'Not bad. I go no further than this. Towns smell of people.' });
     await E.say('lav', 'Kronby ligger lige der. Find Birk. Og {navn} … pas på frakken.', { en: 'Kronby is right there. Find Birk. And {navn} … take care of the coat.' });
-    E.hidePanel(); E.actor('lav').flip = 1; E.tween(E.actor('lav'), 'alpha', 0, 1.6); await E.tween(E.actor('lav'), 'x', 420, 1.8);
+    E.hidePanel(); lav2.look = null; E.tween(lav2, 'alpha', 0, 2.2); await WLD().walk('lav', X.STONES_X + 300, 110); lav2.hidden = true;
 
-    /* ---------- 11 · the gate */
-    await fadeTo(async () => {
-      setScene('gate', { feet: 694, where: 'Kronbys port', g: { dusk: 0, scan: 0 }, cast: [{ k: 'hero', x: 150, y: 690, s: 1.32 }, { id: 'holm', k: 'npc', x: 320, y: 692, s: 1.36, o: A.NPC.holm, flip: 1 }] });
-      E.mood('gate', { wind: 0.02 });
-    });
-    E.tween(G, 'dusk', 0.4, 8);
-    await E.tell([['n', 'Kronby is not built next to a tree. It is built in one: a trunk as wide as a cathedral, windows glowing in the bark, a whole town in the crown. At its root stands a great gate, and a man with a magnificent beard.']]);
+    /* ---------- 12 · the gate of Kronby, at dusk */
+    camFree(); E.mood('gate', { wind: 0.02 }); G.dusk = 0.5;
+    G.cast.push({ id: 'holm', k: 'npc', wx: X.GATE_X + 104, o: Object.assign({}, A.NPC.holm), flip: 1, look: 'hero' });
+    await go({ to: X.GATE_X - 24, hint: 'Walk to the town  ▶', lights: [[X.STONES_X + 300, 62, 'by', 'town'], [X.STONES_X + 520, 150, 'port', 'gate'], [X.STONES_X + 760, 62, 'formular', 'form']] });
+    cam(X.GATE_X + 30); E.tween(G, 'dusk', 0.9, 8);
+    await E.tell([['n', 'Kronby is built in a tree. Behind a wall of living wood, a trunk as wide as a cathedral rises into the dusk, with a whole town glowing in its crown. At the gate stands a man with a magnificent beard.']]);
     await E.say('holm', 'Stop! Velkommen til Kronby. Jeg er Holm, portvagt.', { en: 'Stop! Welcome to Kronby. I am Holm, gatekeeper.' });
     await E.say('holm', 'Alle fremmede skal udfylde formular 7B: din baggrund. Skriv, hvad du lavede, før du kom hertil, og hvorfor du kom. Scanneren læser det.', { en: 'All strangers must fill in form 7B: your background. Write what you did before you came here, and why you came. The scanner reads it.' });
     await E.tell([['t', 'An alien moon. A magic forest. A talking deer. And still: paperwork.']]);
@@ -563,18 +597,18 @@
     G.scan = 0; E.SFX.clang(); E.gainPower(10); E.castAnim('godkendt');
     await E.say('holm', 'En før-sætning med omvendt ordstilling. Smukt. Godkendt! Stempel!', { en: 'A før-clause with inverted word order. Beautiful. Approved! Stamp!' });
 
-    /* ---------- 12 · the coat, and the sky */
-    E.tween(G, 'dusk', 0.85, 4);
-    E.setCast(G.cast.concat([{ id: 'birk', k: 'npc', x: -40, y: 694, s: 1.3, o: A.NPC.birk }]));
-    E.tween(E.actor('hero'), 'x', 196, 1.4); await E.tween(E.actor('birk'), 'x', 74, 1.6);
-    await E.say('birk', 'Du klarede det.', { en: 'You made it.', pre: 'Footsteps. Birk walks out of the dusk: scratched, out of breath, alive.' });
-    const c5 = await E.choose({ who: 'birk', da: 'Du klarede det.', en: 'You made it.', opts: ['Did the drone follow you?', 'Thank you for leading it away.'] });
-    await E.say('birk', ['Nej. Jeg er hurtigere end en drone.', 'Du skal ikke takke mig. Ikke endnu.'][c5], { en: ['No. I’m faster than a drone.', 'Don’t thank me. Not yet.'][c5] });
-    E.mood('dread', { wind: 0.02 });
-    await E.tell([['n', 'Under the gate lanterns, Birk sees the coat properly for the first time. She goes very still. She reaches out and turns the collar between two fingers.']]);
+    /* ---------- 13 · the coat, and the sky */
+    const bk = E.actor('birk'); bk.hidden = false; bk.wx = X.GATE_X - 330; bk.look = null; bk.alpha = 1;
+    await WLD().walk('birk', X.GATE_X - 110, 140); bk.look = 'hero';
+    await E.say('birk', 'Du klarede det.', { en: 'You made it.', pre: 'Footsteps behind you. Birk walks out of the dusk: scratched, out of breath, alive.' });
+    const c6 = await E.choose({ who: 'birk', da: 'Du klarede det.', en: 'You made it.', opts: ['Did the drone follow you?', 'Thank you for leading it away.'] });
+    await E.say('birk', ['Nej. Jeg er hurtigere end en drone.', 'Du skal ikke takke mig. Ikke endnu.'][c6], { en: ['No. I’m faster than a drone.', 'Don’t thank me. Not yet.'][c6] });
+    E.mood('dread', { wind: 0.02 }); cam(X.GATE_X - 70);
+    await E.tell([['n', 'Under the gate lanterns, Birk sees the coat properly for the first time. She goes very still. She steps closer and turns the collar between two fingers.']]);
+    await WLD().walk('birk', X.GATE_X - 62, 60);
     await E.say('birk', 'A. L. … Hvor har du den fra?', { en: 'A. L. … Where did you get it from?' });
     await E.converse({
-      who: 'birk', da: 'Hvor har du den fra?', en: 'Where did you get it from?', pool: ['Fra', 'et', 'skib', 'i', 'skoven', 'en', 'sø'], ans: 'Fra et skib i skoven', noBurst: true,
+      who: 'birk', da: 'Hvor har du den fra?', en: 'Where did you get it from?', pool: ['Fra', 'et', 'skib', 'i', 'skoven', 'en', 'sø', 'til', 'på'], ans: 'Fra et skib i skoven', noBurst: true,
       judge: t => has(t, 'skib') ? { ok: true, who: 'birk', da: 'Et skib. I skoven.', en: 'A ship. In the forest.' } : { ok: false, who: 'birk', da: 'Hvor? Fra en sø? Fra et skib?', en: 'Where? From a lake? From a ship?' }
     });
     await E.say('birk', 'Det er min mors frakke.', { en: 'It is my mother’s coat.' });
