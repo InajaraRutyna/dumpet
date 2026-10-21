@@ -1532,8 +1532,8 @@
       const [bg, c] = off(W, H);
       c.fillStyle = lg(c, 0, 0, 0, H, [[0, '#06110f'], [0.6, '#0f2b24'], [1, '#2a5a44']]); c.fillRect(0, 0, W, H);
       for (let i = 0; i < 200; i++) { c.fillStyle = `rgba(230,255,235,${0.2 + R() * 0.7})`; c.fillRect(R() * W, R() * H * 0.7, 1.3, 1.3); }
-      c.save(); c.translate(300, 150); c.rotate(-0.3); c.fillStyle = rg(c, -12, -12, 4, 60, [[0, '#e9f7dc'], [1, '#7fb894']]); c.beginPath(); c.arc(0, 0, 52, 0, TAU); c.fill();
-      c.strokeStyle = 'rgba(170,255,210,.8)'; c.lineWidth = 3; c.beginPath(); c.ellipse(0, 6, 92, 15, 0, 0, TAU); c.stroke(); c.restore();
+      c.save(); c.translate(286, 250); c.rotate(-0.3); c.fillStyle = rg(c, -10, -10, 4, 46, [[0, '#e9f7dc'], [1, '#7fb894']]); c.beginPath(); c.arc(0, 0, 36, 0, TAU); c.fill();
+      c.strokeStyle = 'rgba(170,255,210,.8)'; c.lineWidth = 2.4; c.beginPath(); c.ellipse(0, 5, 64, 10, 0, 0, TAU); c.stroke(); c.restore();
       c.strokeStyle = 'rgba(160,240,200,.35)'; c.lineWidth = 7; c.beginPath(); c.ellipse(140, 900, 420, 640, 0.35, Math.PI * 1.1, Math.PI * 1.6); c.stroke();
       const clouds = Array.from({ length: 14 }, () => [R() * W, R() * H * 1.4, 40 + R() * 70, 0.4 + R() * 0.9]);
       return { bg, clouds, R };
@@ -1912,7 +1912,7 @@
 
   /* ---------- palettes: night is its own family; the day family shifts with the hour */
   const PAL = {
-    night: { sky0: '#04100d', sky1: '#0b2520', sky2: '#1a4334', stars: 1, sunCol: '#e9f7dc', sunY: 0.17, sunR: 34, sunGlow: 'rgba(170,255,210,.25)', ring: '#1d3a32', ringLine: 'rgba(130,230,190,.55)', far: '#0c1f19', far2: '#0f251e', towerLit: 1, mist: 'rgba(110,200,150,.13)',
+    night: { sky0: '#04100d', sky1: '#0b2520', sky2: '#1a4334', stars: 1, sunCol: '#e9f7dc', sunY: 0.3, sunR: 30, sunGlow: 'rgba(170,255,210,.25)', ring: '#1d3a32', ringLine: 'rgba(130,230,190,.55)', far: '#0c1f19', far2: '#0f251e', towerLit: 1, mist: 'rgba(110,200,150,.13)',
       trunk: '#2b2117', trunkD: '#120d08', trunkL: '#3d3020', leafD: '#0a1610', leafM: '#11251a', leafL: '#1b3726', edge: 'rgba(120,255,180,.35)', seam: '#7dffb0', seamA: 0.95,
       ground: '#12231a', groundD: '#050b07', grass: '#1d3a28', grassL: '#2a5238', water: '#0f3830', waterL: 'rgba(150,255,210,.45)', canopy: '#040c08', grade: null, glow: 1 },
     dawn: { sky0: '#2c4a5c', sky1: '#c99a8c', sky2: '#f4d6a6', stars: 0.15, sunCol: '#fff1cf', sunY: 0.52, sunR: 30, sunGlow: 'rgba(255,214,160,.4)', ring: '#c9b8b0', ringLine: 'rgba(255,240,220,.6)', far: '#7a8796', far2: '#94a0aa', towerLit: 0.3, mist: 'rgba(255,226,206,.38)',
@@ -1981,6 +1981,7 @@
     let y = GY + 9 * Math.sin(wx * 0.0042) + 5 * Math.sin(wx * 0.0113 + 1.3);
     if (wx < LAKE_X) y += smooth(LAKE_X, LAKE_X - 190, wx) * 44;
     const dR = wx < RAV0 ? RAV0 - wx : wx - RAV1; if (dR < 260) y = lerp(GY, y, smooth(60, 260, dR));
+    const dW = Math.abs(wx - WRECK_X - 10); if (dW < 420) y = lerp(GY + 2, y, smooth(320, 420, dW));
     return y;
   }
 
@@ -2103,7 +2104,7 @@
   let SCENERY = null;
   function buildScenery() {
     const R = rng(4242), near = [], mid = [], fern = [], props = [];
-    const clear = [[LAKE_X - 500, LAKE_X + 60], [WRECK_X - 260, WRECK_X + 200], [PYLON_X - 90, PYLON_X + 90], [RAV0 - 60, RAV1 + 60], [GATE_X - 360, GATE_X + 400], [STONES_X - 200, STONES_X + 200]];
+    const clear = [[LAKE_X - 500, LAKE_X + 60], [WRECK_X - 380, WRECK_X + 340], [PYLON_X - 90, PYLON_X + 90], [RAV0 - 60, RAV1 + 60], [GATE_X - 360, GATE_X + 400], [STONES_X - 200, STONES_X + 200]];
     const isClear = x => clear.some(([a, b]) => x > a && x < b);
     ZONES.forEach(z => {
       const dens = z.closed, x0 = Math.max(z.x0, -300), x1 = z.x1;
@@ -2134,25 +2135,92 @@
   }
 
   /* ---------- the things that stand in the world */
-  function drawWreck(ctx, x, y, P, t, night) {
-    ctx.save(); ctx.translate(x, y);
-    // hull, nose buried in the bank
-    ctx.save(); ctx.rotate(-0.16);
-    ctx.fillStyle = night ? '#2a2018' : cmix(P.trunkL, '#d8c0a0', 0.25); ctx.beginPath(); ctx.ellipse(0, -46, 150, 44, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = night ? '#1a130d' : P.trunk; ctx.beginPath(); ctx.ellipse(0, -30, 150, 30, 0, 0, Math.PI); ctx.fill();
-    ctx.strokeStyle = night ? 'rgba(0,0,0,.4)' : 'rgba(60,35,20,.45)'; ctx.lineWidth = 1.4;
-    for (let i = -4; i <= 4; i++) { ctx.beginPath(); ctx.moveTo(i * 30, -88); ctx.quadraticCurveTo(i * 34, -46, i * 30, -4); ctx.stroke(); }
-    // portholes, one glowing
-    [[-80, -56], [-44, -60], [-8, -62], [28, -62]].forEach(([px, py], i) => { ctx.fillStyle = i === 2 ? (night ? '#ffc66b' : '#ffe3a0') : (night ? '#0b0806' : '#3e2a1c'); if (i === 2) { ctx.shadowColor = '#ffc66b'; ctx.shadowBlur = night ? 16 : 6; } ctx.beginPath(); ctx.arc(px, py, 8, 0, TAU); ctx.fill(); ctx.shadowBlur = 0; });
-    // the hatch
-    ctx.fillStyle = night ? '#120d08' : '#4a3020'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(60, -70, 30, 52, 8) : ctx.rect(60, -70, 30, 52); ctx.fill();
-    ctx.strokeStyle = night ? '#3d3020' : '#c9a24a'; ctx.lineWidth = 2; ctx.stroke();
+  /* the wreck: a small ship half sunk in the moss. Seen from outside, or cut open when you are inside. */
+  const WR = { x0: -300, x1: 280, top: -205 };
+  function hullPath(ctx) {
+    ctx.beginPath(); ctx.moveTo(-300, 26); ctx.bezierCurveTo(-330, -60, -300, -170, -200, -198); ctx.lineTo(150, -205);
+    ctx.bezierCurveTo(230, -205, 280, -150, 282, -80); ctx.lineTo(282, 26); ctx.closePath();
+  }
+  function drawWreckBack(ctx, x, y, s, P, t, night, open, G) {
+    // the inside: only drawn while you are in it
+    if (open <= 0.01) return;
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.globalAlpha = open;
+    ctx.save(); hullPath(ctx); ctx.clip();
+    const wall = night ? '#1c1610' : '#4a3626', wall2 = night ? '#120e0a' : '#3a2a1e';
+    ctx.fillStyle = lg(ctx, 0, -205, 0, 26, [[0, wall2], [0.6, wall], [1, wall2]]); ctx.fillRect(-340, -220, 640, 260);
+    // ribs and panels
+    for (let k = -5; k <= 5; k++) { const rx = k * 52; ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.fillRect(rx - 5, -210, 10, 240); ctx.fillStyle = 'rgba(255,220,170,.06)'; ctx.fillRect(rx - 5, -210, 2, 240); }
+    ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 1; for (let yy = -170; yy < 0; yy += 34) { ctx.beginPath(); ctx.moveTo(-320, yy); ctx.lineTo(300, yy); ctx.stroke(); }
+    // portholes with the morning outside, and their light on the floor
+    [[-70, -128], [30, -132], [118, -128]].forEach(([px, py]) => {
+      ctx.fillStyle = night ? '#0e2a26' : lg(ctx, 0, py - 13, 0, py + 13, [[0, '#cfe8d8'], [1, '#8fbf96']]); ctx.beginPath(); ctx.arc(px, py, 13, 0, TAU); ctx.fill();
+      if (!night) { ctx.fillStyle = '#5f9a5a'; ctx.beginPath(); ctx.arc(px - 4, py + 6, 7, 0, TAU); ctx.fill(); }
+      ctx.strokeStyle = '#b08a54'; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(px, py, 14, 0, TAU); ctx.stroke();
+      if (!night) { ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = lg(ctx, px, py, px + 60, 0, [[0, 'rgba(255,245,200,.32)'], [1, 'rgba(255,245,200,0)']]); ctx.beginPath(); ctx.moveTo(px - 10, py); ctx.lineTo(px + 10, py); ctx.lineTo(px + 70, 0); ctx.lineTo(px + 20, 0); ctx.closePath(); ctx.fill(); ctx.restore(); }
+    });
+    // notes pinned between the portholes
+    [[-28, -110, -0.08], [-12, -92, 0.1], [70, -100, 0.05]].forEach(([nx, ny, a], i) => {
+      ctx.save(); ctx.translate(nx, ny); ctx.rotate(a); ctx.fillStyle = '#e8dcbc'; ctx.fillRect(-8, -10, 16, 20); ctx.strokeStyle = 'rgba(60,40,20,.5)'; ctx.lineWidth = 0.6; for (let k = 0; k < 4; k++) { ctx.beginPath(); ctx.moveTo(-6, -6 + k * 4); ctx.lineTo(5 - (k % 2) * 3, -6 + k * 4); ctx.stroke(); }
+      if (i === 1) { ctx.beginPath(); ctx.moveTo(-5, 7); ctx.lineTo(-2, 2); ctx.lineTo(3, 2); ctx.lineTo(5, 7); ctx.stroke(); }
+      ctx.fillStyle = '#b4602e'; ctx.beginPath(); ctx.arc(0, -9, 1.3, 0, TAU); ctx.fill(); ctx.restore();
+    });
+    // the locker, taller than you
+    const lo = G.locker || 0;
+    ctx.fillStyle = '#4a3a28'; ctx.fillRect(-262, -150, 56, 150); ctx.fillStyle = '#1e1810'; ctx.fillRect(-258, -146, 48, 142);
+    if (!G.coatTaken) { ctx.fillStyle = '#8e5a36'; ctx.beginPath(); ctx.moveTo(-248, -136); ctx.lineTo(-222, -136); ctx.lineTo(-216, -40); ctx.lineTo(-254, -40); ctx.closePath(); ctx.fill(); ctx.fillStyle = '#2f7a6a'; ctx.fillRect(-239, -132, 8, 90); }
+    const dw = 48 * (1 - lo); if (dw > 1) { ctx.fillStyle = '#5a4630'; ctx.fillRect(-258, -146, dw, 142); ctx.fillStyle = 'rgba(0,0,0,.3)'; for (let k = 0; k < 4; k++) ctx.fillRect(-254, -132 + k * 6, Math.max(0, dw - 8), 1.5); ctx.fillStyle = '#c58a52'; ctx.font = '700 8px "Space Grotesk", sans-serif'; if (dw > 30) ctx.fillText('A.L.', -238, -96); }
+    if (lo > 0.05) { ctx.fillStyle = '#5a4630'; ctx.beginPath(); ctx.moveTo(-210, -146); ctx.lineTo(-210 + 22 * lo, -152); ctx.lineTo(-210 + 22 * lo, -2); ctx.lineTo(-210, -4); ctx.closePath(); ctx.fill(); }
+    // the cot
+    ctx.fillStyle = '#4a3a28'; ctx.fillRect(-180, -36, 124, 7); ctx.fillRect(-176, -29, 5, 29); ctx.fillRect(-64, -29, 5, 29);
+    ctx.fillStyle = '#6a7a5a'; ctx.beginPath(); ctx.moveTo(-182, -36); ctx.bezierCurveTo(-150, -48, -90, -46, -56, -36); ctx.closePath(); ctx.fill();
+    // the console where SKIB lives
+    ctx.fillStyle = '#2a2420'; ctx.beginPath(); ctx.moveTo(150, 0); ctx.lineTo(160, -74); ctx.lineTo(236, -74); ctx.lineTo(246, 0); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#3a322a'; ctx.fillRect(158, -78, 82, 7);
+    for (let k = 0; k < 6; k++) { const on = Math.sin(t * (1 + k * 0.3) + k) > 0; ctx.fillStyle = on ? (k % 2 ? '#ffc66b' : '#7affcf') : '#3a322a'; ctx.fillRect(170 + k * 10, -60, 5, 3); }
+    // crystals in the corner, roots coming through a crack
+    [[262, 0, 0.2, 30], [250, 0, -0.3, 22], [-286, 0, 0.3, 24]].forEach(([cx, cy, a, L], i) => { ctx.save(); ctx.translate(cx, cy); ctx.rotate(a); ctx.fillStyle = i % 2 ? '#5fd4b0' : '#9ff5d6'; ctx.shadowColor = '#6fffc4'; ctx.shadowBlur = 8 + 5 * Math.sin(t * 2 + i); ctx.beginPath(); ctx.moveTo(-4, 0); ctx.lineTo(-1, -L); ctx.lineTo(2, -L * 0.85); ctx.lineTo(4, 0); ctx.closePath(); ctx.fill(); ctx.restore(); });
+    ctx.strokeStyle = night ? '#1a120a' : '#5a3a20'; ctx.lineCap = 'round'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-300, -120); ctx.quadraticCurveTo(-270, -80, -282, -20); ctx.stroke();
+    ctx.fillStyle = P.leafM; for (let k = 0; k < 5; k++) { ctx.beginPath(); ctx.arc(-292 + k * 6, -130 + k * 22, 7, 0, TAU); ctx.fill(); }
+    // the floor
+    ctx.fillStyle = night ? '#14100b' : '#2a221a'; ctx.fillRect(-340, 0, 640, 30);
+    ctx.strokeStyle = 'rgba(180,140,90,.2)'; ctx.lineWidth = 1; for (let k = -320; k < 300; k += 14) { ctx.beginPath(); ctx.moveTo(k, 0); ctx.lineTo(k - 8, 26); ctx.stroke(); }
+    // dust in the light
+    for (let k = 0; k < 16; k++) { const u = (t * 0.04 + k * 0.071) % 1; ctx.fillStyle = `rgba(255,245,210,${(night ? 0.2 : 0.55) * Math.sin(u * Math.PI)})`; ctx.beginPath(); ctx.arc(-120 + (k * 37) % 300 + u * 40, -150 + (k * 23) % 140 + u * 20, 1, 0, TAU); ctx.fill(); }
     ctx.restore();
-    // moss and roots over it
-    const R = rng(77);
-    for (let i = 0; i < 9; i++) { ctx.fillStyle = i % 2 ? P.leafM : P.leafD; ctx.beginPath(); blobPath(ctx, -130 + R() * 230, -86 + R() * 30, 10 + R() * 16, R, 7, 0.35, 0.6); ctx.fill(); }
-    ctx.strokeStyle = P.trunkD; ctx.lineCap = 'round';
-    [[-140, -40, -100, -100, -40, -96, 7], [120, -30, 90, -110, 20, -98, 6]].forEach(([a, b, c2, d, e, f, w]) => { ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(a, b); ctx.quadraticCurveTo(c2, d, e, f); ctx.stroke(); });
+    ctx.restore();
+  }
+  function drawWreckShell(ctx, x, y, s, P, t, night, open) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    if (open < 0.99) {
+      // the hull from outside: plates, portholes, the hatch, moss and roots
+      ctx.save(); ctx.globalAlpha = 1 - open;
+      hullPath(ctx); ctx.fillStyle = lg(ctx, 0, -205, 0, 26, night ? [[0, '#3a2c20'], [1, '#14100b']] : [[0, cmix(P.trunkL, '#e6d0b0', 0.25)], [0.55, P.trunk], [1, P.trunkD]]); ctx.fill();
+      ctx.save(); hullPath(ctx); ctx.clip();
+      ctx.strokeStyle = night ? 'rgba(0,0,0,.4)' : 'rgba(60,35,20,.4)'; ctx.lineWidth = 1.4;
+      for (let k = -5; k <= 5; k++) { ctx.beginPath(); ctx.moveTo(k * 52, -210); ctx.lineTo(k * 52, 30); ctx.stroke(); }
+      ctx.beginPath(); ctx.moveTo(-320, -60); ctx.lineTo(290, -64); ctx.stroke();
+      ctx.restore();
+      [[-70, -128], [30, -132], [118, -128]].forEach(([px, py], i) => { ctx.fillStyle = i === 1 ? (night ? '#ffc66b' : '#ffe3a0') : (night ? '#0b0806' : '#3e2a1c'); if (i === 1 && night) { ctx.shadowColor = '#ffc66b'; ctx.shadowBlur = 16; } ctx.beginPath(); ctx.arc(px, py, 12, 0, TAU); ctx.fill(); ctx.shadowBlur = 0; ctx.strokeStyle = night ? '#4a3a28' : '#b08a54'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(px, py, 13, 0, TAU); ctx.stroke(); });
+      ctx.fillStyle = night ? '#120d08' : '#4a3020'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(200, -128, 46, 128, 10) : ctx.rect(200, -128, 46, 128); ctx.fill();
+      ctx.strokeStyle = night ? '#3d3020' : '#c9a24a'; ctx.lineWidth = 2.4; ctx.stroke();
+      const R = rng(77);
+      for (let i = 0; i < 12; i++) { ctx.fillStyle = i % 2 ? P.leafM : P.leafD; ctx.beginPath(); blobPath(ctx, -280 + R() * 470, -200 + R() * 40, 12 + R() * 18, R, 7, 0.35, 0.6); ctx.fill(); }
+      ctx.strokeStyle = P.trunkD; ctx.lineCap = 'round';
+      [[-310, -40, -270, -190, -150, -205, 9], [110, 10, 70, -170, -20, -206, 7]].forEach(([a, b, c2, d, e, f, w]) => { ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(a, b); ctx.quadraticCurveTo(c2, d, e, f); ctx.stroke(); });
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  function drawWreckFront(ctx, x, y, s, P, t, night, open) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    if (open > 0.01) {
+      // cut open: the thick rim of the hull and a little moss on top
+      ctx.save(); ctx.globalAlpha = open;
+      ctx.lineWidth = 12; ctx.strokeStyle = night ? '#2a2018' : cmix(P.trunk, P.trunkD, 0.3); hullPath(ctx); ctx.stroke();
+      ctx.lineWidth = 2; ctx.strokeStyle = night ? 'rgba(255,220,170,.12)' : 'rgba(255,230,190,.35)'; hullPath(ctx); ctx.stroke();
+      const R = rng(78); for (let i = 0; i < 10; i++) { ctx.fillStyle = i % 2 ? P.leafM : P.leafD; ctx.beginPath(); blobPath(ctx, -260 + R() * 420, -204 + R() * 10, 8 + R() * 12, R, 7, 0.35, 0.55); ctx.fill(); }
+      ctx.restore();
+    }
     ctx.restore();
   }
   function drawPylon(ctx, x, y, P, t, G) {
@@ -2299,6 +2367,7 @@
   function worldFrame(ctx, t, G) {
     if (!SCENERY) buildScenery();
     _planks = G.planks || 0;
+    const inW = (G.wreckOpen || 0) > 0.3, inWreck = wx => inW && wx > WRECK_X - 300 && wx < WRECK_X + 282;
     const V = G.view || (G.view = { x: 0, z: 1 }), night = !!G.night, P = palAt(V.x, night);
     const closed = zoneMix(V.x, 'closed'), z = V.z || 1;
     const SX = wx => (wx - V.x) * z + W / 2, SY = y => (y - GY) * z + GY;
@@ -2389,7 +2458,7 @@
       for (let wx = Math.max(xL, LAKE_X - 60); wx <= xR; wx += 12) { if (wx > RAV0 && wx < RAV1) continue; pts.push([SX(wx), gy(wx)]); }
       if (pts.length > 1) { ctx.moveTo(pts[0][0], pts[0][1]); pts.forEach(p => ctx.lineTo(p[0], p[1])); for (let i = pts.length - 1; i >= 0; i--) ctx.lineTo(pts[i][0], pts[i][1] + 15 * z); ctx.closePath(); ctx.fillStyle = cmix(P.ground, P.trunkL, night ? 0.12 : 0.3); ctx.globalAlpha = 0.85; ctx.fill(); ctx.globalAlpha = 1; }
       ctx.fillStyle = cmix(P.groundD, P.trunkL, 0.25);
-      SCENERY.pebbles.forEach(([px, py, r]) => { if (px < xL || px > xR || (px > RAV0 - 6 && px < RAV1 + 6) || px < LAKE_X - 40) return; ctx.beginPath(); ctx.ellipse(SX(px), gy(px) + py * z, r * z, r * 0.55 * z, 0, 0, TAU); ctx.fill(); }); }
+      SCENERY.pebbles.forEach(([px, py, r]) => { if (px < xL || px > xR || (px > RAV0 - 6 && px < RAV1 + 6) || px < LAKE_X - 40 || inWreck(px)) return; ctx.beginPath(); ctx.ellipse(SX(px), gy(px) + py * z, r * z, r * 0.55 * z, 0, 0, TAU); ctx.fill(); }); }
     // a lower bank, a little closer to the eye
     ctx.fillStyle = cmix(P.groundD, P.ground, 0.35); ctx.beginPath(); ctx.moveTo(-20, H + 400);
     for (let x = -20; x <= W + 20; x += 14) { const wx = V.x + (x - W / 2) * 1.12; ctx.lineTo(x, SY(GY + 104 + 14 * Math.sin(wx * 0.006) + 8 * Math.sin(wx * 0.017))); }
@@ -2397,7 +2466,7 @@
     if (lakeOn) { ctx.restore(); ctx.save(); ctx.strokeStyle = cmix(P.groundD, P.water, 0.3); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(shoreA[0], shoreA[1]); ctx.lineTo(shoreX(H + 400), H + 400); ctx.stroke(); ctx.restore(); }
     // grass along the edge
     ctx.strokeStyle = P.grass; ctx.lineWidth = 1.3; ctx.lineCap = 'round';
-    for (let wx = Math.floor(xL / 14) * 14; wx < xR; wx += 14) { if ((wx > RAV0 - 4 && wx < RAV1 + 4) || wx < LAKE_X - 120) continue; const x = SX(wx), y = gy(wx), h = (5 + ((wx * 7919) % 7)) * z, sw = Math.sin(t * 1.4 + wx * 0.03) * 2; ctx.beginPath(); ctx.moveTo(x, y + 2); ctx.quadraticCurveTo(x + sw * 0.4, y - h * 0.6, x + sw + 2, y - h); ctx.moveTo(x + 4, y + 2); ctx.quadraticCurveTo(x + 4 + sw * 0.3, y - h * 0.4, x + 3 + sw, y - h * 0.7); ctx.stroke(); }
+    for (let wx = Math.floor(xL / 14) * 14; wx < xR; wx += 14) { if ((wx > RAV0 - 4 && wx < RAV1 + 4) || wx < LAKE_X - 120 || inWreck(wx)) continue; const x = SX(wx), y = gy(wx), h = (5 + ((wx * 7919) % 7)) * z, sw = Math.sin(t * 1.4 + wx * 0.03) * 2; ctx.beginPath(); ctx.moveTo(x, y + 2); ctx.quadraticCurveTo(x + sw * 0.4, y - h * 0.6, x + sw + 2, y - h); ctx.moveTo(x + 4, y + 2); ctx.quadraticCurveTo(x + 4 + sw * 0.3, y - h * 0.4, x + 3 + sw, y - h * 0.7); ctx.stroke(); }
     if (xR > RAV0 - 200 && xL < RAV1 + 200) drawRavine(ctx, SX(RAV0), SX(RAV1), gy(RAV0), P, t, G, night, z);
 
     // ---- near scenery on the far side of the path
@@ -2405,7 +2474,7 @@
     SCENERY.near.forEach(n => { const x = SX(n.x); if (x < -200 || x > W + 200) return; const T = treeDef(n.k, n.seed); paintTree(ctx, T, x, gy(n.x) + n.dy * z, n.s * HS * 1.9 * z, n.flip, P, t, false, night, sway); });
     // glowing mushrooms in the thicket
     SCENERY.props.forEach(p => { if (p.type !== 'mushL') return; const x = SX(p.x); if (x < -60 || x > W + 60) return; paintTree(ctx, treeDef('mush', 5 + (p.x | 0) % 7), x, gy(p.x) + 2, p.s * z, p.x % 2 > 1, P, t, false, night, 0); });
-    if (Math.abs(V.x - WRECK_X) < 500) drawWreck(ctx, SX(WRECK_X), gy(WRECK_X) + 10 * z, P, t, night);
+    if (Math.abs(V.x - WRECK_X) < 560) { drawWreckShell(ctx, SX(WRECK_X), gy(WRECK_X), z, P, t, night, G.wreckOpen || 0); drawWreckBack(ctx, SX(WRECK_X), gy(WRECK_X), z, P, t, night, G.wreckOpen || 0, G); }
     if (Math.abs(V.x - PYLON_X) < 460) { ctx.save(); ctx.translate(SX(PYLON_X), gy(PYLON_X)); ctx.scale(z, z); drawPylon(ctx, 0, 0, P, t, G); ctx.restore(); }
     if (Math.abs(V.x - 3980) < 400) { ctx.save(); ctx.translate(SX(3980), gy(3980)); ctx.scale(z, z); drawSign(ctx, 0, 0, P, 'KRONBY →'); ctx.restore(); }
     if (Math.abs(V.x - STONES_X) < 520) { ctx.save(); ctx.translate(SX(STONES_X), gy(STONES_X)); ctx.scale(z, z); drawStones(ctx, 0, 0, P, t, G, night); ctx.restore(); }
@@ -2425,23 +2494,31 @@
     const cast = (G.cast || []).filter(a => !a.hidden).sort((a, b) => (a.z || 0) - (b.z || 0));
     cast.forEach(a => {
       if (a.wx == null) return;
-      const base = a.k === 'kurator' ? 1.1 : a.k === 'deer' ? 0.72 : HS;
+      const base = a.k === 'skib' ? 0.42 : a.k === 'deer' ? 1.25 : HS;
       let gyv = groundAt(a.wx); if (gyv > GY + 200) gyv = GY;   // nobody falls into the ravine by accident
       a.x = SX(a.wx); a.y = SY(gyv + (a.wy || 0)); a.s = (a.sc || 1) * base * z;
       if (a.x < -120 || a.x > W + 120) return;
       // glowing pool at night under the hero
       if (night && a.k === 'hero' && (G.glow == null ? 1 : G.glow) > 0.2) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = rg(ctx, a.x, a.y, 4, 90 * z, [[0, `rgba(150,255,170,${0.28 * (G.glow == null ? 1 : G.glow)})`], [1, 'rgba(0,0,0,0)']]); ctx.beginPath(); ctx.ellipse(a.x, a.y, 90 * z, 26 * z, 0, 0, TAU); ctx.fill(); ctx.restore(); }
-      drawActor(ctx, a, t);
+      if (a.duck) { ctx.save(); ctx.beginPath(); ctx.rect(-500, -2000, W + 1000, SY(gyv) + 2 + 2000); ctx.clip(); drawActor(ctx, a, t); ctx.restore(); }
+      else drawActor(ctx, a, t);
     });
+    // tall grass on the shore, in front of whoever stands in it
+    if (xR > 440 && xL < 760) { const gc = night ? '#0f2418' : P.leafD, gc2 = night ? '#163423' : P.leafM;
+      for (let k = 0; k < 26; k++) { const wx = 452 + k * 11 + (k * 7) % 5, x = SX(wx), y = gy(wx) + 3 * z, h = (30 + (k * 13) % 22) * z, sw = Math.sin(t * 1.3 + k * 0.7) * 3 * z;
+        ctx.strokeStyle = k % 2 ? gc : gc2; ctx.lineWidth = 2.2 * z; ctx.lineCap = 'round';
+        for (let j = -1; j <= 1; j++) { ctx.beginPath(); ctx.moveTo(x + j * 3 * z, y); ctx.quadraticCurveTo(x + j * 4 * z + sw * 0.5, y - h * 0.6, x + j * 6 * z + sw, y - h * (1 - Math.abs(j) * 0.18)); ctx.stroke(); } } }
     // water in front of anyone wading in the lake
     if (xL < LAKE_X + 40) { const wy = SY(GY + 8); ctx.save(); ctx.globalAlpha = 0.86; ctx.fillStyle = lg(ctx, 0, wy, 0, wy + 60, [[0, P.water], [1, P.groundD]]);
       ctx.beginPath(); ctx.moveTo(SX(-700), wy); for (let wx = -700; wx <= LAKE_X; wx += 10) ctx.lineTo(SX(wx), wy); for (let wx = LAKE_X; wx >= -700; wx -= 10) ctx.lineTo(SX(wx), Math.max(wy, gy(wx) + 2)); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 0.6; ctx.strokeStyle = P.waterL; ctx.lineWidth = 1.2; ctx.beginPath(); for (let x = SX(-600); x < SX(LAKE_X - 40); x += 6) ctx.lineTo(x, wy + Math.sin(x * 0.08 + t * 2) * 1.6); ctx.stroke(); ctx.restore(); }
+    if (Math.abs(V.x - WRECK_X) < 560) drawWreckFront(ctx, SX(WRECK_X), gy(WRECK_X), z, P, t, night, G.wreckOpen || 0);
     // a few trees stand between you and the path
     SCENERY.front.forEach(n => { const x = SX(n.x); if (x < -200 || x > W + 200) return; paintTree(ctx, treeDef(n.k, n.seed), x, gy(n.x) + 14 * z, n.s * HS * 1.9 * z, n.flip, night ? P : Object.assign({}, P, { leafL: P.leafM, trunkL: P.trunk }), t, false, night, sway * 0.6); });
     if (G.drone) { const D = G.drone; drone(ctx, t, night, 0, Object.assign({}, D, { x: SX(D.wx), y: SY(D.y) })); }
 
     // ---- foreground: ferns and grass close to the eye
     SCENERY.fern.forEach(f => {
+      if (inW && Math.abs(f.x - WRECK_X) < 420) return;
       const x = W / 2 + (f.x - V.x) * 1.25 * z; if (x < -40 || x > W + 40) return; if (f.x > RAV0 - 30 && f.x < RAV1 + 30) return; if (f.x < LAKE_X - 160) return;
       const y = SY(groundAt(f.x)) + f.dy * z, sw = Math.sin(t * 1.2 + f.x * 0.02) * 0.08;
       if (f.kind === 'fern') fern(ctx, x, y, f.h * 1.5 * z, f.a, sw, night ? '#0c1a12' : P.leafD, 1.6 * z, 7 * z, f.dir);
@@ -2449,7 +2526,7 @@
     });
     // plants right in front of your eyes, at the bottom of the picture
     { const fc = cmix(P.groundD, '#000000', night ? 0.25 : 0.12), fc2 = cmix(P.groundD, P.leafD, 0.45);
-      SCENERY.fore.forEach(f => { const x = W / 2 + (f.x - V.x) * 1.45 * z; if (x < -80 || x > W + 80) return; const y = SY(GY + 236) + f.dy, sw = Math.sin(t * 0.9 + f.x * 0.01) * 0.05;
+      SCENERY.fore.forEach(f => { const x = W / 2 + (f.x - V.x) * 1.45 * z; if (x < -80 || x > W + 80) return; if (inW && Math.abs(f.x - WRECK_X) < 460) return; const y = SY(GY + 236) + f.dy, sw = Math.sin(t * 0.9 + f.x * 0.01) * 0.05;
         if (lakeOn && x < shoreX(y) + 10) { if (f.k !== 'grass') return; ctx.strokeStyle = fc; ctx.lineWidth = 2 * z; ctx.lineCap = 'round'; for (let k = 0; k < 4; k++) { const rx = x + k * 6 - 9, rh = f.h * (0.9 + k * 0.25) * z; ctx.beginPath(); ctx.moveTo(rx, y + 20); ctx.quadraticCurveTo(rx + sw * 60, y - rh * 0.5, rx + sw * 120 + (k - 1.5) * 4, y - rh); ctx.stroke(); } return; }
         if (f.k === 'fern') fern(ctx, x, y, f.h * z, f.a, sw, f.dir > 0 ? fc : fc2, 2.4 * z, 13 * z, f.dir);
         else if (f.k === 'leaf') { ctx.save(); ctx.translate(x, y); ctx.rotate(f.a * 0.8 + sw); ctx.fillStyle = fc2; ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-f.h * 0.28 * z, -f.h * 0.5 * z, 0, -f.h * 0.9 * z); ctx.quadraticCurveTo(f.h * 0.28 * z, -f.h * 0.5 * z, 0, 0); ctx.fill(); ctx.strokeStyle = fc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -f.h * 0.85 * z); ctx.stroke(); ctx.restore(); }
@@ -2467,7 +2544,7 @@
         ctx.fillStyle = cmix(P.leafD, P.canopy, 0.35); ctx.fill(C.M);
         ctx.fillStyle = night ? cmix(P.leafM, P.canopy, 0.3) : cmix(P.leafM, P.leafL, 0.25); ctx.globalAlpha = 0.85; ctx.fill(C.L); ctx.globalAlpha = 1;
         ctx.strokeStyle = cmix(P.leafD, P.canopy, 0.5); ctx.lineWidth = 1.4;
-        C.vines.forEach(([vx, vy, len, ph]) => { const sw = Math.sin(t * 0.8 + ph) * 4; ctx.beginPath(); ctx.moveTo(vx, vy); ctx.quadraticCurveTo(vx + sw, vy + len * 0.5, vx + sw * 1.5, vy + len); ctx.stroke();
+        if (!inW) C.vines.forEach(([vx, vy, len, ph]) => { const sw = Math.sin(t * 0.8 + ph) * 4; ctx.beginPath(); ctx.moveTo(vx, vy); ctx.quadraticCurveTo(vx + sw, vy + len * 0.5, vx + sw * 1.5, vy + len); ctx.stroke();
           ctx.fillStyle = cmix(P.leafD, P.canopy, 0.2); for (let k = 1; k < 5; k++) { ctx.beginPath(); ctx.ellipse(vx + sw * k / 4 + (k % 2 ? 4 : -4), vy + len * k / 5, 4, 2, k % 2 ? 0.5 : -0.5, 0, TAU); ctx.fill(); }
           if (night) { ctx.save(); ctx.fillStyle = '#bfffe0'; ctx.shadowColor = '#7dffb0'; ctx.shadowBlur = 8; ctx.beginPath(); ctx.arc(vx + sw * 1.5, vy + len + 3, 2.2, 0, TAU); ctx.fill(); ctx.restore(); } });
         ctx.restore();
@@ -2483,6 +2560,142 @@
     if (closed > 0.05) { ctx.save(); ctx.fillStyle = rg(ctx, W / 2, GY - 120, 200, 620, [[0, 'rgba(0,0,0,0)'], [1, `rgba(0,0,0,${0.35 * closed * (night ? 1 : 0.6)})`]]); ctx.fillRect(0, -300, W, H + 600); ctx.restore(); }
   }
   SCN.world = { ground: '#0b1712', ownsCast: true, build() { return {}; }, back(ctx, t, S, G) { worldFrame(ctx, t, G); } };
+
+  /* ===================== ROOMS: side-view cutaways at the same scale as the world.
+     The bedroom on Earth and the Kurator ship. Floor at GY; x in room units; the camera is G.view. */
+  function drawPeople(ctx, t, G, SX, SY, z, night) {
+    (G.cast || []).filter(a => !a.hidden && a.wx != null).sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(a => {
+      const base = a.k === 'skib' ? 0.42 : a.k === 'deer' ? 1.25 : HS;
+      a.x = SX(a.wx); a.y = SY(GY + (a.wy || 0)); a.s = (a.sc || 1) * base * z;
+      drawActor(ctx, a, t);
+    });
+  }
+  function roomView(G, cx, cz) {
+    const V = G.view || (G.view = { x: cx, z: cz });
+    const z = V.z || 1, SX = wx => (wx - V.x) * z + W / 2, SY = y => (y - GY) * z + GY;
+    return { V, z, SX, SY };
+  }
+
+  /* ---------- Earth: a flat in a block, at three in the morning */
+  const BED = { x0: -150, x1: 150, top: -200 };
+  let _city = null;
+  SCN.bedroom = {
+    ground: '#0b1218', ownsCast: true, build() { return {}; },
+    back(ctx, t, S, G) {
+      const { V, z, SX, SY } = roomView(G, 0, 0.86);
+      if (!_city) { const R = rng(17); _city = { far: Array.from({ length: 30 }, (_, i) => [i * 34 - 500 + R() * 10, 120 + R() * 220, 22 + R() * 14]), near: Array.from({ length: 16 }, (_, i) => [i * 70 - 560 + R() * 20, 260 + R() * 260, 46 + R() * 20]), stars: Array.from({ length: 70 }, () => [R() * W, R() * 380, R()]) }; }
+      // night sky over the city
+      ctx.fillStyle = lg(ctx, 0, 0, 0, H, [[0, '#08121c'], [0.6, '#16283a'], [1, '#22384a']]); ctx.fillRect(0, -300, W, H + 600);
+      _city.stars.forEach(([sx, sy, a], i) => { ctx.fillStyle = `rgba(230,240,255,${0.25 + 0.5 * a * (0.7 + 0.3 * Math.sin(t + i))})`; ctx.fillRect(sx, sy, 1.2, 1.2); });
+      ctx.fillStyle = 'rgba(240,250,230,.92)'; ctx.beginPath(); ctx.arc(W * 0.78, 150, 16, 0, TAU); ctx.fill();
+      // far towers, then nearer blocks (slow parallax)
+      _city.far.forEach(([bx, h, w], i) => { const x = W / 2 + (bx - V.x * 0.25) * 0.9; ctx.fillStyle = '#132232'; ctx.fillRect(x, SY(GY) - h, w, h + 400); for (let k = 0; k < 6; k++) if ((i * 7 + k * 3) % 5 === 0) { ctx.fillStyle = 'rgba(255,214,140,.5)'; ctx.fillRect(x + 5 + (k % 2) * 9, SY(GY) - h + 12 + k * 16, 3, 4); } });
+      _city.near.forEach(([bx, h, w], i) => { const x = W / 2 + (bx - V.x * 0.55); ctx.fillStyle = '#0e1a26'; ctx.fillRect(x, SY(GY) - h + 140, w, h + 400); for (let k = 0; k < 10; k++) if ((i * 5 + k * 7) % 4 === 0) { const on = Math.sin(t * 0.25 + i * 3 + k) > -0.7; if (on) { ctx.fillStyle = 'rgba(255,206,120,.75)'; ctx.fillRect(x + 8 + (k % 3) * 14, SY(GY) - h + 160 + Math.floor(k / 3) * 26, 6, 9); } } });
+      // our building: the outside wall around the cut-open flat
+      ctx.save(); ctx.translate(SX(0), SY(GY)); ctx.scale(z, z);
+      ctx.fillStyle = '#2a2c30'; ctx.fillRect(-168, -640, 336, 1000); ctx.fillStyle = '#34363a'; ctx.fillRect(-176, -652, 352, 16);
+      for (let fl = -3; fl <= 1; fl++) { if (fl === 0) continue; [-110, -20, 70].forEach((wx, i) => { const wy = fl * 215 - 150; const lit = (fl * 7 + i * 3 + 9) % 4 === 0; ctx.fillStyle = lit ? 'rgba(255,206,120,.8)' : '#141a20'; ctx.fillRect(wx, wy, 40, 60); ctx.strokeStyle = '#3a3c40'; ctx.lineWidth = 3; ctx.strokeRect(wx, wy, 40, 60); if (lit) { ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(wx + 6, wy + 28, 14, 32); } }); ctx.fillStyle = '#222428'; ctx.fillRect(-168, fl * 215 + 4, 336, 8); }
+      // the room
+      ctx.fillStyle = lg(ctx, 0, BED.top, 0, 0, [[0, '#1a2c34'], [1, '#22383f']]); ctx.fillRect(BED.x0, BED.top, BED.x1 - BED.x0, -BED.top);
+      ctx.strokeStyle = 'rgba(255,255,255,.03)'; ctx.lineWidth = 5; for (let x = BED.x0 + 8; x < BED.x1; x += 15) { ctx.beginPath(); ctx.moveTo(x, BED.top); ctx.lineTo(x, 0); ctx.stroke(); }
+      // a window of normal size, with the city in it
+      ctx.fillStyle = lg(ctx, 0, -150, 0, -82, [[0, '#0b1a2a'], [1, '#22404a']]); ctx.fillRect(66, -150, 52, 68);
+      for (let k = 0; k < 5; k++) { const bh = 12 + (k * 13) % 26; ctx.fillStyle = k % 2 ? '#0c1820' : '#102028'; ctx.fillRect(67 + k * 10.4, -82 - bh, 10, bh); if (k % 2) { ctx.fillStyle = 'rgba(255,214,140,.8)'; ctx.fillRect(70 + k * 10.4, -76 - bh, 2, 3); } }
+      ctx.strokeStyle = '#5a3a24'; ctx.lineWidth = 3.5; ctx.strokeRect(66, -150, 52, 68); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(92, -150); ctx.lineTo(92, -82); ctx.stroke();
+      ctx.fillStyle = 'rgba(70,120,100,.85)'; ctx.beginPath(); ctx.moveTo(58, -156); ctx.quadraticCurveTo(66, -116, 58, -74); ctx.lineTo(67, -74); ctx.quadraticCurveTo(70, -116, 66, -156); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(126, -156); ctx.quadraticCurveTo(118, -116, 126, -74); ctx.lineTo(117, -74); ctx.quadraticCurveTo(114, -116, 118, -156); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#2a2016'; ctx.fillRect(54, -158, 76, 3);
+      // shelf with books and a plant, a framed print of a ringed planet
+      ctx.fillStyle = '#4a3020'; ctx.fillRect(-140, -128, 64, 3.5);
+      const R = rng(5); for (let i = 0; i < 6; i++) { ctx.fillStyle = ['#7a4a2c', '#2f5446', '#a88a4c', '#5a6a3a', '#3a2a1c'][i % 5]; const bh = 12 + R() * 7; ctx.fillRect(-137 + i * 7, -128 - bh, 5.5, bh); }
+      ctx.fillStyle = '#6a4a30'; ctx.fillRect(-92, -137, 9, 9); ctx.fillStyle = '#3f7a44'; ctx.beginPath(); ctx.arc(-87.5, -142, 7, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#1d3a34'; ctx.fillRect(-40, -168, 38, 46); ctx.strokeStyle = '#c58a52'; ctx.lineWidth = 1.4; ctx.strokeRect(-37, -165, 32, 40);
+      ctx.strokeStyle = 'rgba(110,255,200,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(-21, -145, 8, 0, TAU); ctx.stroke(); ctx.beginPath(); ctx.ellipse(-21, -145, 13, 3.4, -0.3, 0, TAU); ctx.stroke();
+      // floor and rug
+      ctx.fillStyle = '#3a2a1e'; ctx.fillRect(BED.x0, 0, BED.x1 - BED.x0, 16); ctx.fillStyle = 'rgba(70,110,90,.5)'; ctx.beginPath(); ctx.ellipse(10, 2, 90, 5, 0, 0, TAU); ctx.fill();
+      // the bed
+      ctx.fillStyle = '#5a3a24'; ctx.fillRect(-146, -62, 10, 62); ctx.fillStyle = '#e8e0cc'; ctx.fillRect(-136, -36, 128, 14); ctx.fillStyle = '#3a2a1e'; ctx.fillRect(-136, -22, 130, 12); ctx.fillRect(-12, -22, 5, 22); ctx.fillRect(-136, -10, 5, 10);
+      // nightstand, lamp, the phone
+      ctx.fillStyle = '#5a3a24'; ctx.fillRect(4, -40, 34, 40); ctx.fillStyle = '#4a3020'; ctx.fillRect(4, -22, 34, 2);
+      ctx.fillStyle = '#c9b88a'; ctx.beginPath(); ctx.moveTo(12, -60); ctx.lineTo(26, -60); ctx.lineTo(30, -48); ctx.lineTo(8, -48); ctx.closePath(); ctx.fill(); ctx.fillStyle = '#3a2a1e'; ctx.fillRect(18, -48, 2.4, 8);
+      ctx.fillStyle = '#0d1418'; ctx.fillRect(24, -43, 11, 3); ctx.fillStyle = `rgba(150,230,255,${0.4 + 0.25 * Math.sin(t * 2)})`; ctx.fillRect(25, -42.6, 9, 2);
+      // the sleeper
+      const beam = G.beam || 0;
+      if (!G.lifted) {
+        const b = Math.sin(t * 1.1) * 1.1;
+        ctx.fillStyle = '#f2ecdc'; ctx.beginPath(); ctx.ellipse(-116, -40, 17, 6, -0.05, 0, TAU); ctx.fill();
+        ctx.fillStyle = G.male ? '#2e1e14' : '#3a2418'; ctx.beginPath(); ctx.ellipse(-120, -47, 9.5, 6.4, -0.2, 0, TAU); ctx.fill();
+        ctx.fillStyle = '#d6a07a'; ctx.beginPath(); ctx.ellipse(-112, -45, 5.4, 6.2, 0.3, 0, TAU); ctx.fill();
+        ctx.fillStyle = '#2f6a5a'; ctx.beginPath(); ctx.moveTo(-114, -38); ctx.bezierCurveTo(-90, -50 - b, -40, -48 - b, -10, -36); ctx.lineTo(-10, -22); ctx.lineTo(-116, -22); ctx.closePath(); ctx.fill();
+        if (G.zzz !== false && beam < 0.1) { ctx.fillStyle = 'rgba(200,230,220,.65)'; ctx.font = '600 9px "Space Grotesk", sans-serif'; [0, 1, 2].forEach(k => { const u = ((t * 0.35 + k / 3) % 1); ctx.globalAlpha = 1 - u; ctx.fillText('z', -104 + u * 18 + k * 3, -58 - u * 36); }); ctx.globalAlpha = 1; }
+      } else { ctx.fillStyle = '#2f6a5a'; ctx.beginPath(); ctx.moveTo(-116, -32); ctx.bezierCurveTo(-80, -36, -40, -36, -10, -32); ctx.lineTo(-10, -22); ctx.lineTo(-116, -22); ctx.closePath(); ctx.fill(); }
+      // the ceiling, and the light that comes straight through it
+      ctx.fillStyle = '#2a2c30'; ctx.fillRect(BED.x0 - 10, BED.top - 14, BED.x1 - BED.x0 + 20, 14);
+      if (beam > 0) {
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'; const a = Math.min(1, beam), wob = Math.sin(t * 9) * 2;
+        ctx.fillStyle = lg(ctx, 0, -520, 0, 0, [[0, `rgba(200,255,235,${0.7 * a})`], [1, `rgba(120,255,210,${0.3 * a})`]]);
+        ctx.beginPath(); ctx.moveTo(-100 - wob, -660); ctx.lineTo(-44 + wob, -660); ctx.lineTo(-12, -20); ctx.lineTo(-120, -20); ctx.closePath(); ctx.fill();
+        for (let k = 0; k < 22; k++) { const u = ((t * 0.5 + k * 0.137) % 1); ctx.fillStyle = `rgba(230,255,245,${a * (1 - u)})`; ctx.beginPath(); ctx.arc(-110 + ((k * 53) % 90), -20 - u * 600, 1.2, 0, TAU); ctx.fill(); }
+        ctx.fillStyle = `rgba(160,255,220,${0.12 * a})`; ctx.fillRect(BED.x0, BED.top, BED.x1 - BED.x0, -BED.top);
+        ctx.restore();
+      }
+      ctx.restore();
+      drawPeople(ctx, t, G, SX, SY, z, false);
+      // the floor slab below the flat
+      ctx.save(); ctx.translate(SX(0), SY(GY)); ctx.scale(z, z); ctx.fillStyle = '#2a2c30'; ctx.fillRect(BED.x0 - 10, 18, BED.x1 - BED.x0 + 20, 16); ctx.restore();
+    }
+  };
+
+  /* ---------- the Kurator ship: a long, quiet chamber, cut open against space */
+  SCN.ship = {
+    ground: '#05090a', ownsCast: true, build() { const R = rng(9); return { stars: Array.from({ length: 160 }, () => [R() * W, R() * H, R()]) }; },
+    back(ctx, t, S, G) {
+      const { V, z, SX, SY } = roomView(G, 0, 1.12);
+      ctx.fillStyle = lg(ctx, 0, 0, 0, H, [[0, '#03060a'], [1, '#0a1418']]); ctx.fillRect(0, -300, W, H + 600);
+      S.stars.forEach(([sx, sy, a], i) => { ctx.fillStyle = `rgba(240,255,245,${0.2 + 0.7 * a})`; ctx.fillRect((sx - V.x * 0.03 * a + W * 2) % W, sy, a > 0.9 ? 1.8 : 1.1, a > 0.9 ? 1.8 : 1.1); });
+      // Earth, small and far below
+      { const ex = W * 0.2 - V.x * 0.05, ey = H * 0.86; ctx.fillStyle = rg(ctx, ex, ey, 10, 120, [[0, 'rgba(120,200,255,.35)'], [1, 'rgba(0,0,0,0)']]); ctx.beginPath(); ctx.arc(ex, ey, 120, 0, TAU); ctx.fill(); ctx.fillStyle = rg(ctx, ex - 20, ey - 20, 4, 80, [[0, '#9fd8ff'], [0.6, '#3a7ab0'], [1, '#1e4a6a']]); ctx.beginPath(); ctx.arc(ex, ey, 74, 0, TAU); ctx.fill(); ctx.fillStyle = 'rgba(90,160,90,.85)'; ctx.beginPath(); ctx.ellipse(ex - 14, ey - 18, 22, 14, 0.5, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(ex + 26, ey + 10, 14, 9, 0.2, 0, TAU); ctx.fill(); }
+      const alarm = G.anomaly ? 0.5 + 0.5 * Math.sin(t * 6) : 0, col = G.anomaly ? '255,190,120' : '150,255,220';
+      ctx.save(); ctx.translate(SX(0), SY(GY)); ctx.scale(z, z);
+      // hull: a long elegant shell, the near side cut away
+      ctx.beginPath(); ctx.moveTo(-330, 40); ctx.bezierCurveTo(-400, -60, -360, -270, -200, -290); ctx.lineTo(200, -290); ctx.bezierCurveTo(360, -270, 400, -60, 330, 40); ctx.closePath();
+      ctx.fillStyle = '#c9bf9e'; ctx.fill(); ctx.strokeStyle = '#c9a24a'; ctx.lineWidth = 6; ctx.stroke();
+      // the inside
+      ctx.save(); ctx.beginPath(); ctx.moveTo(-300, 20); ctx.bezierCurveTo(-360, -60, -330, -250, -190, -268); ctx.lineTo(190, -268); ctx.bezierCurveTo(330, -250, 360, -60, 300, 20); ctx.closePath(); ctx.clip();
+      ctx.fillStyle = lg(ctx, 0, -270, 0, 20, [[0, '#e2dcc6'], [0.6, '#cfc6a8'], [1, '#a89e80']]); ctx.fillRect(-380, -300, 760, 340);
+      for (let k = -6; k <= 6; k++) { ctx.strokeStyle = 'rgba(160,140,90,.35)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(k * 52, -270); ctx.quadraticCurveTo(k * 58, -120, k * 52, 20); ctx.stroke(); }
+      if (alarm) { ctx.fillStyle = `rgba(255,140,60,${0.12 * alarm})`; ctx.fillRect(-380, -300, 760, 340); }
+      // a viewport of normal size, with stars in it
+      ctx.fillStyle = '#06120f'; ctx.beginPath(); ctx.ellipse(-190, -170, 40, 34, 0, 0, TAU); ctx.fill();
+      for (let k = 0; k < 18; k++) { ctx.fillStyle = 'rgba(240,255,245,.8)'; ctx.fillRect(-220 + (k * 23) % 60, -196 + (k * 17) % 50, 1, 1); }
+      ctx.fillStyle = '#3a7ab0'; ctx.beginPath(); ctx.arc(-178, -146, 14, Math.PI, TAU); ctx.fill();
+      ctx.strokeStyle = '#c9a24a'; ctx.lineWidth = 4; ctx.beginPath(); ctx.ellipse(-190, -170, 42, 36, 0, 0, TAU); ctx.stroke();
+      // the pod: a column of light from floor to ceiling
+      const px = -40;
+      ctx.fillStyle = '#2a2a22'; ctx.beginPath(); ctx.ellipse(px, -262, 38, 8, 0, 0, TAU); ctx.fill(); ctx.fillStyle = '#c9a24a'; ctx.beginPath(); ctx.ellipse(px, 0, 42, 8, 0, 0, TAU); ctx.fill();
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = lg(ctx, px - 36, 0, px + 36, 0, [[0, `rgba(${col},.04)`], [0.5, `rgba(${col},.3)`], [1, `rgba(${col},.04)`]]); ctx.fillRect(px - 34, -258, 68, 258);
+      for (let k = 0; k < 4; k++) { const yy = -250 + ((t * 50 + k * 64) % 250); ctx.strokeStyle = `rgba(${col},.6)`; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(px, yy, 34, 6, 0, 0, TAU); ctx.stroke(); }
+      ctx.restore();
+      // the readout, floating in the middle of the room
+      const p = Math.round(G.progress || 0), hx = 34, hy = -250;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = `rgba(${col},.1)`; ctx.strokeStyle = `rgba(${col},.85)`; ctx.lineWidth = 0.8; ctx.fillRect(hx, hy, 124, 84); ctx.strokeRect(hx, hy, 124, 84);
+      ctx.fillStyle = `rgba(${col},.95)`; ctx.font = '600 7.5px "Space Grotesk", sans-serif';
+      ctx.fillText('SPECIMEN 4471 · HUMAN', hx + 6, hy + 13); ctx.fillText('KERNEL GROWTH', hx + 6, hy + 28);
+      ctx.strokeRect(hx + 6, hy + 33, 88, 7); ctx.fillRect(hx + 7, hy + 34, 86 * p / 100, 5); ctx.fillText(p + '%', hx + 98, hy + 40);
+      ctx.beginPath(); for (let k = 0; k <= 50; k++) { const xx = hx + 6 + k * 2.2, yy = hy + 56 + Math.sin(k * 0.5 + t * 8) * (G.anomaly ? 7 : 3) * Math.sin(k / 50 * Math.PI); k ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); } ctx.stroke();
+      if (G.anomaly) { ctx.fillStyle = `rgba(255,170,110,${0.6 + 0.4 * alarm})`; ctx.font = '700 8px "Space Grotesk", sans-serif'; ctx.fillText('ANOMALY: LINGUAL', hx + 6, hy + 74); ctx.fillText('RESONANCE', hx + 6, hy + 83); }
+      else { ctx.font = '500 7px "Space Grotesk", sans-serif'; ctx.fillText('STATUS: NOMINAL', hx + 6, hy + 76); }
+      ctx.restore();
+      // floor with a golden grid
+      ctx.fillStyle = '#2a3a34'; ctx.fillRect(-380, 0, 760, 40); ctx.strokeStyle = 'rgba(201,162,74,.4)'; ctx.lineWidth = 1; for (let k = -360; k < 360; k += 24) { ctx.beginPath(); ctx.moveTo(k, 0); ctx.lineTo(k * 1.15, 30); ctx.stroke(); }
+      ctx.restore();
+      ctx.restore();
+      drawPeople(ctx, t, G, SX, SY, z, false);
+      if (G.anomaly) for (let k = 0; k < 3; k++) { ctx.fillStyle = 'rgba(255,170,110,.18)'; ctx.fillRect(0, (t * 300 + k * 290) % H, W, 2); }
+    }
+  };
 
   window.Art = { W, H, DPR, SCN, render, makeStage, drawActor, handOf, heroLook, nightify, NPC, DEER_DAY, DEER_NIGHT, OUTFIT, ROTATION, scene, lerp, GY, HS, groundAt, zoneAt, zoneMix, palAt, smooth, WX: { LAKE_X, RAV0, RAV1, PYLON_X, WRECK_X, GATE_X, STONES_X } };
 })();

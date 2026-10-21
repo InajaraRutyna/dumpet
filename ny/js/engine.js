@@ -182,8 +182,14 @@
     return `<div class="pop">${who(id)}<p class="da" lang="da">${fog(da)}</p><div class="tools"><button class="mini" data-say="${esc(fmt(da))}" data-who="${id}">▶ igen</button>${en ? `<button class="mini" data-en>EN</button>` : ''}</div>${en ? `<p class="trans" hidden>${esc(fmt(en))}</p>` : ''}</div>`;
   }
   function wireEn(p) { p.querySelectorAll('[data-en]').forEach(b => b.onclick = () => { const t = b.closest('.pop').querySelector('.trans'); if (t) t.hidden = !t.hidden; }); }
-  const extra = o => (o && o.narr ? `<p class="narr pop">${fmtB(o.narr)}</p>` : '') + (o && o.think ? `<p class="think pop">${esc(fmt(o.think))}</p>` : '');
+  const extra = o => (o && o.narr ? `<p class="narr pop">${fmtB(o.narr)}</p>` : '') + (o && o.think ? `<p class="think pop">${thinkH(o.think)}</p>` : '');
   const fmtB = s => esc(fmt(s)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  // a thought is English, but the Danish it quotes (“…”) can be tapped like any other Danish
+  const fogEsc = h => RE ? h.replace(RE, x => { const k = gk(x.replace(/&amp;/g, '&')); return k ? `<span data-w="${esc(k)}" class="${knows(k) ? '' : 'new'}">${x}</span>` : x; }) : h;
+  const thinkH = s => esc(fmt(s)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/“([^”]+)”/g, (m, q) => {
+    const ws = q.match(/[\p{L}]+/gu) || [], n = ws.filter(w => gk(w)).length;
+    return ws.length && n * 2 >= ws.length ? `“<span lang="da" class="q">${fogEsc(q)}</span>”` : m;
+  });
   function say_(id, da, o) {
     o = o || {};
     return new Promise(async res => {
@@ -208,7 +214,7 @@
       const h = lines.map(l => {
         const [k, x, en] = l;
         if (k === 'n') return `<p class="narr pop">${fmtB(x)}</p>`;
-        if (k === 't') return `<p class="think pop">${esc(fmt(x))}</p>`;
+        if (k === 't') return `<p class="think pop">${thinkH(x)}</p>`;
         if (k === 'm') return `<div class="memory pop"><div class="who">${fog('Et minde vender tilbage')}</div><p style="margin:.2em 0">${fmtB(x)}</p></div>`;
         if (k.startsWith('a:')) return `<div class="alien pop">${who(k.slice(2))}<p class="enl">${esc(fmt(x))}</p></div>`;
         if (k.startsWith('d:')) { learnText(fmt(x)); return lineHtml(k.slice(2), x, en); }
@@ -221,7 +227,7 @@
   }
   function choose_(o) {
     return new Promise(res => {
-      const p = show((o.who && o.da ? lineHtml(o.who, o.da, o.en) : '') + (o.narr ? `<p class="narr pop">${fmtB(o.narr)}</p>` : '') + (o.think ? `<p class="think pop">${esc(fmt(o.think))}</p>` : '') +
+      const p = show((o.who && o.da ? lineHtml(o.who, o.da, o.en) : '') + (o.narr ? `<p class="narr pop">${fmtB(o.narr)}</p>` : '') + (o.think ? `<p class="think pop">${thinkH(o.think)}</p>` : '') +
         `<div class="opts">${(o.shuffle ? shuffle(o.opts.map((x, i) => [x, i])) : o.opts.map((x, i) => [x, i])).map(([x, i]) => `<button data-i="${i}" ${o.da_opts ? 'lang="da"' : ''}>${esc(fmt(x))}</button>`).join('')}</div>`);
       wireEn(p); if (o.who && o.da) { G.talk = o.who; speak(o.da, o.who); }
       p.querySelectorAll('.opts button').forEach(b => b.addEventListener('click', () => res(+b.dataset.i)));
@@ -284,7 +290,7 @@
       }
       await new Promise(async res => {
         const mine = u.raw ? `<div class="mine"><div class="who">${esc(S.name || 'You')} <small>${u.mode === 'voice' ? 'spoken' : u.mode === 'write' ? 'written' : ''}</small></div><p class="da" lang="da">${fog(u.raw)}</p></div>` : '';
-        const p = show(mine + (r.da ? lineHtml(r.who || o.who, r.da, r.en) : '') + (r.note ? `<p class="narr">${fmtB(r.note)}</p>` : '') + (r.think ? `<p class="think">${esc(fmt(r.think))}</p>` : '') + (r.fb ? `<p class="fb ${r.ok ? '' : 'bad'}">${fmtB(r.fb)}</p>` : '') + told + (r.ok && u.mode !== 'tap' ? `<p class="gain">+ Ordkraft for ${u.mode === 'voice' ? 'saying' : 'writing'} it yourself.</p>` : '') + nextBtn());
+        const p = show(mine + (r.da ? lineHtml(r.who || o.who, r.da, r.en) : '') + (r.note ? `<p class="narr">${fmtB(r.note)}</p>` : '') + (r.think ? `<p class="think">${thinkH(r.think)}</p>` : '') + (r.fb ? `<p class="fb ${r.ok ? '' : 'bad'}">${fmtB(r.fb)}</p>` : '') + told + (r.ok && u.mode !== 'tap' ? `<p class="gain">+ Ordkraft for ${u.mode === 'voice' ? 'saying' : 'writing'} it yourself.</p>` : '') + nextBtn());
         wireEn(p); if (r.da) { G.talk = r.who || o.who; speak(r.da, r.who || o.who); }
         await waitNext(p); res();
       });

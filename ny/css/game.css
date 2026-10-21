@@ -55,7 +55,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .enl { font-size: 1.05em; line-height: 1.4; margin: 0 0 .3em; color: #fff3df; }
 .trans { font-size: .9em; color: var(--ink2); margin: .2em 0 .4em; font-style: italic; }
 .think { font-family: "Fraunces", Georgia, serif; font-style: italic; color: #e8dcc0; font-size: 1.02em; line-height: 1.42; margin: .35em 0; }
-.think::before { content: "· "; color: var(--amber); font-style: normal; }
+.think .q { font-style: normal; color: #f3e6c4; }
+.think::before { content: "You think: "; color: var(--amber); font-style: normal; font-family: "Space Grotesk", sans-serif; font-size: .78em; letter-spacing: .05em; text-transform: uppercase; }
 .narr { color: var(--ink2); line-height: 1.45; margin: .35em 0; font-size: .98em; }
 .narr b { color: var(--ink); }
 .tools { display: flex; gap: .45em; margin: .2em 0 .1em; }
@@ -169,7 +170,7 @@ textarea.write { min-height: 7.5em; resize: vertical; line-height: 1.4; }
 #pad button { pointer-events: auto; width: 4.4em; height: 4.4em; border-radius: 50%; border: 1.5px solid var(--line); background: rgba(6, 20, 16, .55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 1.05em; color: var(--ink); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 #pad button.down { background: rgba(60, 220, 180, .35); border-color: var(--teal); }
 #pad #pJ { margin-left: auto; }
-#goal { position: absolute; top: 4.1em; left: 50%; transform: translateX(-50%); max-width: 86%; padding: .45em .9em; border-radius: 2em; background: rgba(6, 20, 16, .62); border: 1px solid rgba(140, 255, 215, .35); font-size: .82em; color: var(--ink2); text-align: center; pointer-events: none; }
+#goal { position: absolute; bottom: calc(max(1.3em, env(safe-area-inset-bottom)) + 6.4em); left: 50%; transform: translateX(-50%); max-width: 86%; padding: .45em .9em; border-radius: 2em; background: rgba(6, 20, 16, .62); border: 1px solid rgba(140, 255, 215, .35); font-size: .82em; color: var(--ink2); text-align: center; pointer-events: none; }
 #wordpop { position: absolute; top: 34%; left: 50%; transform: translate(-50%, -50%); padding: .6em 1.1em; border-radius: .6em; background: rgba(8, 30, 24, .85); border: 1px solid var(--teal); text-align: center; pointer-events: none; z-index: 6; box-shadow: 0 0 24px rgba(122, 255, 207, .35); }
 #wordpop b { display: block; font-size: 1.5em; color: #eafff6; text-shadow: 0 0 12px rgba(122, 255, 207, .7); }
 #wordpop span { font-size: .85em; color: var(--ink2); }

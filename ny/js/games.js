@@ -46,19 +46,18 @@
     const gy = () => window.Art.groundAt(h.wx), aim = tx => Math.atan((D.wx - tx) / Math.max(120, gy() - D.y));
     // a fresh order every time, never the same whisper twice in a row
     const seq = []; while (seq.length < 12) { const k = shuffle(Object.keys(CMD))[0]; if (k !== seq[seq.length - 1]) seq.push(k); }
-    const listen = E.daVoices().length > 0, HIDE_X = 822;
-    let lives = 3, ok = 0, miss = 0, saved = 0;
+    const listen = E.daVoices().length > 0, HIDE_X = 822, A_X = x0, B_X = x0 + 150;
+    let lives = 3, ok = 0, miss = 0, saved = 0, pos = 'A';
     for (let r = 0; r < seq.length; r++) {
-      const k = seq[r], C = CMD[k], ms = Math.max(2600, 5600 - r * 260), hide = listen && r >= 4;
+      const k = seq[r], C = CMD[k], ms = Math.max(2800, 5800 - r * 250), hide = listen && r >= 4;
       E.tween(D, 'sweep', aim(h.wx) + (r % 2 ? 0.45 : -0.45), 1.2);
       const res = await new Promise(async done => {
         const c = E.sheet(`<p class="lab">Gem dig <span>${'◆'.repeat(lives)}${'◇'.repeat(3 - lives)} · ${r + 1}/${seq.length}</span></p>
-          <p class="hint center">${hide ? 'Listen. Lav is barely breathing the words.' : 'Lav whispers:'}</p>
           <div class="whisper" id="wh" data-ans="${k}">${hide ? '· · ·' : esc(C.da)}</div>
           <div class="meter"><i id="tm" style="width:100%"></i></div>
           <div class="act">${Object.keys(CMD).map(x => `<button data-a="${x}"><span>${CMD[x].ic}</span> ${esc(CMD[x].en)}</button>`).join('')}</div>
-          <div class="row"><button class="ghost" id="again">▶ igen</button></div>`, { lift: 1 });
-        await E.wait(350);
+          <div class="row"><button class="ghost" id="again">▶ igen</button><span class="hint">${hide ? 'Listen. Lav barely breathes the words now.' : 'Lav whispers. Do it before the time runs out.'}</span></div>`, { lift: 1 });
+        await E.wait(300);
         E.speak(C.da, 'lav');
         const cl = clockBar(c.querySelector('#tm'), ms);
         c.querySelector('#again').onclick = () => E.speak(C.da, 'lav');
@@ -67,14 +66,19 @@
       });
       if (res === k) {
         ok++; SFX.tick();
-        if (k === 'ned') E.tween(h, 'sq', 0.62, 0.18);
-        if (k === 'stille') E.tween(G, 'glow', 0.4, 0.3);
-        if (k === 'lob') { const to = h.wx > x0 + 40 ? x0 - 50 : x0 + 110; E.tween(h, 'wx', to, Math.abs(to - h.wx) / 300, 'lin'); }
-        if (k === 'bag') E.tween(h, 'wx', HIDE_X, Math.abs(HIDE_X - h.wx) / 300, 'lin');
-        await E.wait(450);
-        await E.tween(D, 'sweep', aim(h.wx) + (D.wx > h.wx ? -0.5 : 0.5), 0.9);
+        // only the move you chose happens, and nothing else
+        let move = null;
+        if (k === 'ned') { h.duck = 1; E.tween(h, 'wy', 46, 0.18, 'out'); }
+        if (k === 'stille') E.tween(G, 'glow', 0.35, 0.25);
+        if (k === 'lob') { const to = pos === 'B' ? A_X : B_X; pos = pos === 'B' ? 'A' : 'B'; move = E.tween(h, 'wx', to, Math.abs(to - h.wx) / 380, 'lin'); }
+        if (k === 'bag') { pos = 'T'; move = E.tween(h, 'wx', HIDE_X, Math.abs(HIDE_X - h.wx) / 330, 'lin'); }
+        if (move) await move; else await E.wait(350);
+        await E.tween(D, 'sweep', aim(h.wx) + (D.wx > h.wx ? -0.55 : 0.55), 0.9);
         E.sheet(`<p class="whisper" lang="da">${fog(C.da)}</p><p class="center hint">${esc(C.en)}. The beam slides past.</p>`, { lift: 1 });
         await E.wait(900);
+        // you stand up again before the next whisper
+        if (k === 'ned') { await E.tween(h, 'wy', 0, 0.22); h.duck = 0; }
+        if (k === 'stille') await E.tween(G, 'glow', 1, 0.35);
       } else {
         miss++; lives--;
         await E.tween(D, 'sweep', aim(h.wx), 0.5);
@@ -91,10 +95,8 @@
           lives = 3;
         }
       }
-      // back to the starting pose
-      E.tween(h, 'sq', 1, 0.3); E.tween(G, 'glow', 1, 0.5);
-      if (k === 'bag') await E.tween(h, 'wx', x0 + 20, Math.abs(x0 + 20 - h.wx) / 260, 'lin');
     }
+    if (h.duck) { h.duck = 0; h.wy = 0; }
     E.closeSheet();
     return { ok, miss, saved };
   }

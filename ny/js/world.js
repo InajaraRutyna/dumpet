@@ -30,10 +30,10 @@
     return new Promise(res => {
       E.hidePanel(); E.closeSheet();
       const h = hero();
-      WD.to = o.to; WD.min = o.min != null ? o.min : (h ? h.wx - 600 : -1e9); WD.done = res; WD.light = o.light;
+      WD.to = o.to; WD.left = !!(h && o.to < h.wx); WD.min = o.min != null ? o.min : WD.left ? o.to : (h ? h.wx - 600 : -1e9); WD.max = o.max != null ? o.max : WD.left ? h.wx + 200 : o.to; WD.done = res; WD.light = o.light;
       if (o.lights) { const got = E.S().got || {}; G.lights = o.lights.map(([x, hh, word, en]) => ({ x, h: hh, word, en, got: got[word] ? -99 : 0 })); }
       showPad(true, o.hint);
-      if (h && h.wx >= o.to - 1) finish();
+      if (h && (WD.left ? h.wx <= o.to + 1 : h.wx >= o.to - 1)) finish();
     });
   }
   function finish() { const d = WD.done; WD.done = null; WD.to = null; showPad(false); G.lights = (G.lights || []).filter(L => L.got > 0); if (d) d(); }
@@ -62,13 +62,15 @@
     // your own feet
     if (WD.on && !frozen) {
       const v = WD.R - WD.L;
-      if (v) { h.wx = clamp(h.wx + v * WD.speed * dt, WD.min, WD.to != null ? WD.to : 1e9); h.flip = v < 0; }
+      if (v) { h.wx = clamp(h.wx + v * WD.speed * dt, WD.min, WD.max != null ? WD.max : 1e9); h.flip = v < 0; }
       if (WD.J && WD.py <= 0.5) { WD.vy = 430; E.tone(520, 0.12, 0.03, 'sine', 0, 780); }
       WD.J = 0;
-      if (WD.to != null && h.wx >= WD.to - 1) finish();
+      if (WD.to != null && (WD.left ? h.wx <= WD.to + 1 : h.wx >= WD.to - 1)) finish();
+      // remember where you are, so a closed app reopens on the same spot of the path
+      const S = E.S(); if (v && S.cp && t - (WD.savedT || 0) > 0.8) { WD.savedT = t; S.cp.at = Math.round(h.wx); S.cp.atN = S.cp.r.length; E.save(); }
     }
     if (WD.py > 0 || WD.vy > 0) { WD.vy -= 1300 * dt; WD.py = Math.max(0, WD.py + WD.vy * dt); if (WD.py <= 0) WD.vy = 0; }
-    h.wy = -WD.py;
+    if (WD.on || WD.py > 0) h.wy = -WD.py;
     // word-lights you touch are yours
     (G.lights || []).forEach(L => { if (!L.got && Math.abs(h.wx - L.x) < 26 && L.h <= 112 + WD.py) caught(L, t); });
     // walking, for everyone in the world
@@ -83,7 +85,7 @@
       const dx = a.wx - (a._lx == null ? a.wx : a._lx); a._lx = a.wx;
       const moving = Math.abs(dx) > 0.04 && dt > 0;
       a._walk = (a._walk || 0) + ((moving ? 1 : 0) - (a._walk || 0)) * Math.min(1, dt * 9);
-      a._step = (a._step || 0) + Math.abs(dx) * (a.k === 'deer' ? 0.13 : 0.085);
+      a._step = (a._step || 0) + Math.abs(dx) * (a.k === 'deer' ? 0.08 : 0.085);
       if (a.o) { a.o.walk = a._walk < 0.03 ? 0 : a._walk; a.o.step = a._step; }
       if (moving && a.autoFlip !== false && Math.abs(dx) > 0.2) a.flip = a.k === 'deer' ? dx > 0 : dx < 0;
       // a face that turns toward whoever is talking
