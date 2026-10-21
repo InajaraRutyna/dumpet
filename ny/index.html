@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b1712">
+<title>Dumpet på Måne Syv</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="cv" aria-label="The game world" role="img"></canvas>
+    <div id="ui">
+      <div id="hud" hidden>
+        <button id="bMenu" class="hb" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div id="where"></div>
+        <div id="kraft" title="Ordkraft: word power"><b>ORDKRAFT</b><i><u></u></i></div>
+        <button id="bBook" class="hb txt" aria-label="Word book">Ord</button>
+      </div>
+      <div id="panel" hidden></div>
+      <div id="sheet" hidden></div>
+      <div id="gl" hidden></div>
+      <div id="tip" hidden></div>
+      <div id="title" hidden></div>
+    </div>
+  </div>
+</div>
+<script src="js/art.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/games.js"></script>
+<script src="js/k1a1.js"></script>
+<script>
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  E.boot();
+</script>
+</body>
+</html>
