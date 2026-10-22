@@ -168,15 +168,18 @@
   function show(html, cls) { const p = panel(); p.className = (cls || '') + (G.night ? ' night' : ''); p.innerHTML = html; p.hidden = false; p.scrollTop = 0; return p; }
   function hidePanel() { const p = panel(); p.hidden = true; p.innerHTML = ''; G.talk = null; }
   function nextBtn(label) { return `<button class="go next" id="nx" aria-label="Continue">${label || '▸'}</button>`; }
-  // wait for ▸, or a tap anywhere on the panel that isn't a word or a button
+  // wait for ▸ only: a tap on the text is for looking words up, never for moving on
   function waitNext(p) {
     return new Promise(res => {
-      const go = () => { p.removeEventListener('click', onTap); res(); };
-      const onTap = e => { if (e.target.closest('[data-w],button,input,textarea,.mini')) return; go(); };
-      const b = p.querySelector('#nx'); if (b) b.onclick = go;
-      p.addEventListener('click', onTap);
+      const b = p.querySelector('#nx'); if (!b) return res();
+      b.onclick = e => { e.stopPropagation(); b.onclick = null; res(); };
     });
   }
+  // on a keyboard, Enter is the same as ▸
+  addEventListener('keydown', e => {
+    if (e.key !== 'Enter' || e.target.closest && e.target.closest('input,textarea')) return;
+    const b = document.querySelector('#panel:not([hidden]) #nx'); if (b) { e.preventDefault(); b.click(); }
+  });
   function who(id) { const s = SPK[id] || { name: id }; return `<div class="who">${esc(fmt(s.name))}${s.sub ? ` <small>${esc(s.sub)}</small>` : ''}</div>`; }
   function lineHtml(id, da, en) {
     return `<div class="pop">${who(id)}<p class="da" lang="da">${fog(da)}</p><div class="tools"><button class="mini" data-say="${esc(fmt(da))}" data-who="${id}">▶ igen</button>${en ? `<button class="mini" data-en>EN</button>` : ''}</div>${en ? `<p class="trans" hidden>${esc(fmt(en))}</p>` : ''}</div>`;

@@ -74,7 +74,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .opts button[lang=da] { font-size: 1.08em; }
 
 /* tappable Danish words */
-[data-w] { cursor: pointer; border-bottom: 1px dotted rgba(122, 255, 207, .35); }
+[data-w] { cursor: pointer; border-bottom: 1px dotted rgba(122, 255, 207, .35); padding: .18em 0; -webkit-tap-highlight-color: rgba(122, 255, 207, .18); }
 [data-w].new { color: #bff7e4; border-bottom: 1px dashed var(--teal); }
 #gl { position: absolute; z-index: 30; max-width: 15em; padding: .6em .75em; background: #0e2a22; border: 1px solid var(--teal); border-radius: .45em; box-shadow: 0 6px 24px rgba(0, 0, 0, .5); font-size: .9em; line-height: 1.35; }
 #gl b { font-size: 1.1em; margin-right: .4em; }

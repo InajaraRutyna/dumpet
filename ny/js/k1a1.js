@@ -161,8 +161,8 @@
     G.fade = 1; E.tween(G, 'fade', 0, 2);
     await E.tell([
       ['n', 'Earth. 03:12. A block of flats, a city that never quite sleeps, and on the fourth floor, **{navn}**, who does.'],
-      ['n', 'On the nightstand the phone glows: an alarm for 06:40, three unread messages, and a reminder: “Danish class, 19:00. Homework: the past tense.”'],
-      ['t', 'I haven’t done the homework. I’ll do it on the bus. I always do it on the bus.']
+      ['n', 'On the nightstand the phone glows: an alarm for 06:40, three unread messages, and a reminder: “Dentist, 08:15. Do NOT cancel again.”'],
+      ['t', 'I am going to cancel again.']
     ]);
     E.tween(G.view, 'z', 1.1, 3); E.tween(G.view, 'x', -4, 3);
     await E.tell([['n', 'The window starts to hum. Not the glass: the air itself. Every hair on your arms stands up.']]);
@@ -172,7 +172,7 @@
     E.setCast([{ k: 'hero', wx: -66, wy: -40, extra: { marks: 0, eyes: 'closed' } }]);
     await E.tell([
       ['n', 'The light does not come through the window. It comes straight through the ceiling: slow, green and completely silent.'],
-      ['t', 'This is a dream. In my dreams I’m usually better at Danish.']
+      ['t', 'This is a dream. In my dreams I can usually fly. …Oh. Apparently I can.']
     ]);
     const c1 = await E.choose({ narr: 'You float. Your feet leave the sheets.', opts: ['Grab the bed frame', 'Reach for your phone', 'Close your eyes'] });
     await E.tell([[c1 === 1 ? 'n' : 'n', ['Your fingers slide off the wood as if it were wet soap.', 'The phone stays behind, glowing. Three unread messages. Then four.', 'Behind your eyelids everything turns green, and then everything is gone.'][c1]], ['t', ['So much for the bed frame.', 'Nobody will believe this. Nobody will even read the message.', 'If I keep my eyes closed, maybe it counts as sleeping.'][c1]]]);
@@ -195,7 +195,7 @@
       ['n', 'You are standing, but not on anything. A column of light holds you upright. Outside, far below, hangs a small blue planet you used to live on.'],
       ['n', 'You can’t move. You can’t open your eyes. And still, somehow, you see.']
     ]);
-    await E.tell([['a:plink', 'Specimen 4471. Human, adult, fully intact. Sleeping nicely.'], ['a:vex', 'Begin the Kernel. I want a power cell by the next orbit.'], ['t', 'They speak English. Of course they do. Abducted by aliens, and the aliens have better English than I have Danish.']]);
+    await E.tell([['a:plink', 'Specimen 4471. Human, adult, fully intact. Sleeping nicely.'], ['a:vex', 'Begin the Kernel. I want a power cell by the next orbit.'], ['t', 'They speak English. Polite, precise, faintly bored English. Like a dentist. I knew I should have cancelled.']]);
     E.hidePanel(); E.SFX.heart();
     E.tween(G, 'progress', 41, 4.5, 'lin'); await heroSet('marks', 0.5, 4.5);
     await E.tell([
@@ -209,12 +209,12 @@
     G.anomaly = 1; E.SFX.alarm(); E.mood('alarm'); G.glitch = { t0: E.clock(), dur: 1.2 }; G.shake = { t0: E.clock(), dur: 0.8, amp: 0.6 };
     heroSet('eyes', 'open'); heroSet('mouth', 'open');
     await E.tell([['a:plink', 'Wait. Wait, wait, wait. It isn’t growing toward the heart.'], ['a:plink', 'It’s growing along the language centre. Vex… it’s listening.'], ['a:vex', 'Impossible. Show me.']]);
-    await E.tell([['t', 'Listening. My crystal is listening. At least something in me pays attention in class.']]);
+    await E.tell([['t', 'Listening. There is a crystal growing out of my shoulder, and it is listening. I would like to speak to a manager.']]);
     G.glitch = { t0: E.clock(), dur: 2 };
     await E.tell([
       ['n', 'Under the alarm there is a voice. Not the aliens. A woman’s voice, cracked, very far away.'],
       ['d:stemme', 'Du er ikke alene.', 'You are not alone.'],
-      ['t', 'Wait. That’s Danish. “Du er”: you are. “Ikke”: not. “Alene”… alone. You are not alone. Tuesday evenings, room four, a teacher who brought biscuits. It was all for this.']
+      ['t', 'I think that was Danish. I don’t speak Danish. And yet, as each word lands, the crystal hums and a meaning floats up behind it. “Du er”: you are. “Ikke”: not. “Alene”… alone. You are not alone. That is either very comforting or very creepy.']
     ]);
     const c2 = await E.choose({ narr: 'The crystal in your shoulder answers the voice with a pulse of light.', opts: ['Try to answer', 'Stay silent', 'Look at the aliens'] });
     await E.tell([['n', ['Your mouth opens. Nothing comes out but light.', 'You hold your breath. The crystal doesn’t. It sings.', 'The tall one is staring at you. For the first time, it looks afraid.'][c2]]]);
@@ -230,7 +230,7 @@
     E.tween(G, 'fallP', 0.55, 6, 'lin'); E.tween(E.actor('hero'), 'rot', 3.5, 6);
     await E.tell([
       ['n', 'Wind. Cold. A sky that is green at the edges, cut in half by a ring of light. Below you: a forest the size of a country, and in the middle of it, a lake, rushing up.'],
-      ['t', 'Feet first. Feet first. Why did I take Danish instead of swimming?']
+      ['t', 'Feet first. Feet first. I am a person who takes the lift. I am not built for this.']
     ]);
     const feet = await E.step(() => Gm.qte('Feet first!', 4200, 'The lake is coming.'));
     E.tween(E.actor('hero'), 'rot', feet ? 0.2 : 1.4, 0.9);
@@ -247,12 +247,12 @@
     await E.tell([
       ['n', 'You come up gasping, waist-deep in a black lake. Above you: a ringed planet, an aurora, and that enormous arch of light across the sky.'],
       ['n', 'And you are glowing. Crystal on your shoulder. Lines of light under the skin of your arm. One eye sees the dark in green.'],
-      ['t', 'My name is {navn}. That much I know. My job, my street, my own front door: gone, blurred. But I still know that “hund” means dog. Priorities.']
+      ['t', 'My name is {navn}. That much I know. My job, my street, my own front door: gone, blurred. But I can remember a jingle for washing powder, every single word. Priorities.']
     ]);
     await go({ to: 520, hint: 'Hold ▶ to wade to the shore' });
     E.tween(E.actor('lav'), 'alpha', 1, 1.4); await WLD().walk('lav', 700, 90);
     E.actor('lav').look = 'hero'; cam(610);
-    await E.say('lav', 'Ssh. Du lyser.', { en: 'Shh. You are glowing.', pre: 'Something steps out from between the trees: a deer made of moss and bark, with antlers that end in tiny lights.', think: '“Du”: you. “Lyser”… “lys” is light. You… light? I’m glowing. A deer is telling me I’m glowing. In Danish. Thank you, deer.' });
+    await E.say('lav', 'Ssh. Du lyser.', { en: 'Shh. You are glowing.', pre: 'Something steps out from between the trees: a deer made of moss and bark, with antlers that end in tiny lights.', think: '“Du”: you. That one I have now. “Lyser”… the crystal hums, and I get: light. I’m glowing. A deer is telling me I’m glowing. In Danish. Thank you, deer.' });
     G.drone = { wx: 60, y: 372, len: 300, sweep: 0.4, alert: 0 }; E.SFX.drone(); E.mood('hunt', { water: 0.03, wind: 0.03 });
     E.tween(G.drone, 'wx', 640, 3);
     await E.say('lav', 'En drone! Den kan se lys. Gem dig!', { en: 'A drone! It can see light. Hide!', think: '“Den kan se lys.” It can see light. And I am, at the moment, a lamp. “Gem dig” I don’t know. From his face, it means: do something clever, quickly.' });
@@ -269,14 +269,14 @@
     E.hidePanel();
     if (G.drone) { E.tween(G.drone, 'y', 160, 3); await E.tween(G.drone, 'wx', 1600, 3.2); } G.drone = null;
     E.mood('night', { water: 0.03, crickets: 0.45, wind: 0.02 });
-    await E.say('lav', 'Her er ord magi. Men kun, hvis du forstår dem.', { en: 'Here, words are magic. But only if you understand them.', think: '“Ord”: words. “Magi” is free. Words are magic here, but only if I understand them. Wonderful. My survival depends on my homework.' });
-    await E.say('lav', 'Jeg hedder Lav. Jeg er en moshjort. Hvad hedder du?', { en: 'My name is Lav. I am a moss deer. What is your name?', think: 'Finally. Chapter one, lesson one. This one I can do in my sleep. I was, in fact, asleep an hour ago.' });
+    await E.say('lav', 'Her er ord magi. Men kun, hvis du forstår dem.', { en: 'Here, words are magic. But only if you understand them.', think: '“Ord”: words. “Magi” is free. Words are magic here, but only if I understand them. Wonderful. My survival depends on vocabulary.' });
+    await E.say('lav', 'Jeg hedder Lav. Jeg er en moshjort. Hvad hedder du?', { en: 'My name is Lav. I am a moss deer. What is your name?', think: 'He says his own name, then points his nose at me. Some things don’t need a crystal. My name. Easy. Something I still have.' });
     await E.converse({
       who: 'lav', da: 'Hvad hedder du?', en: 'What is your name?', pool: ['Jeg', 'hedder', '{navn}', 'er', 'du', 'Lav'], ans: 'Jeg hedder {navn}', noBurst: true,
       judge: t => has(t, 'hedder') && !has(t, 'du hedder') && !has(t, 'hedder lav') ? { ok: true, who: 'lav', da: '{navn}. Et mærkeligt navn. Du er ikke herfra.', en: '{navn}. A strange name. You are not from here.', think: '“Mærkeligt”: strange. From a deer made of moss. Fair enough.' } : { ok: false, who: 'lav', da: has(t, 'lav') ? 'Nej, jeg hedder Lav. Og du? Jeg hedder …' : 'Jeg hedder Lav. Og du? Jeg hedder …', en: 'My name is Lav. And you? My name is …' }
     });
     const c3 = await E.choose({ who: 'lav', da: 'Du er fremmed her. Om natten er det farligt.', en: 'You are a stranger here. At night it is dangerous.', opts: ['Where am I?', 'Can you help me?', 'Why do you speak… Danish?'] });
-    await E.say('lav', ['Måne Syv. Skoven. Min sø.', 'Måske. Hvis du lærer hurtigt.', 'Det er månens sprog. Og nu er det også dit.'][c3], { en: ['Moon Seven. The forest. My lake.', 'Maybe. If you learn fast.', 'It is the moon’s language. And now it is yours too.'][c3], think: ['Moon Seven. The forest. His lake. Short sentences. He is the best teacher I’ve ever had.', 'Maybe, if I learn fast. I have never learned anything fast. I learned “Tuesday” in March.', 'The moon’s language. Danish. Eleven million speakers, and one of them is a moon.'][c3] });
+    await E.say('lav', ['Måne Syv. Skoven. Min sø.', 'Måske. Hvis du lærer hurtigt.', 'Det er månens sprog. Og nu er det også dit.'][c3], { en: ['Moon Seven. The forest. My lake.', 'Maybe. If you learn fast.', 'It is the moon’s language. And now it is yours too.'][c3], think: ['Moon Seven. The forest. His lake. Short sentences, slowly, for the new arrival. I appreciate that more than he knows.', 'Maybe, if I learn fast. Nobody has ever described me as fast. Not before coffee.', 'The moon’s language. Danish. Of all the languages in the universe, the moon picked the one with “ø” in it.'][c3] });
     await E.say('lav', 'Kom. Der ligger et gammelt skib i skoven. Der kan du sove. Følg mig.', { en: 'Come. There is an old ship in the forest. You can sleep there. Follow me.', think: '“Skib”: ship. “Sove”: sleep. A ship and a bed. The two best words anyone has said to me tonight.' });
     camFree(); const lav = E.actor('lav'); lav.look = null; lav.follow = 'hero'; lav.gap = -130;
     await E.tell([['t', 'Little lights drift between the trees, and each one has a word inside. If I touch one, I keep the word. Vocabulary, on this moon, is a kind of firefly. Some float high: ▲ jumps.']]);
@@ -294,18 +294,18 @@
     }, 1.6);
     await E.tell([
       ['n', 'Morning light through small round windows. Notes pinned to the walls. A locker with two letters scratched into its door: **A.L.** In the corner, a dead console that is not quite dead: one green light blinks.'],
-      ['t', 'Not a dream, then. I’m on an alien moon, in my pyjamas, in a shipwreck. My Danish teacher would say: good, a new context.']
+      ['t', 'Not a dream, then. I’m on an alien moon, in my pyjamas, in a shipwreck. On the plus side, I am definitely missing the dentist.']
     ]);
     camFree(); G.camZ = 1.3;
     await go({ to: X.WRECK_X + 112, hint: 'Walk to the blinking console  ▶', min: X.WRECK_X - 250, max: X.WRECK_X + 120 });
     cam(X.WRECK_X + 150, 1.3); E.SFX.chime(); await E.tween(E.actor('skib'), 'alpha', 1, 1.2);
     await E.say('skib', 'Bip. God morgen. Jeg er SKIB. Jeg er dette skibs computer.', { en: 'Beep. Good morning. I am SKIB. I am this ship’s computer.', think: '“Skib” again: ship. A ship called Ship. Someone here had a sense of humour once.' });
-    await E.say('skib', 'Du er ny. Jeg skal registrere dig. Hvad lavede du, før du kom hertil?', { en: 'You are new. I must register you. What did you do before you came here?', think: '“Lavede”: the past of “lave”. What did I do before I came here. That is the homework question. That is literally the homework question.' });
+    await E.say('skib', 'Du er ny. Jeg skal registrere dig. Hvad lavede du, før du kom hertil?', { en: 'You are new. I must register you. What did you do before you came here?', think: '“Lavede”. The crystal hums: did. What did I do before I came here? Easy. Everyone knows that about themselves.' });
     await E.tell([
       ['n', 'You open your mouth to answer, and nothing is there.'],
-      ['t', 'My job. I had a job. A street, a bed, a way to get to work. I can see the shapes, not the faces. The tall one said: wipe its memory. They wiped everything except the Danish. Of all the things to keep.']
+      ['t', 'My job. I had a job. A street, a bed, a way to get to work. I can see the shapes, not the faces. The tall one said: wipe its memory. They did. Everything except my name, and that jingle.']
     ]);
-    await E.say('skib', 'Analyse: Dine minder er låst. Nøglen er datid. Sig dine minder i datid, så kommer de tilbage.', { en: 'Analysis: Your memories are locked. The key is the past tense. Say your memories in the past tense, and they come back.', think: '“Datid”: the past tense. The key to my memories is the past tense. Of course it is. The universe has read my homework list.' });
+    await E.say('skib', 'Analyse: Dine minder er låst. Nøglen er datid. Sig dine minder i datid, så kommer de tilbage.', { en: 'Analysis: Your memories are locked. The key is the past tense. Say your memories in the past tense, and they come back.', think: '“Datid”: the crystal says “the past tense”. My memories are locked, and the key is grammar. Of course it is. Nothing on this moon is just a door.' });
     E.mood('wonder', { wind: 0.01 });
     await E.step(() => Gm.teach({
       lab: 'Datid', sub: 'past tense', h: 'Three ways to remember',
@@ -344,7 +344,7 @@
     await E.tell([['m', job.m]]);
 
     // memory 2 · where you worked: i or på
-    await E.say('skib', 'Spørgsmål to: Hvor arbejdede du? Pas på: i eller på.', { en: 'Question two: Where did you work? Careful: i or på.', think: '“I” or “på”. The two smallest words in Danish, and the two I get wrong most. The computer knows. Of course it knows.' });
+    await E.say('skib', 'Spørgsmål to: Hvor arbejdede du? Pas på: i eller på.', { en: 'Question two: Where did you work? Careful: i or på.', think: '“I” or “på”. The two smallest words in Danish, and they already look like trouble. The computer knows. Of course it knows.' });
     await E.step(() => Gm.teach({ lab: 'i eller på', sub: 'in or at', h: 'Small words, big trouble', html: `<p><b lang="da">${E.fog('i')}</b> for cities, countries, and most companies and shops: <span lang="da">${E.fog('i Berlin, i Tyskland, i et firma, i en bank')}</span>.</p><p><b lang="da">${E.fog('på')}</b> for islands and for many institutions: <span lang="da">${E.fog('på Island, på Fyn, på et hospital, på en skole, på et universitet')}</span>.</p><p class="hint">There is logic, and there are habits. Learn them in pairs.</p>` }));
     await E.step(() => Gm.prepSort([
       { w: 'et hospital', p: 'på', en: 'a hospital', why: 'på et hospital: an institution.' }, { w: 'et firma', p: 'i', en: 'a company', why: 'i et firma.' }, { w: 'en skole', p: 'på', en: 'a school', why: 'på en skole.' },
@@ -406,7 +406,7 @@
     });
     await E.tell([['m', `Every morning, ${tr.m}. You used to complain about it. You would give anything for it now.`]]);
     E.castAnim('minder');
-    await E.say('skib', `Registrering færdig. Før {hun} kom hertil, ${jobLine('{hun}', true)}. {Hun} boede ${cityP()}. Velkommen, {navn}.`, { en: `Registration complete. Before {she} came here, {she} ${st ? 'was a student' : 'worked as ' + (/^[aeiou]/i.test(job.en) ? 'an ' : 'a ') + job.en}. {She} lived in ${city.da}. Welcome, {navn}.`, pre: 'The shards settle. Not everything is back, but enough. You remember who you were.', think: '“Før {hun} kom hertil, ' + (st ? 'var' : 'arbejdede') + ' {hun}…” The verb jumped in front. After a “før” sentence the verb comes first. That was in the homework too.' });
+    await E.say('skib', `Registrering færdig. Før {hun} kom hertil, ${jobLine('{hun}', true)}. {Hun} boede ${cityP()}. Velkommen, {navn}.`, { en: `Registration complete. Before {she} came here, {she} ${st ? 'was a student' : 'worked as ' + (/^[aeiou]/i.test(job.en) ? 'an ' : 'a ') + job.en}. {She} lived in ${city.da}. Welcome, {navn}.`, pre: 'The shards settle. Not everything is back, but enough. You remember who you were.', think: '“Før {hun} kom hertil, ' + (st ? 'var' : 'arbejdede') + ' {hun}…” The verb jumped in front of “{hun}”. Interesting. I’ll keep an eye on that.' });
 
     /* ---------- 6 · Seks's log, the coat */
     await E.say('skib', 'Du er nummer to. Den første var Seks.', { en: 'You are number two. The first was Six.', think: '“Seks” is six. Specimen Six. The small alien said that name, twenty-two years ago, give or take.' });
@@ -516,7 +516,7 @@
     E.mood('tense', { wind: 0.02 }); E.SFX.clang(); cam(5110, 0.9);
     await WLD().walk('birk', 5190, 260);
     await E.say('birk', 'Stop! Hvem er du? Fremmede bringer droner.', { en: 'Stop! Who are you? Strangers bring drones.', pre: 'Someone in bronze armour comes running down the path and stops the glowing tip of a spear a hand’s width from your chest.', think: '“Fremmede”: strangers. “Droner”: drones. Strangers bring drones. Fair. I did bring one, sort of.' });
-    await E.say('lav', 'Ro på, Birk. {Hun} er med mig.', { en: 'Easy, Birk. {She} is with me.', think: '“Ro på.” Not in my book. But it sounds like “calm down” in every language I know.' });
+    await E.say('lav', 'Ro på, Birk. {Hun} er med mig.', { en: 'Easy, Birk. {She} is with me.', think: '“Ro på.” The crystal doesn’t even bother. It sounds like “calm down” in every language I know.' });
     await E.say('birk', 'Med dig? Du hjælper aldrig nogen, Lav.', { en: 'With you? You never help anyone, Lav.' });
     await E.say('lav', 'Jeg hjælper. Jeg er bare sarkastisk imens.', { en: 'I help. I’m just sarcastic while I do it.', think: 'I understood “sarkastisk”. Some words are the same everywhere. Sarcasm, for example.' });
     await E.converse({
@@ -557,7 +557,7 @@
     await E.tell([['n', 'The path ends at a ravine. Far below runs a river of light. Across it: nothing. No bridge. Only a shimmer in the air, like heat over a summer road.'], ['t', '“Kløften.” Something you fall into. I was right.']]);
     E.hidePanel(); lav2.autoFlip = false; lav2.flip = true;
     E.tween(lav2, 'wy', -120, 0.6, 'out').then(() => E.tween(lav2, 'wy', 0, 0.6, 'in')); await E.tween(lav2, 'wx', X.RAV1 + 60, 1.2, 'lin'); lav2.flip = false; lav2.autoFlip = true; lav2.look = 'hero';
-    await E.say('lav', 'Her er broen. Du kan ikke se den. Den kommer, når ordene står rigtigt.', { en: 'Here is the bridge. You can’t see it. It comes when the words stand right.', pre: 'Lav jumps. He lands on the far side as if the gap were nothing.', think: 'A bridge made of word order. My teacher would weep with joy. I might just weep.' });
+    await E.say('lav', 'Her er broen. Du kan ikke se den. Den kommer, når ordene står rigtigt.', { en: 'Here is the bridge. You can’t see it. It comes when the words stand right.', pre: 'Lav jumps. He lands on the far side as if the gap were nothing.', think: 'A bridge made of word order. Not wood, not rope: grammar. I might just weep.' });
     await E.step(() => Gm.teach({
       lab: 'Spejlbroen', sub: 'word order', h: 'Where does the verb stand?',
       html: `<div class="book">
@@ -585,7 +585,7 @@
     await go({ to: X.STONES_X - 150, hint: 'Walk on  ▶', lights: [[X.RAV1 + 260, 62, 'lyd', 'sound'], [X.RAV1 + 470, 150, 'synge', 'sing'], [X.RAV1 + 640, 62, 'sten', 'stone']] });
     lav2.follow = null; await WLD().walk('lav', X.STONES_X + 70, 100); lav2.look = 'hero'; cam(X.STONES_X - 40);
     await E.tell([['n', 'The forest opens into a clearing of tall grey stones. When the wind passes, they hum, each one on its own note. The sun is low now, and everything is gold.']]);
-    await E.say('lav', 'Klangsten. De svarer kun, når du siger ordene rigtigt. Som en dansker.', { en: 'Sound stones. They only answer when you say the words right. Like a Dane.', think: 'Stones that correct my pronunciation. I have paid good money for that before. The stones are cheaper.' });
+    await E.say('lav', 'Klangsten. De svarer kun, når du siger ordene rigtigt. Som en dansker.', { en: 'Sound stones. They only answer when you say the words right. Like a Dane.', think: 'Stones that judge my pronunciation. Even the rocks on this moon have standards.' });
     await E.step(() => Gm.stones());
     G.stonesLit = 6;
     await E.say('lav', 'Ikke dårligt. Her går jeg ikke længere. Byer lugter af mennesker.', { en: 'Not bad. I go no further than this. Towns smell of people.', think: '“Byer lugter af mennesker.” Towns smell of people. He is not wrong.' });
@@ -606,7 +606,7 @@
     E.SFX.scan(); await E.tween(G, 'scan', 1, 1.6); await E.wait(800);
     await E.tell([['n', 'The scanner ring hums and turns. Holm reads your words aloud, slowly, enjoying every one of them.'], ['d:holm', bio, '']]);
     G.scan = 0; E.SFX.clang(); E.gainPower(10); E.castAnim('godkendt');
-    await E.say('holm', 'Før jeg kom hertil, boede jeg … Smukt! Verbet står rigtigt. Godkendt!', { en: 'Before I came here, I lived … Beautiful! The verb stands right. Approved!', think: 'He is moved by my word order. Somewhere on Earth, my teacher just smiled and doesn’t know why.' });
+    await E.say('holm', 'Før jeg kom hertil, boede jeg … Smukt! Verbet står rigtigt. Godkendt!', { en: 'Before I came here, I lived … Beautiful! The verb stands right. Approved!', think: 'He is moved by my word order. I have never moved anyone with my word order. I could get used to this.' });
 
     /* ---------- 13 · the coat, and the sky */
     const bk = E.actor('birk'); bk.hidden = false; bk.wx = X.GATE_X - 330; bk.look = null; bk.alpha = 1;
