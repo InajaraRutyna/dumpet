@@ -133,20 +133,62 @@
       speakingUntil = clock() + Math.min(6, 0.6 + t.length * 0.055);
     } catch (e) { }
   }
-  function hear() {
+  // Listening. On phones the microphone needs a moment, and it can't open while the game or a voice is still playing:
+  // so the game goes quiet first, the button says "vent" (wait), and only then "Tal nu" (speak now).
+  let hearMiss = 0;
+  function hear(onState) {
     return new Promise(res => {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR || !S.set.mic) return res(null);
-      let done = false; const fin = v => { if (!done) { done = true; res(v); } };
-      try {
-        const r = new SR(); r.lang = 'da-DK'; r.maxAlternatives = 5; r.interimResults = false;
-        r.onresult = e => fin([...e.results[0]].map(a => a.transcript));
-        r.onerror = e => fin(e.error === 'no-speech' ? [] : null); r.onend = () => fin([]);
-        try { speechSynthesis.cancel(); } catch (e) { }
-        r.start(); setTimeout(() => { try { r.stop(); } catch (e) { } }, 8000);
-      } catch (e) { fin(null); }
+      hear.why = '';
+      if (!SR || !S.set.mic) { hear.why = 'none'; return res(null); }
+      const st = x => { try { if (onState) onState(x); } catch (e) { } };
+      const ac = AU.c, wasOn = !!(ac && ac.state === 'running');
+      let done = false, opened = false, interim = [], tStop, tOpen;
+      const fin = v => {
+        if (done) return; done = true; clearTimeout(tStop); clearTimeout(tOpen);
+        if (wasOn) ac.resume().catch(() => { });
+        if (v && v.length) hearMiss = 0; else if (v) hearMiss++;
+        res(v);
+      };
+      try { speechSynthesis.cancel(); } catch (e) { }
+      if (wasOn) ac.suspend().catch(() => { });
+      st('wait');
+      setTimeout(() => {
+        let r;
+        try { r = new SR(); } catch (e) { hear.why = 'none'; return fin(null); }
+        r.lang = 'da-DK'; r.maxAlternatives = 5; r.interimResults = true; r.continuous = false;
+        r.onaudiostart = () => { opened = true; st('listen'); };
+        r.onspeechstart = () => { opened = true; st('hearing'); };
+        r.onresult = e => {
+          const last = e.results[e.results.length - 1], alts = [...last].map(x => x.transcript).filter(x => x && x.trim());
+          if (!alts.length) return;
+          if (last.isFinal) fin(alts); else interim = alts;
+        };
+        r.onerror = e => {
+          hear.why = e.error;
+          if (['not-allowed', 'service-not-allowed', 'audio-capture', 'network', 'language-not-supported'].includes(e.error)) fin(interim.length ? interim : null);
+        };
+        r.onend = () => fin(interim);
+        try { r.start(); } catch (e) { hear.why = 'none'; return fin(null); }
+        // some phones never announce that the microphone is open: after a moment, assume it is
+        tOpen = setTimeout(() => { if (!opened) st('listen'); }, 1500);
+        tStop = setTimeout(() => { try { r.stop(); } catch (e) { } }, 9000);
+      }, 400);
     });
   }
+  // what to tell the player when nothing usable came back
+  function hearMsg(alts) {
+    const w = hear.why;
+    if (alts === null) {
+      if (w === 'not-allowed' || w === 'service-not-allowed') return 'The microphone is blocked for this page. Allow it in the browser’s site settings (the icon left of the address), or tap or write the answer.';
+      if (w === 'audio-capture') return 'No microphone was found. Tap or write the answer instead.';
+      if (w === 'network') return 'Speaking needs an internet connection. Tap or write the answer instead.';
+      if (w === 'language-not-supported') return 'This phone can’t recognise spoken Danish. Tap or write the answer instead.';
+      return 'Speaking doesn’t work in this browser. Open the page in Chrome, or tap or write the answer.';
+    }
+    return hearMiss >= 2 ? 'Still nothing. Wait until the button says “Tal nu”, then speak close to the phone. Or use Skriv to write it.' : 'I heard nothing. Wait until the button says “Tal nu”, then speak.';
+  }
+  const MICL = { wait: '… vent', listen: '● Tal nu', hearing: '… lytter' };
 
   /* ================= checkpoints: every answered step is remembered; leaving mid-scene loses nothing */
   function cpStart(id) { if (S.cp && S.cp.id === id && S.cp.r.length) { W.ffq = S.cp.r.slice(); W.ff = true; } else { S.cp = { id, r: [] }; W.ffq = []; W.ff = false; } save(); }
@@ -265,7 +307,7 @@
       p.querySelector('#ty').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); p.querySelector('#sig').click(); } });
       p.querySelector('#sig').onclick = () => { const ty = p.querySelector('#ty'); if (!ty.hidden && ty.value.trim()) return fin(ty.value, 'write'); if (!comp.length) return toast('Tap some words first, or write, or say it.'); fin(comp.map(c => fmt(c.w)).join(' '), 'tap'); };
       const mic = p.querySelector('#mic');
-      if (mic) mic.onclick = async () => { mic.disabled = true; mic.textContent = '… lytter'; const alts = await hear(); if (done) return; mic.disabled = false; mic.textContent = '🎙 Sig det'; if (alts === null) return toast('No microphone here. Tap or write instead.', 3200); if (!alts.length) return toast('I heard nothing. Try again.'); const best = o.pickAlt ? o.pickAlt(alts.map(norm)) : 0; fin(alts[best] || alts[0], 'voice'); };
+      if (mic) mic.onclick = async () => { const lab = mic.innerHTML; mic.disabled = true; const alts = await hear(x => { mic.textContent = MICL[x]; mic.classList.toggle('rec', x !== 'wait'); }); if (done) return; mic.disabled = false; mic.classList.remove('rec'); mic.innerHTML = lab; if (alts === null || !alts.length) return toast(hearMsg(alts), 6000); const best = o.pickAlt ? o.pickAlt(alts.map(norm)) : 0; fin(alts[best] || alts[0], 'voice'); };
       let hn = 0;
       p.querySelector('#hint').onclick = () => { hn++; if (hn === 1) toast(o.hint || 'Use the words you have heard.', 5200); else { toast('Answer: ' + fmt(o.ans || ''), 6500); } };
     });
@@ -274,7 +316,9 @@
   async function converse_(o) {
     let give = false;
     for (let tries = 0; ; tries++) {
-      const u = await utter(Object.assign({}, o, give ? { give: o.ans, silent: true } : tries ? { silent: true } : {}));
+      // of everything the phone thinks it heard, take the guess that is a right answer, if there is one
+      const pickAlt = alts => { const i = alts.findIndex(t => { try { return !!(o.judge(t, tries, {}) || {}).ok; } catch (e) { return false; } }); return i < 0 ? 0 : i; };
+      const u = await utter(Object.assign({ pickAlt }, o, give ? { give: o.ans, silent: true } : tries ? { silent: true } : {}));
       let r = o.judge(u.text, tries, u) || { ok: false };
       if (r.ok) {
         learnText(u.raw);
@@ -538,7 +582,7 @@
   }
 
   window.E = {
-    S: () => S, G, W, $, esc, shuffle, fmt, fog, norm, unacc, cap, wait, tween, clock, save, toast, speak, hear, learn, learnText,
+    S: () => S, G, W, $, esc, shuffle, fmt, fog, norm, unacc, cap, wait, tween, clock, save, toast, speak, hear, hearMsg, MICL, learn, learnText,
     addGloss, GLOSS, SPK, IRONY, say, alien, tell, choose, converse, utter, step, show, hidePanel, nextBtn, waitNext, lineHtml, wireEn,
     sheet, closeSheet, modal, closeModal, onTick, gainPower, hud, where, mood, SFX, tone, cpStart, cpEnd, heroLook, actor, setCast, refreshHero, outfitOf, castAnim, speaking, daVoices,
     chapter, CH, boot, chapters, menu, audioStart, layout, Hun, titleScreen, book
