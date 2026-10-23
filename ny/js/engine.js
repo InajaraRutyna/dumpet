@@ -114,7 +114,7 @@
     const sp = e.target.closest('[data-say]'); if (sp) { e.stopPropagation(); speak(sp.dataset.say, sp.dataset.who); }
   }, true);
   let tipT;
-  function toast(t, ms, code) { const tip = $('#tip'); tip.textContent = t; if (code) { const k = document.createElement('small'); k.className = 'code'; k.textContent = code; tip.appendChild(k); } tip.hidden = false; clearTimeout(tipT); tipT = setTimeout(() => tip.hidden = true, ms || 2600); }
+  function toast(t, ms) { const tip = $('#tip'); tip.textContent = t; tip.hidden = false; clearTimeout(tipT); tipT = setTimeout(() => tip.hidden = true, ms || 2600); }
 
   /* ================= speech: the world speaks Danish aloud; you can answer aloud */
   const daVoices = () => { try { return speechSynthesis.getVoices().filter(x => /^da/i.test(x.lang)); } catch (e) { return []; } };
@@ -135,68 +135,47 @@
   }
   // Listening. On phones the microphone needs a moment, and it can't open while the game or a voice is still playing:
   // so the game goes quiet first, the button says "vent" (wait), and only then "Tal nu" (speak now).
-  // Some phones give up after a second or two of silence: then we quietly start again, for up to 9 seconds.
   let hearMiss = 0;
-  const HARD = ['not-allowed', 'service-not-allowed', 'audio-capture', 'network'];
   function hear(onState) {
     return new Promise(res => {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      hear.why = ''; hear.log = [];
+      hear.why = '';
       if (!SR || !S.set.mic) { hear.why = 'none'; return res(null); }
       const st = x => { try { if (onState) onState(x); } catch (e) { } };
-      const L = x => { hear.log.push(x); if (hear.onlog) try { hear.onlog(x); } catch (e) { } };
-      const ac = AU.c, wasOn = !!(ac && ac.state === 'running'), t0 = Date.now(), WINDOW = 9000;
-      let done = false, opened = false, best = [], tries = 0, cur = null, hard = false, tOpen, tStop;
-      hear.busy = true;
+      const ac = AU.c, wasOn = !!(ac && ac.state === 'running');
+      let done = false, opened = false, interim = [], tStop, tOpen;
       const fin = v => {
-        if (done) return; done = true; hear.busy = false; clearTimeout(tStop); clearTimeout(tOpen);
-        try { if (cur) cur.abort(); } catch (e) { }
+        if (done) return; done = true; clearTimeout(tStop); clearTimeout(tOpen);
         if (wasOn) ac.resume().catch(() => { });
         if (v && v.length) hearMiss = 0; else if (v) hearMiss++;
         res(v);
       };
-      const once = () => {
-        if (done) return;
-        tries++;
-        let r; try { r = new SR(); } catch (e) { hear.why = 'none'; L('no-recognizer'); return fin(null); }
-        cur = r; r.lang = hear.lang || 'da-DK'; r.maxAlternatives = 5; r.interimResults = true; r.continuous = false;
-        r.onaudiostart = () => { L('mic'); if (!opened) { opened = true; st('listen'); } };
-        r.onsoundstart = () => L('sound');
-        r.onspeechstart = () => { L('speech'); st('hearing'); };
-        r.onresult = e => {
-          const last = e.results[e.results.length - 1], alts = [...last].map(x => x.transcript).filter(x => x && x.trim());
-          if (!alts.length) return;
-          L((last.isFinal ? 'heard:' : 'part:') + alts[0]);
-          if (last.isFinal) fin(alts); else best = alts;
-        };
-        r.onnomatch = () => L('nomatch');
-        r.onerror = e => {
-          L('error:' + e.error); hear.why = e.error;
-          if (HARD.includes(e.error)) { hard = true; fin(best.length ? best : null); }
-          if (e.error === 'language-not-supported' && r.lang === 'da-DK') hear.lang = 'da';
-        };
-        r.onend = () => {
-          L('end'); if (done) return;
-          if (best.length) return fin(best);
-          if (!hard && tries < 6 && Date.now() - t0 < WINDOW - 1200) setTimeout(once, 150); else fin([]);
-        };
-        try { r.start(); L('start'); } catch (e) { L('start-failed'); hear.why = 'none'; fin(null); }
-      };
       try { speechSynthesis.cancel(); } catch (e) { }
       if (wasOn) ac.suspend().catch(() => { });
       st('wait');
-      setTimeout(once, 400);
-      // some phones never announce that the microphone is open: after a moment, assume it is
-      tOpen = setTimeout(() => { if (!opened) st('listen'); }, 1900);
-      tStop = setTimeout(() => { try { if (cur) cur.stop(); } catch (e) { } setTimeout(() => fin(best), 1500); }, WINDOW);
+      setTimeout(() => {
+        let r;
+        try { r = new SR(); } catch (e) { hear.why = 'none'; return fin(null); }
+        r.lang = 'da-DK'; r.maxAlternatives = 5; r.interimResults = true; r.continuous = false;
+        r.onaudiostart = () => { opened = true; st('listen'); };
+        r.onspeechstart = () => { opened = true; st('hearing'); };
+        r.onresult = e => {
+          const last = e.results[e.results.length - 1], alts = [...last].map(x => x.transcript).filter(x => x && x.trim());
+          if (!alts.length) return;
+          if (last.isFinal) fin(alts); else interim = alts;
+        };
+        r.onerror = e => {
+          hear.why = e.error;
+          if (['not-allowed', 'service-not-allowed', 'audio-capture', 'network', 'language-not-supported'].includes(e.error)) fin(interim.length ? interim : null);
+        };
+        r.onend = () => fin(interim);
+        try { r.start(); } catch (e) { hear.why = 'none'; return fin(null); }
+        // some phones never announce that the microphone is open: after a moment, assume it is
+        tOpen = setTimeout(() => { if (!opened) st('listen'); }, 1500);
+        tStop = setTimeout(() => { try { r.stop(); } catch (e) { } }, 9000);
+      }, 400);
     });
   }
-  // a short summary for a screenshot: how many tries, and how far the microphone got
-  hear.code = () => {
-    const lg = hear.log || [], n = lg.filter(x => x === 'start').length, has = x => lg.includes(x);
-    const errs = [...new Set(lg.filter(x => x.startsWith('error:')).map(x => x.slice(6)))];
-    return `mic ${n}× · open ${has('mic') ? 'yes' : 'no'} · sound ${has('sound') ? 'yes' : 'no'} · speech ${has('speech') ? 'yes' : 'no'}${errs.length ? ' · ' + errs.join(', ') : ''}`;
-  };
   // what to tell the player when nothing usable came back
   function hearMsg(alts) {
     const w = hear.why;
@@ -328,7 +307,7 @@
       p.querySelector('#ty').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); p.querySelector('#sig').click(); } });
       p.querySelector('#sig').onclick = () => { const ty = p.querySelector('#ty'); if (!ty.hidden && ty.value.trim()) return fin(ty.value, 'write'); if (!comp.length) return toast('Tap some words first, or write, or say it.'); fin(comp.map(c => fmt(c.w)).join(' '), 'tap'); };
       const mic = p.querySelector('#mic');
-      if (mic) mic.onclick = async () => { const lab = mic.innerHTML; mic.disabled = true; const alts = await hear(x => { mic.textContent = MICL[x]; mic.classList.toggle('rec', x !== 'wait'); }); if (done) return; mic.disabled = false; mic.classList.remove('rec'); mic.innerHTML = lab; if (alts === null || !alts.length) return toast(hearMsg(alts), 7000, hear.code()); const best = o.pickAlt ? o.pickAlt(alts.map(norm)) : 0; fin(alts[best] || alts[0], 'voice'); };
+      if (mic) mic.onclick = async () => { const lab = mic.innerHTML; mic.disabled = true; const alts = await hear(x => { mic.textContent = MICL[x]; mic.classList.toggle('rec', x !== 'wait'); }); if (done) return; mic.disabled = false; mic.classList.remove('rec'); mic.innerHTML = lab; if (alts === null || !alts.length) return toast(hearMsg(alts), 6000); const best = o.pickAlt ? o.pickAlt(alts.map(norm)) : 0; fin(alts[best] || alts[0], 'voice'); };
       let hn = 0;
       p.querySelector('#hint').onclick = () => { hn++; if (hn === 1) toast(o.hint || 'Use the words you have heard.', 5200); else { toast('Answer: ' + fmt(o.ans || ''), 6500); } };
     });
@@ -392,7 +371,7 @@
   /* ================= SOUND: synthesised, nothing recorded */
   const AU = { c: null };
   function audioStart() {
-    if (AU.c && AU.c.state === 'suspended' && !hear.busy) { try { AU.c.resume(); } catch (e) { } }
+    if (AU.c && AU.c.state === 'suspended') { try { AU.c.resume(); } catch (e) { } }
     if (AU.c || !S.set.sound) return; const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
     const c = AU.c = new C();
     AU.out = c.createGain(); AU.out.gain.value = 0.85; AU.out.connect(c.destination);
@@ -558,18 +537,9 @@
       <div class="set"><span>Danish voice</span><select class="ghost" id="sVoice">${vs.length ? vs.map(v => `<option ${v.name === S.set.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('') : '<option>none found on this device</option>'}</select></div>
       <div class="set"><span>Microphone answers</span><button class="ghost" id="sMic">${S.set.mic ? 'on' : 'off'}</button></div>
       <div class="row"><button class="ghost" id="sTest">▶ Test the voice</button></div>
-      <div class="row"><button class="ghost" id="sMicT">🎙 Test the microphone</button></div><div id="micOut" class="micout" hidden></div>
       <p class="hint">No Danish voice? On Android: Settings › Text-to-speech › install Danish. On iPhone: Settings › Accessibility › Spoken Content › Voices › Dansk.</p>
       <div class="row end"><button class="go" id="cl">Luk · close</button></div></div>`);
     c.querySelector('#sSnd').onclick = e => { S.set.sound = S.set.sound ? 0 : 1; e.target.textContent = S.set.sound ? 'on' : 'off'; save(); audioStart(); };
-    c.querySelector('#sMicT').onclick = async e => {
-      const b = e.currentTarget, out = c.querySelector('#micOut'), lab = b.innerHTML; if (!S.set.mic) { S.set.mic = 1; save(); c.querySelector('#sMic').textContent = 'on'; }
-      out.hidden = false; out.textContent = 'Say: “Hej, jeg hedder …”'; b.disabled = true;
-      hear.onlog = x => { out.textContent += '\n· ' + x; };
-      const alts = await hear(x => { b.textContent = MICL[x]; b.classList.toggle('rec', x !== 'wait'); });
-      hear.onlog = null; b.disabled = false; b.classList.remove('rec'); b.innerHTML = lab;
-      out.textContent += '\n' + (alts && alts.length ? '✓ The phone heard: ' + alts.join(' / ') : '✗ ' + hearMsg(alts));
-    };
     c.querySelector('#sMic').onclick = e => { S.set.mic = S.set.mic ? 0 : 1; e.target.textContent = S.set.mic ? 'on' : 'off'; save(); };
     c.querySelector('#sMus').oninput = e => { S.set.music = +e.target.value; save(); };
     c.querySelector('#sRate').oninput = e => { S.set.rate = +e.target.value; save(); };

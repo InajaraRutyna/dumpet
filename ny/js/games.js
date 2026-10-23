@@ -387,7 +387,7 @@
           setTimeout(() => E.speak(s), 300);
           const dn = c.querySelector('#dn'); if (dn) dn.onclick = () => res('self');
           const mc = c.querySelector('#mc');
-          if (mc) mc.onclick = async () => { const lab = mc.innerHTML; mc.disabled = true; const alts = await E.hear(x => { mc.textContent = E.MICL[x]; mc.classList.toggle('rec', x !== 'wait'); }); mc.disabled = false; mc.classList.remove('rec'); mc.innerHTML = lab; if (alts === null) { E.toast(E.hearMsg(null), 6000); return res('self'); } if (!alts.length) { c.querySelector('#hd').textContent = E.hearMsg(alts) + ' (' + E.hear.code() + ')'; return; } res(alts.map(E.norm)); };
+          if (mc) mc.onclick = async () => { const lab = mc.innerHTML; mc.disabled = true; const alts = await E.hear(x => { mc.textContent = E.MICL[x]; mc.classList.toggle('rec', x !== 'wait'); }); mc.disabled = false; mc.classList.remove('rec'); mc.innerHTML = lab; if (alts === null) { E.toast(E.hearMsg(null), 6000); return res('self'); } if (!alts.length) { c.querySelector('#hd').textContent = E.hearMsg(alts); return; } res(alts.map(E.norm)); };
         });
         if (r === 'self') { if (SAY.indexOf(s) % 2) lightUp(); else SFX.stone(); E.gainPower(1); break; }
         const words = target.split(' '), best = Math.max(...r.map(a => words.filter(w => (' ' + a + ' ').includes(' ' + w + ' ')).length / words.length));

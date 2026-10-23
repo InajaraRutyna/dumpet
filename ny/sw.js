@@ -1,5 +1,5 @@
 // Network first, so updates arrive; the cache is only the offline fallback.
-const C = "dumpet-ny-v8";
+const C = "dumpet-ny-v9";
 self.addEventListener("install", e => self.skipWaiting());
 self.addEventListener("activate", e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C && (k.startsWith('dumpet-ny') || k === 'dumpet2-v1')).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", e => {
