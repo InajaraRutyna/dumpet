@@ -47,6 +47,8 @@
     // a fresh order every time, never the same whisper twice in a row
     const seq = []; while (seq.length < 12) { const k = shuffle(Object.keys(CMD))[0]; if (k !== seq[seq.length - 1]) seq.push(k); }
     const listen = E.daVoices().length > 0, HIDE_X = 822, A_X = x0, B_X = x0 + 150;
+    // the whole playing field in view: both spots and the hiding tree
+    G.camX = (A_X + HIDE_X) / 2 + 30; G.camZ = 0.82;
     let lives = 3, ok = 0, miss = 0, saved = 0, pos = 'A';
     for (let r = 0; r < seq.length; r++) {
       const k = seq[r], C = CMD[k], ms = Math.max(2800, 5800 - r * 250), hide = listen && r >= 4;

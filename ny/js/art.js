@@ -1825,7 +1825,10 @@
     if (a.hidden) return;
     ctx.save();
     if (a.alpha != null) ctx.globalAlpha = a.alpha;
-    ctx.translate(a.x, a.y); if (a.rot) ctx.rotate(a.rot); if (a.flip) ctx.scale(-1, 1); if (a.sq) ctx.scale(1 + (1 - a.sq) * 0.35, a.sq);
+    // clipY: everything below this line is under water
+    if (a.clipY != null) { ctx.beginPath(); ctx.rect(-2000, -2000, 4000 + W, a.clipY + 2000); ctx.clip(); }
+    // mid: turn around the middle of the body instead of the feet
+    ctx.translate(a.x, a.y); if (a.rot) ctx.rotate(a.rot); if (a.mid) ctx.translate(0, a.mid); if (a.flip) ctx.scale(-1, 1); if (a.sq) ctx.scale(1 + (1 - a.sq) * 0.35, a.sq);
     const tt = t + (a.ph || 0);
     if (a.k === 'hero' || a.k === 'npc') hero(ctx, 0, 0, a.s || 1.32, a.o, tt);
     else if (a.k === 'deer') deer(ctx, 0, 0, a.s || 1.2, a.o || DEER_DAY, tt);

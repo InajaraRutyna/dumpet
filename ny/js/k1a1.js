@@ -226,15 +226,22 @@
     await E.wait(500);
 
     /* ---------- 3 · the fall */
-    setScene('fall', { maxLift: 0, where: 'Måne Syv', g: { fallP: 0 }, cast: [{ k: 'hero', x: 195, y: 380, s: 1.1, rot: 2.6, extra: { cast: 1, marks: 1, eyes: 'open', mouth: 'open' } }] });
-    E.tween(G, 'fallP', 0.55, 6, 'lin'); E.tween(E.actor('hero'), 'rot', 3.5, 6);
+    // the same size as everywhere else: a small person, a very large moon
+    setScene('fall', { maxLift: 0, where: 'Måne Syv', g: { fallP: 0 }, cast: [{ k: 'hero', x: 195, y: 290, s: 0.56, mid: 60, rot: 2.6, extra: { cast: 1, marks: 1, eyes: 'open', mouth: 'open', ground: '' } }] });
+    const fh = E.actor('hero');
+    E.tween(G, 'fallP', 0.55, 6, 'lin'); E.tween(fh, 'rot', 3.5, 6);
     await E.tell([
       ['n', 'Wind. Cold. A sky that is green at the edges, cut in half by a ring of light. Below you: a forest the size of a country, and in the middle of it, a lake, rushing up.'],
       ['t', 'Feet first. Feet first. I am a person who takes the lift. I am not built for this.']
     ]);
     const feet = await E.step(() => Gm.qte('Feet first!', 4200, 'The lake is coming.'));
-    E.tween(E.actor('hero'), 'rot', feet ? 0.2 : 1.4, 0.9);
+    E.hidePanel();
+    E.tween(fh, 'rot', feet ? 0 : 1.5, 0.9);
+    E.tween(fh, 'y', 420, 1.6, 'in');
     await E.tween(G, 'fallP', 1, 1.6, 'in');
+    // into the water: below the surface she is gone
+    fh.clipY = 470; G.splash = { t0: E.clock(), x: 195, y: 470 };
+    await E.tween(fh, 'y', 560, 0.3, 'in'); fh.hidden = true;
     E.SFX.splash(); G.flash = { t0: E.clock(), up: 0.08, hold: 0.4, down: 1.6, col: '200,255,235' }; E.mood('silence', { water: 0.05 });
     await E.wait(400);
     await E.tell([['n', feet ? 'You straighten like a needle and go in clean and deep, into water that tastes of metal and mint.' : 'You hit the water like a slammed door. Everything goes white, then green, then very, very quiet.']]);
@@ -256,6 +263,7 @@
     G.drone = { wx: 60, y: 372, len: 300, sweep: 0.4, alert: 0 }; E.SFX.drone(); E.mood('hunt', { water: 0.03, wind: 0.03 });
     E.tween(G.drone, 'wx', 640, 3);
     await E.say('lav', 'En drone! Den kan se lys. Gem dig!', { en: 'A drone! It can see light. Hide!', think: '“Den kan se lys.” It can see light. And I am, at the moment, a lamp. “Gem dig” I don’t know. From his face, it means: do something clever, quickly.' });
+    WLD().walk('lav', 905, 150);   // out of the way, beyond the hiding tree
     await E.step(() => Gm.gemDig());
     if (G.drone) E.tween(G.drone, 'sweep', 0.05, 1.5);
     await E.say('lav', 'Du lyser stadig. Sig: mørke.', { en: 'You are still glowing. Say: mørke (darkness).', pre: 'The drone stops right above the shore. Its beam crawls toward the light you are leaking.', think: '“Stadig”: still. I’m still glowing. “Mørke”: dark. Darkness. He wants me to say a word at a drone. Fine. Sure. Why not.' });
