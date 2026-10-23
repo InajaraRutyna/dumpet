@@ -44,16 +44,14 @@
     document.documentElement.style.setProperty('--s', Math.max(0.86, Math.min(1.35, sw / 390)).toFixed(3));
   }
   // when a tall panel covers the bottom, the scene slides up so the characters stay visible
+  // the scene sits at one fixed height per place: it never jumps with the size of a text box
+  let liftScene = null;
   function updateLift() {
-    const p = $('#panel'), sh = $('#sheet');
-    let target = 0;
-    const box = !p.hidden ? p : (!sh.hidden && sh.dataset.lift === '1') ? sh.querySelector('.card') : null;
-    if (box) {
-      const r = box.getBoundingClientRect(), st = $('#stage').getBoundingClientRect();
-      const topScene = (r.top - st.top - canvasBox.y) / canvasBox.sc;
-      const keep = (G.feet || 668) - 60;
-      target = Math.max(0, Math.min(G.maxLift == null ? 260 : G.maxLift, keep - topScene));
-    }
+    const st = $('#stage').getBoundingClientRect();
+    const visTop = -canvasBox.y / canvasBox.sc, visH = st.height / canvasBox.sc;
+    const want = (G.feet || 668) - (visTop + visH * 0.54);   // the hero's feet just above the middle of what you see
+    const target = Math.max(0, Math.min(G.maxLift == null ? 260 : G.maxLift, want));
+    if (G.scene !== liftScene) { liftScene = G.scene; G.lift = target; return; }
     G.lift += (target - G.lift) * 0.12;
   }
   const TICK = [];
