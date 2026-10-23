@@ -188,3 +188,5 @@ textarea.write { min-height: 7.5em; resize: vertical; line-height: 1.4; }
 /* the microphone is open: speak now */
 button.rec { border-color: #ff8a7a !important; color: #ffd6cf !important; box-shadow: 0 0 0 2px rgba(255, 138, 122, .35), 0 0 18px rgba(255, 138, 122, .35); animation: recp 1.1s ease-in-out infinite; }
 @keyframes recp { 50% { box-shadow: 0 0 0 4px rgba(255, 138, 122, .15), 0 0 26px rgba(255, 138, 122, .5); } }
+#tip small.code { display: block; margin-top: .35em; font-size: .78em; opacity: .55; font-family: ui-monospace, monospace; }
+.micout { white-space: pre-line; font-family: ui-monospace, monospace; font-size: .8em; line-height: 1.5; background: rgba(0,0,0,.25); border-radius: .4em; padding: .6em .7em; margin: .4em 0; max-height: 11em; overflow-y: auto; }
