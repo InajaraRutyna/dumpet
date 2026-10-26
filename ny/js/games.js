@@ -377,25 +377,45 @@
     const SAY = ['for at', 'på grund af', 'Jeg kom hertil på grund af en drone.', 'Det gik godt.'];
     const mic = !!(window.SpeechRecognition || window.webkitSpeechRecognition) && E.S().set.mic;
     await teach({ lab: 'Klangsten', sub: 'say it', h: 'Now the stones listen to you.', html: `<p>${mic ? 'Tap ▶ to hear it, then 🎙 and say it. Say it the lazy Danish way: swallow the silent letters.' : 'There is no microphone here. Tap ▶, then say it aloud twice, the lazy Danish way. Be honest with the stones.'}</p>`, btn: 'Klar ▸' });
+    // how close is what the phone heard to the target? words in common, or letters in common (Danes swallow sounds)
+    const lev = (a, b) => { const m = a.length, n = b.length, d = Array.from({ length: m + 1 }, (_, i) => [i]); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; };
+    const close = (heard, target) => {
+      const words = target.split(' '), w = words.filter(x => (' ' + heard + ' ').includes(' ' + x + ' ')).length / words.length;
+      const a = heard.replace(/ /g, ''), b = target.replace(/ /g, ''), ch = 1 - lev(a, b) / Math.max(a.length, b.length, 1);
+      return Math.max(w, ch);
+    };
     for (const s of SAY) {
       const target = E.norm(s);
-      for (let tries = 0; ; tries++) {
-        const r = await new Promise(res => {
-          const c = E.sheet(`<p class="lab">Sig det <span>say it</span></p><div class="frag" lang="da">${fog(s)}</div>
-            <div class="act"><button id="pl">▶ Lyt</button>${mic ? '<button id="mc">🎙 Sig det</button>' : '<button id="dn">Jeg sagde det ✓</button>'}</div><p class="hint center" id="hd"></p>`, { lift: 1 });
-          c.querySelector('#pl').onclick = () => E.speak(s);
-          setTimeout(() => E.speak(s), 300);
-          const dn = c.querySelector('#dn'); if (dn) dn.onclick = () => res('self');
-          const mc = c.querySelector('#mc');
-          if (mc) mc.onclick = async () => { const lab = mc.innerHTML; mc.disabled = true; const alts = await E.hear(x => { mc.textContent = E.MICL[x]; mc.classList.toggle('rec', x !== 'wait'); }); mc.disabled = false; mc.classList.remove('rec'); mc.innerHTML = lab; if (alts === null) { E.toast(E.hearMsg(null), 6000); return res('self'); } if (!alts.length) { c.querySelector('#hd').textContent = E.hearMsg(alts); return; } res(alts.map(E.norm)); };
-        });
-        if (r === 'self') { if (SAY.indexOf(s) % 2) lightUp(); else SFX.stone(); E.gainPower(1); break; }
-        const words = target.split(' '), best = Math.max(...r.map(a => words.filter(w => (' ' + a + ' ').includes(' ' + w + ' ')).length / words.length));
-        if (best >= 0.75) { if (SAY.indexOf(s) % 2) lightUp(); else SFX.stone(); E.gainPower(3); E.castAnim(); E.sheet(`<p class="whisper">✓</p><p class="center hint">The stone heard: “${esc(r[0])}”</p>`, { lift: 1 }); await E.wait(1200); break; }
-        miss++; SFX.bad();
-        if (tries >= 2) { if (SAY.indexOf(s) % 2) lightUp(); E.sheet(`<p class="center">The stone heard “${esc(r[0])}”. Speech recognition is fussy; that's fine. Moving on.</p>`, { lift: 1 }); await E.wait(2000); break; }
-        E.toast(`The stone heard “${r[0]}”. Again, slowly.`, 2600);
-      }
+      // one card per phrase; it stays open, and always says what the phone heard
+      const r = await new Promise(res => {
+        let tries = 0;
+        const c = E.sheet(`<p class="lab">Sig det <span>say it</span></p><div class="frag" lang="da">${fog(s)}</div>
+          <div class="act"><button id="pl">▶ Lyt</button>${mic ? '<button id="mc">🎙 Sig det</button>' : ''}</div>
+          <p class="heard" id="hd" ${mic ? 'hidden' : ''}>${mic ? '' : 'No microphone here: say it aloud twice, then tap below.'}</p>
+          <div class="act"><button class="ghost" id="dn">Jeg sagde det ✓</button></div>`, { lift: 1 });
+        const hd = c.querySelector('#hd'), note = h => { hd.hidden = false; hd.innerHTML = h; };
+        c.querySelector('#pl').onclick = () => E.speak(s);
+        setTimeout(() => E.speak(s), 300);
+        c.querySelector('#dn').onclick = () => res({ self: 1 });
+        const mc = c.querySelector('#mc');
+        if (mc) mc.onclick = async () => {
+          const lab = mc.innerHTML; mc.disabled = true;
+          const alts = await E.hear(x => { mc.textContent = E.MICL[x]; mc.classList.toggle('rec', x !== 'wait'); });
+          mc.disabled = false; mc.classList.remove('rec'); mc.innerHTML = lab; tries++;
+          if (alts === null) return note(esc(E.hearMsg(null)) + ' Tap <b>Jeg sagde det ✓</b> to go on.');
+          if (!alts.length) { miss++; return note(`<span class="k">You said</span> … nothing the phone could hear. Wait for <b>Tal nu</b>, then speak.${tries >= 2 ? ' Or tap <b>Jeg sagde det ✓</b>.' : ''}`); }
+          const sc = alts.map(a => close(E.norm(a), target)), bi = sc.indexOf(Math.max(...sc));
+          note(`<span class="k">You said</span> “${esc(alts[bi])}”`);
+          if (sc[bi] >= 0.6) return res({ ok: 1, heard: alts[bi] });
+          miss++; SFX.bad();
+          if (tries >= 3) return res({ gave: 1, heard: alts[bi] });
+          hd.innerHTML += `<br><span class="sub">Close, but not quite. Listen again (▶), then say it slowly.${tries >= 2 ? ' Or tap <b>Jeg sagde det ✓</b>.' : ''}</span>`;
+        };
+      });
+      if (SAY.indexOf(s) % 2) lightUp(); else SFX.stone();
+      if (r.ok) { E.gainPower(3); E.castAnim(); E.sheet(`<p class="whisper">✓</p><p class="center hint">The stone heard: “${esc(r.heard)}”</p>`, { lift: 1 }); await E.wait(1200); }
+      else if (r.gave) { E.sheet(`<p class="center">The stone heard “${esc(r.heard)}”. Speech recognition is fussy; that's fine. Moving on.</p>`, { lift: 1 }); await E.wait(2000); }
+      else E.gainPower(1);
     }
     E.closeSheet();
     return { miss };

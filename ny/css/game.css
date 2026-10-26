@@ -188,3 +188,8 @@ textarea.write { min-height: 7.5em; resize: vertical; line-height: 1.4; }
 /* the microphone is open: speak now */
 button.rec { border-color: #ff8a7a !important; color: #ffd6cf !important; box-shadow: 0 0 0 2px rgba(255, 138, 122, .35), 0 0 18px rgba(255, 138, 122, .35); animation: recp 1.1s ease-in-out infinite; }
 @keyframes recp { 50% { box-shadow: 0 0 0 4px rgba(255, 138, 122, .15), 0 0 26px rgba(255, 138, 122, .5); } }
+
+/* what the phone heard you say */
+.heard { text-align: center; margin: .55em 0 .2em; line-height: 1.45; color: #e8f6ee; }
+.heard .k { color: var(--amber); font-size: .74em; letter-spacing: .06em; text-transform: uppercase; margin-right: .35em; }
+.heard .sub { font-size: .86em; opacity: .8; }

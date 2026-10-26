@@ -290,6 +290,7 @@
         <div class="slot" id="comp" data-ans="${esc(fmt(o.ans || ''))}"></div>
         <div class="chips" id="tray"></div>
         <textarea class="write" id="ty" rows="2" hidden autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Skriv her … (write here)"></textarea>
+        <p class="heard" id="hd" hidden></p>
         <div class="tools2">${o.noMic ? '' : '<button class="ghost" id="mic">🎙 Sig det</button>'}<button class="ghost" id="wr">⌨ Skriv</button><button class="ghost" id="del" aria-label="Remove last word">⌫</button><button class="ghost" id="hint" aria-label="Hint">?</button></div>
         <div class="row end"><button class="go" id="sig">Svar ▸</button></div>`);
       wireEn(p);
@@ -305,9 +306,22 @@
       p.querySelector('#del').onclick = () => { const c = comp.pop(); if (c) used.delete(c.i); paint(); };
       p.querySelector('#wr').onclick = () => { const t = p.querySelector('#ty'); t.hidden = !t.hidden; if (!t.hidden) t.focus(); };
       p.querySelector('#ty').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); p.querySelector('#sig').click(); } });
-      p.querySelector('#sig').onclick = () => { const ty = p.querySelector('#ty'); if (!ty.hidden && ty.value.trim()) return fin(ty.value, 'write'); if (!comp.length) return toast('Tap some words first, or write, or say it.'); fin(comp.map(c => fmt(c.w)).join(' '), 'tap'); };
+      p.querySelector('#sig').onclick = () => { const ty = p.querySelector('#ty'); if (!ty.hidden && ty.value.trim()) return fin(ty.value, heard && ty.value.trim() === heard.trim() ? 'voice' : 'write'); if (!comp.length) return toast('Tap some words first, or write, or say it.'); fin(comp.map(c => fmt(c.w)).join(' '), 'tap'); };
       const mic = p.querySelector('#mic');
-      if (mic) mic.onclick = async () => { const lab = mic.innerHTML; mic.disabled = true; const alts = await hear(x => { mic.textContent = MICL[x]; mic.classList.toggle('rec', x !== 'wait'); }); if (done) return; mic.disabled = false; mic.classList.remove('rec'); mic.innerHTML = lab; if (alts === null || !alts.length) return toast(hearMsg(alts), 6000); const best = o.pickAlt ? o.pickAlt(alts.map(norm)) : 0; fin(alts[best] || alts[0], 'voice'); };
+      // what the phone heard is always written down; if it isn't a right answer, it goes into the write box to fix and send
+      let heard = '';
+      if (mic) mic.onclick = async () => {
+        const lab = mic.innerHTML; mic.disabled = true;
+        const alts = await hear(x => { mic.textContent = MICL[x]; mic.classList.toggle('rec', x !== 'wait'); });
+        if (done) return; mic.disabled = false; mic.classList.remove('rec'); mic.innerHTML = lab;
+        const hd = p.querySelector('#hd'); hd.hidden = false;
+        if (alts === null || !alts.length) { hd.textContent = hearMsg(alts); return; }
+        const best = o.pickAlt ? o.pickAlt(alts.map(norm)) : 0;
+        if (best >= 0) return fin(alts[best], 'voice');
+        heard = alts[0];
+        const ty = p.querySelector('#ty'); ty.hidden = false; ty.value = heard;
+        hd.innerHTML = `<span class="k">You said</span> “${esc(heard)}”<br><span class="sub">If the phone misheard a word, fix it in the box. Then tap <b>Svar</b>.</span>`;
+      };
       let hn = 0;
       p.querySelector('#hint').onclick = () => { hn++; if (hn === 1) toast(o.hint || 'Use the words you have heard.', 5200); else { toast('Answer: ' + fmt(o.ans || ''), 6500); } };
     });
@@ -317,7 +331,7 @@
     let give = false;
     for (let tries = 0; ; tries++) {
       // of everything the phone thinks it heard, take the guess that is a right answer, if there is one
-      const pickAlt = alts => { const i = alts.findIndex(t => { try { return !!(o.judge(t, tries, {}) || {}).ok; } catch (e) { return false; } }); return i < 0 ? 0 : i; };
+      const pickAlt = alts => alts.findIndex(t => { try { return !!(o.judge(t, tries, {}) || {}).ok; } catch (e) { return false; } });
       const u = await utter(Object.assign({ pickAlt }, o, give ? { give: o.ans, silent: true } : tries ? { silent: true } : {}));
       let r = o.judge(u.text, tries, u) || { ok: false };
       if (r.ok) {
