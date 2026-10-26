@@ -442,6 +442,8 @@
     wonder: { bpm: 80, key: 293.7, bar: 8, ch: [[0, 4, 7], [-3, 0, 4], [5, 9, 12], [2, 5, 9]], mel: [24, _, 23, _, 19, _, 16, _, 21, _, 19, _, 16, _, 12, _, 17, _, 16, _, 12, _, 9, _, 14, _, 16, _, 19, _, _, _], mw: 'sine', mv: 0.055, ml: 1.2, bass: [0, _, _, _, 2, _, _, _], bw: 'sine', bv: 0.05, bl: 1.6, dv: 0.03, lp: 3000, vib: 1 },
     gate: { bpm: 120, key: 196, bar: 8, ch: [[0, 4, 7], [5, 9, 12], [7, 11, 14], [0, 4, 7]], mel: [19, _, 16, 19, 24, _, 23, _, 21, _, 17, 21, 26, _, 24, _, 19, 18, 19, 23, 26, _, 23, _, 24, _, 19, _, 12, _, _, _], mw: 'square', mv: 0.035, ml: 0.18, bass: [0, _, 'c', _, 2, _, 'c', _], bw: 'triangle', bv: 0.07, bl: 0.18, dv: 0.01, lp: 2400 },
     dread: { bpm: 48, key: 155.6, bar: 8, ch: [[0, 6, 13], [0, 6, 12]], mel: [12, _, _, _, _, _, _, _, 11, _, _, _, _, _, _, _], mw: 'sawtooth', mv: 0.05, ml: 4, att: 1.2, bass: [_, _, _, _, _, _, _, _], perc: ['h', _, _, _, _, _, _, _], dv: 0.06, lp: 520 },
+    town: { bpm: 108, key: 220, bar: 8, ch: [[0, 4, 7], [5, 9, 12], [7, 11, 14], [0, 4, 7]], mel: [12, _, 16, _, 19, 16, 14, _, 17, _, 21, _, 19, 17, 16, _, 14, _, 17, _, 21, 19, 17, _, 16, _, 12, _, 14, _, 12, _], mw: 'triangle', mv: 0.04, ml: 0.35, bass: [0, _, 'c', _, 2, _, 'c', _], bw: 'triangle', bv: 0.06, bl: 0.3, dv: 0.015, lp: 2600 },
+    tender: { bpm: 66, key: 261.6, bar: 8, ch: [[-3, 0, 4], [5, 9, 12], [0, 4, 7], [7, 11, 14]], mel: [16, _, _, 14, 12, _, _, _, 17, _, _, 16, 14, _, _, _, 12, _, _, 11, 9, _, _, _, 11, _, 12, _, 14, _, _, _], mw: 'sine', mv: 0.05, ml: 1.4, bass: [0, _, _, _, _, _, _, _], bw: 'sine', bv: 0.05, bl: 2.4, dv: 0, lp: 2400, vib: 1 },
     silence: { bpm: 60, key: 220, bar: 8, ch: [[0, 4, 7]], mel: [_, _, _, _, _, _, _, _], mw: 'sine', mv: 0, ml: 1, bass: [_, _, _, _, _, _, _, _], dv: 0, lp: 800 }
   };
   let MOOD = 'night', AMB = { wind: 0.02, water: 0, hum: 0, birds: 0, crickets: 0 };
@@ -508,6 +510,12 @@
     if (cont) t.querySelector('#tCont').onclick = () => { audioStart(); const c = CH.find(x => S.cp && S.cp.id && S.cp.id.startsWith(x.id)) || CH.find(x => x.id === S.cur) || CH[0]; runChapter(c); };
     t.querySelector('#tCh').onclick = () => { audioStart(); chapters(); };
     t.querySelector('#tSet').onclick = () => { audioStart(); settings(); };
+  }
+  // the next section starts on a fresh page; if it isn't there yet, back to the title
+  function next(id) {
+    const c = CH.find(x => x.id === id);
+    if (!c || c.locked) { G.fade = 0; titleScreen(); return; }
+    S.cp = null; S.auto = id; save(); location.reload();
   }
   function confirmBox() { return window.confirm('Start a new journey from the very beginning? Your name, words and progress are reset.'); }
   async function newGame() {
@@ -599,6 +607,6 @@
     S: () => S, G, W, $, esc, shuffle, fmt, fog, norm, unacc, cap, wait, tween, clock, save, toast, speak, hear, hearMsg, MICL, learn, learnText,
     addGloss, GLOSS, SPK, IRONY, say, alien, tell, choose, converse, utter, step, show, hidePanel, nextBtn, waitNext, lineHtml, wireEn,
     sheet, closeSheet, modal, closeModal, onTick, gainPower, hud, where, mood, SFX, tone, cpStart, cpEnd, heroLook, actor, setCast, refreshHero, outfitOf, castAnim, speaking, daVoices,
-    chapter, CH, boot, chapters, menu, audioStart, layout, Hun, titleScreen, book
+    chapter, CH, next, boot, chapters, menu, audioStart, layout, Hun, titleScreen, book
   };
 })();

@@ -36,6 +36,18 @@
       if (h && (WD.left ? h.wx <= o.to + 1 : h.wx >= o.to - 1)) finish();
     });
   }
+  /* ---------- find a door: walk freely, and say “her” at the one you think is right; resolves with its id */
+  function find(o) {
+    return new Promise(res => {
+      E.hidePanel(); E.closeSheet();
+      WD.to = null; WD.left = false; WD.min = o.min != null ? o.min : -1e9; WD.max = o.max != null ? o.max : 1e9; WD.done = null;
+      WD.find = { doors: o.doors, want: o.want, res, near: null, mark: o.mark };
+      if (o.lights) { const got = E.S().got || {}; G.lights = o.lights.map(([x, hh, word, en]) => ({ x, h: hh, word, en, got: got[word] ? -99 : 0 })); }
+      showPad(true, o.hint);
+      const b = $('#here');
+      b.onclick = e => { e.stopPropagation(); const F = WD.find; if (!F || !F.near) return; WD.find = null; b.hidden = true; $('#goal').style.visibility = ''; showPad(false); G.pin = null; E.SFX.tick(); F.res(F.near.id); };
+    });
+  }
   function finish() { const d = WD.done; WD.done = null; WD.to = null; showPad(false); G.lights = (G.lights || []).filter(L => L.got > 0); if (d) d(); }
 
   /* ---------- a scripted walk (anyone with a world x) */
@@ -50,13 +62,14 @@
   function caught(L, t) {
     L.got = t; const S = E.S(); S.got = S.got || {}; S.got[L.word] = 1;
     E.learn(L.word); E.gainPower(1); E.SFX.chime(); E.speak(L.word);
-    const el = $('#wordpop'); el.innerHTML = `<b lang="da">${E.esc(L.word)}</b><span>${E.esc(L.en || E.GLOSS[E.norm(L.word)] || '')}</span>`; el.hidden = false; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+    const el = $('#wordpop'); el.innerHTML = `<b lang="da">${E.fog(L.word)}</b><span>${E.esc(L.en || E.GLOSS[E.norm(L.word)] || '')}</span>`; el.hidden = false; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
     clearTimeout(pop); pop = setTimeout(() => { el.hidden = true; }, 2600);
     E.save();
   }
   function tick(t) {
     const dt = Math.min(0.05, t - (WD.lastT || t)); WD.lastT = t;
-    if (G.scene !== 'world') return;
+    if (G.scene !== 'world' && G.scene !== 'town') return;
+    const M = A.mapOf(G);
     const h = hero(); if (!h) { if (G.titleDrift && G.view) G.view.x += dt * 14; return; }
     const frozen = modalOpen() || !$('#sheet').hidden;
     // your own feet
@@ -68,6 +81,15 @@
       if (WD.to != null && (WD.left ? h.wx <= WD.to + 1 : h.wx >= WD.to - 1)) finish();
       // remember where you are, so a closed app reopens on the same spot of the path
       const S = E.S(); if (v && S.cp && t - (WD.savedT || 0) > 0.8) { WD.savedT = t; S.cp.at = Math.round(h.wx); S.cp.atN = S.cp.r.length; E.save(); }
+    }
+    // looking for a door: the button appears when you stand at one
+    if (WD.find) {
+      const F = WD.find; let near = null, best = 44;
+      F.doors.forEach(d => { const dd = Math.abs(h.wx - d.x); if (dd < best) { best = dd; near = d; } });
+      F.near = near; const b = $('#here');
+      if (near && !frozen) { b.hidden = false; b.innerHTML = `${near.label ? E.esc(near.label) + ' · ' : ''}Her ▸`; } else b.hidden = true;
+      $('#goal').style.visibility = b.hidden ? '' : 'hidden';
+      G.pin = F.mark ? F.doors.find(d => d.id === F.want) : null;
     }
     if (WD.py > 0 || WD.vy > 0) { WD.vy -= 1300 * dt; WD.py = Math.max(0, WD.py + WD.vy * dt); if (WD.py <= 0) WD.vy = 0; }
     if (WD.on || WD.py > 0) h.wy = -WD.py;
@@ -92,27 +114,28 @@
       if (!moving && a.look) { const o2 = E.actor(a.look); if (o2) a.flip = a.k === 'deer' ? o2.wx > a.wx : o2.wx < a.wx; }
     }
     // the name of the place you are in
-    const zn = A.zoneAt(h.wx).id; if (zn !== WD.zone) { WD.zone = zn; const N = { lake: 'Søen', thicket: 'Den mørke skov', wreck: 'Vraget', woods: 'Skoven', meadow: 'Engen', edge: 'Skovkanten', ravine: 'Kløften', stones: 'Klangstenene', kronby: 'Kronby' }; E.where('Måne Syv · ' + (N[zn] || '')); }
+    if (G.scene === 'town') { const zt = M.zoneAt(h.wx); if (zt.id !== WD.zone) { WD.zone = zt.id; E.where('Kronby · ' + zt.name); } }
+    else { const zn = A.zoneAt(h.wx).id; if (zn !== WD.zone) { WD.zone = zn; const N = { lake: 'Søen', thicket: 'Den mørke skov', wreck: 'Vraget', woods: 'Skoven', meadow: 'Engen', edge: 'Skovkanten', ravine: 'Kløften', stones: 'Klangstenene', kronby: 'Kronby' }; E.where('Måne Syv · ' + (N[zn] || '')); } }
     // the camera
     const V = G.view || (G.view = { x: h.wx, z: 1 });
     const tx = G.camX != null ? G.camX : h.wx + (h.flip ? -36 : 36);
     V.x += (tx - V.x) * Math.min(1, dt * (G.camX != null ? 2.2 : 3.2));
-    const tz = G.camZ != null ? G.camZ : A.zoneMix(V.x, 'zoom');
+    const tz = G.camZ != null ? G.camZ : M.zoneMix(V.x, 'zoom');
     V.z += (tz - V.z) * Math.min(1, dt * 1.5);
     G.feet = A.GY + 64;
   }
 
   /* ---------- enter the world at a place */
   function enter(o) {
-    G.scene = 'world'; G.night = !!o.night; G.glow = o.night ? 1 : null; G.camX = null; G.camZ = null; G.lights = [];
+    G.scene = o.map === 'town' ? 'town' : 'world'; G.tod = o.tod || 'day'; G.dusk = o.dusk || 0; G.hallOpen = o.hallOpen || 0; G.gateOpen = o.gateOpen || 0; G.bookOpen = 0; G.chestOpen = 0; G.rain = o.rain || 0; G.blackout = o.blackout || 0; G.drones = null; G.pin = null; G.drone = null; WD.zone = null; G.night = !!o.night; G.glow = o.night ? 1 : null; G.camX = null; G.camZ = null; G.lights = [];
     G.feet = A.GY + 64; G.maxLift = 220;
     E.setCast(o.cast || []);
-    const h = hero(); G.view = { x: o.view != null ? o.view : h ? h.wx + 36 : 0, z: A.zoneMix(h ? h.wx : 0, 'zoom') };
+    const h = hero(); G.view = { x: o.view != null ? o.view : h ? h.wx + 36 : 0, z: A.mapOf(G).zoneMix(h ? h.wx : 0, 'zoom') };
     WD.py = 0; WD.vy = 0;
     if (o.where) E.where(o.where);
   }
 
   initPad();
   E.onTick(tick);
-  window.World = { explore, walk, enter, WD, finish };
+  window.World = { explore, find, walk, enter, WD, finish };
 })();

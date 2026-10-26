@@ -658,11 +658,10 @@
         'How Danes really say <b>for at</b>, <b>på grund af</b> and the sound [ɔ].'
       ]
     });
-    G.fade = 0;
-    E.titleScreen();
+    E.next('k1a2');
   }
 
   E.chapter({ id: 'k1a1', k: 'k1', kTitle: 'Kapitel 1 · Ankomsten', title: 'Afsnit 1 · Faldet', label: 'Kapitel 1 · Faldet', run });
-  E.chapter({ id: 'k1a2', k: 'k1', kTitle: 'Kapitel 1 · Ankomsten', title: 'Afsnit 2 · Hvor længe?', label: 'Kapitel 1 · Hvor længe?', locked: true });
-  E.chapter({ id: 'k1a3', k: 'k1', kTitle: 'Kapitel 1 · Ankomsten', title: 'Afsnit 3 · Bydel', label: 'Kapitel 1 · Bydel', locked: true });
+  // shared with the next sections of the chapter
+  window.K1 = { setScene, fadeTo, go, has, any, cam, camFree, heroSet, mem, cityP, jobLine, JOBS, WORK, CITIES, HOBBY, TRANS };
 })();

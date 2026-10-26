@@ -887,7 +887,8 @@
     D = D || {};
     const dx = (D.x != null ? D.x : 270 + Math.sin(t * 0.45) * 40) + pan * 0.5, dy = (D.y != null ? D.y : 300) + Math.sin(t * 0.9) * 8;
     const sweep = D.sweep != null ? D.sweep : Math.sin(t * 0.7) * 0.42;
-    if (D.beam === 0) { ctx.save(); ctx.translate(dx, dy); ctx.scale(1.35, 1.35); droneBody(ctx, t, N, D); ctx.restore(); return; }
+    const ds = 1.35 * (D.sc || 1);
+    if (D.beam === 0) { ctx.save(); ctx.translate(dx, dy); ctx.scale(ds, ds); droneBody(ctx, t, N, D); ctx.restore(); return; }
     const len = D.len || 340;
     ctx.save();
     ctx.save(); ctx.translate(dx, dy); ctx.rotate(sweep);
@@ -897,7 +898,7 @@
     ctx.beginPath(); ctx.moveTo(-4, 5); ctx.lineTo(4, 5); ctx.lineTo(len * 0.16, len); ctx.lineTo(-len * 0.16, len); ctx.closePath(); ctx.fill();
     if (!N) { ctx.strokeStyle = 'rgba(40,190,160,.35)'; ctx.lineWidth = 0.8; for (let k = 0; k < 4; k++) { const yy = ((t * 60 + k * 70) % (len - 60)) + 10, w = 3 + yy * 0.144; ctx.beginPath(); ctx.moveTo(-w, yy); ctx.lineTo(w, yy); ctx.stroke(); } }
     ctx.restore();
-    ctx.translate(dx, dy); ctx.scale(1.35, 1.35);
+    ctx.translate(dx, dy); ctx.scale(ds, ds);
     droneBody(ctx, t, N, D);
     ctx.restore();
     return [dx, dy, sweep, len];
@@ -1287,6 +1288,21 @@
     birk: Object.assign({}, SKIN, { skin: '#9a6a48', skinShade: 'rgba(60,30,15,.3)', face: '#2a160c', lips: '#7a3a2c', outer: 'armor', plate: '#9a7444', plate2: '#86643a', plateShade: 'rgba(50,30,10,.35)', plateLight: 'rgba(255,230,180,.45)', under: '#24433a', underShade: 'rgba(0,0,0,.25)', top: '#24433a', sleeve: '#24433a', coat: '#24433a', armPlate: '#9a7444', pauldron: '#9a7444', cape: '#2f6a4a', capeShade: 'rgba(0,20,10,.3)', pants: 'armor', legs: '#24433a', boots: '#3a2616', hairStyle: 'undercut', hair: '#1e1410', collarStyle: 'none', marks: 0, staff: true }),
     holm: Object.assign({}, SKIN, { skin: '#e0b896', face: '#4a2a1c', outer: 'tunic', coat: '#2f5446', coatShade: 'rgba(0,20,10,.3)', top: '#2f5446', trim: '#c9a24a', sash: '#c9a24a', sashShade: 'rgba(60,40,0,.3)', pants: 'wide', legs: '#5a3a24', legsShade: 'rgba(0,0,0,.25)', hemTrim: '#c9a24a', sleeve: '#d8cfb2', backSleeve: 'full', upSleeve: '#d8cfb2', collarStyle: 'v', hairStyle: 'undercut', hair: '#8a8478', beard: '#8a8478', boots: '#3a2616', bootStyle: 'short', marks: 0 })
   };
+  // the fallen ones: people from Earth who fell before the hero, and live in Kronby
+  Object.assign(NPC, {
+    ruth: Object.assign({}, SKIN, { skin: '#e6c2a4', skinShade: 'rgba(120,70,50,.25)', face: '#4a2a1c', lips: '#a0645a', outer: 'tunic', coat: '#6e5a7e', coatShade: 'rgba(30,20,40,.3)', top: '#6e5a7e', trim: '#d8c49a', sash: '#d8c49a', sashShade: 'rgba(80,60,20,.3)', pants: 'wide', legs: '#3e3e48', legsShade: 'rgba(0,0,0,.25)', hemTrim: '#d8c49a', sleeve: '#6e5a7e', backSleeve: 'full', upSleeve: '#6e5a7e', collarStyle: 'v', hairStyle: 'knot', hair: '#d6d2c8', boots: '#3a2a1e', bootStyle: 'short', marks: 0 }),
+    mateo: Object.assign({}, SKIN, { skin: '#b5815c', skinShade: 'rgba(90,45,20,.3)', face: '#2a160c', lips: '#8a4a3a', outer: 'vest', vest: '#2f5a4a', vestShade: 'rgba(0,30,20,.3)', pocket: '#244a3c', top: '#ece4d0', topShade: 'rgba(80,70,50,.2)', sleeve: '#ece4d0', legs: '#3a3020', legsShade: 'rgba(0,0,0,.25)', hairStyle: 'short', hair: '#1e1610', beard: '#2a1c14', boots: '#3a2616', bootStyle: 'short', marks: 0 }),
+    noor: Object.assign({}, SKIN, { skin: '#c48c62', skinShade: 'rgba(100,50,25,.28)', face: '#2a160c', lips: '#9a4e44', outer: 'jacket', coat: '#4e6e92', coatShade: 'rgba(10,20,40,.35)', top: '#e8e0d0', hemBand: '#3a5270', pauldron: '#3a5270', legs: '#2a2a36', legsShade: 'rgba(0,0,0,.3)', hairStyle: 'long', hair: '#1a1210', boots: '#2a1e16', bootStyle: 'short', marks: 0 }),
+    kofi: Object.assign({}, SKIN, { skin: '#6a4630', skinShade: 'rgba(30,15,5,.35)', face: '#1a0e08', lips: '#5a2e24', outer: 'longcoat', coat: '#b08a3a', coatShade: 'rgba(60,40,0,.3)', lining: '#4a3a1a', top: '#2a3e3e', collar: '#8a6a2a', collarStyle: 'high', legs: '#2a2a2a', legsShade: 'rgba(0,0,0,.3)', hairStyle: 'short', hair: '#120c08', stubble: 'rgba(20,10,5,.35)', browW: 1.5, boots: '#2a1e16', bootStyle: 'short', marks: 0 })
+  });
+  // Birk at home: no armour, no spear
+  NPC.birkHome = Object.assign({}, NPC.birk, { outer: 'tunic', coat: '#3a5a48', coatShade: 'rgba(0,20,10,.3)', top: '#3a5a48', trim: '#9a7444', sash: '#9a7444', sashShade: 'rgba(50,30,10,.35)', pants: 'wide', legs: '#2a2a22', legsShade: 'rgba(0,0,0,.3)', hemTrim: '#9a7444', sleeve: '#3a5a48', backSleeve: 'full', upSleeve: '#3a5a48', collarStyle: 'v', bootStyle: 'short', staff: false, cape: null });
+  // people born in Kronby
+  Object.assign(NPC, {
+    ebbe: Object.assign({}, SKIN, { skin: '#e8bf9a', skinShade: 'rgba(120,70,50,.25)', face: '#4a2a1c', lips: '#a0645a', outer: 'tunic', coat: '#efe6d0', coatShade: 'rgba(90,80,60,.25)', top: '#efe6d0', trim: '#b4602e', sash: '#b4602e', sashShade: 'rgba(80,30,10,.3)', pants: 'wide', legs: '#5a4a3a', legsShade: 'rgba(0,0,0,.25)', hemTrim: '#d8c49a', sleeve: '#efe6d0', backSleeve: 'full', upSleeve: '#efe6d0', collarStyle: 'v', hairStyle: 'short', hair: '#9a7a52', beard: '#9a7a52', boots: '#3a2a1e', bootStyle: 'short', marks: 0 }),
+    vibeke: Object.assign({}, SKIN, { skin: '#dcae88', skinShade: 'rgba(120,70,50,.25)', face: '#3a2016', lips: '#a0545a', outer: 'jacket', coat: '#7a4a5a', coatShade: 'rgba(40,10,20,.35)', top: '#e8dcc8', hemBand: '#5a3040', pauldron: '#5a3040', legs: '#3a3030', legsShade: 'rgba(0,0,0,.3)', hairStyle: 'long', hair: '#4a2e1a', boots: '#2a1e16', bootStyle: 'short', marks: 0 }),
+    tove: Object.assign({}, SKIN, { skin: '#e2b48e', skinShade: 'rgba(120,70,50,.25)', face: '#3a2016', lips: '#b0645a', outer: 'tunic', coat: '#d9a441', coatShade: 'rgba(90,60,0,.3)', top: '#d9a441', trim: '#6a8a4a', sash: '#6a8a4a', sashShade: 'rgba(20,40,10,.3)', pants: 'slim', legs: '#4a5a3a', legsShade: 'rgba(0,0,0,.25)', sleeve: '#d9a441', backSleeve: 'full', upSleeve: '#d9a441', collarStyle: 'v', hairStyle: 'tail', hair: '#6a3e22', band: '#c84a3a', boots: '#3a2a1e', bootStyle: 'short', marks: 0 })
+  });
   const DEER_DAY = { mode: 'cel', body: '#6f8f4c', bodyShade: 'rgba(30,50,20,.3)', spots: '#9cc06a', belly: '#d6caa0', leg: '#8a6040', legDark: '#6a4630', hoof: '#2a1c12', tail: '#d6caa0', antler: '#c9a77a', tip: '#7affcf', tipGlow: '#7affcf', snout: '#c9b28a', nose: '#2a1c12', eye: '#1e140c', outline: '#1d2a20', olw: 1.1, shadeX: -12, ground: 'rgba(30,50,20,.35)' };
   const DEER_NIGHT = { mode: 'paint', body: '#18231b', spots: '#22362a', belly: '#1c2a20', leg: '#141d17', legDark: '#0e1510', hoof: '#070a08', tail: '#1c2a20', antler: '#2f4a3a', tip: '#c8ffe0', tipGlow: '#7dffb0', snout: '#1c2a20', nose: '#070a08', eye: '#d9ffb0', eyeGlow: '#b8ff8a', rim: '#9dffc8', rimDx: -1.3, rimDy: -1.3, rimGlow: 10 };
 
@@ -2366,14 +2382,9 @@
     ctx.globalAlpha = 1; ctx.restore();
   }
 
-  /* ---------- the whole world, one frame */
-  function worldFrame(ctx, t, G) {
+  /* ---------- the sky, shared by the forest and the town: gradient, stars, aurora, sun or moon, the planet, the ring, far islands */
+  function drawSkyBase(ctx, t, G, P, V, night) {
     if (!SCENERY) buildScenery();
-    _planks = G.planks || 0;
-    const inW = (G.wreckOpen || 0) > 0.3, inWreck = wx => inW && wx > WRECK_X - 300 && wx < WRECK_X + 282;
-    const V = G.view || (G.view = { x: 0, z: 1 }), night = !!G.night, P = palAt(V.x, night);
-    const closed = zoneMix(V.x, 'closed'), z = V.z || 1;
-    const SX = wx => (wx - V.x) * z + W / 2, SY = y => (y - GY) * z + GY;
     // sky
     ctx.fillStyle = lg(ctx, 0, 0, 0, GY + 40, [[0, P.sky0], [0.55, P.sky1], [1, P.sky2]]); ctx.fillRect(0, -300, W, H + 600);
     if (P.stars > 0.02) { ctx.fillStyle = '#eafff2'; SCENERY.stars.forEach(([sx, sy, a], i) => { ctx.globalAlpha = P.stars * a * (0.7 + 0.3 * Math.sin(t * 2 + i)); ctx.fillRect(((sx * W * 1.3 - V.x * 0.01) % (W * 1.3) + W * 1.3) % (W * 1.3) - 20, sy * GY, 1.3, 1.3); }); ctx.globalAlpha = 1; }
@@ -2396,6 +2407,17 @@
       ctx.restore(); }
     // floating islands, far away
     SCENERY.isles.forEach(([ix, iy, is, seed]) => { const x = ((ix - V.x * 0.06) % 7200 + 7200) % 7200 - 300; if (x < -120 || x > W + 120) return; ctx.save(); ctx.globalAlpha = night ? 0.7 : 0.55; island(ctx, x, GY * iy + Math.sin(t * 0.4 + seed) * 5, is * 0.8, night, t, seed); ctx.restore(); });
+  }
+
+  /* ---------- the whole world, one frame */
+  function worldFrame(ctx, t, G) {
+    if (!SCENERY) buildScenery();
+    _planks = G.planks || 0;
+    const inW = (G.wreckOpen || 0) > 0.3, inWreck = wx => inW && wx > WRECK_X - 300 && wx < WRECK_X + 282;
+    const V = G.view || (G.view = { x: 0, z: 1 }), night = !!G.night, P = palAt(V.x, night);
+    const closed = zoneMix(V.x, 'closed'), z = V.z || 1;
+    const SX = wx => (wx - V.x) * z + W / 2, SY = y => (y - GY) * z + GY;
+    drawSkyBase(ctx, t, G, P, V, night);
     // the town-tree on the horizon (it grows as you come closer)
     { const kx = W / 2 + (GATE_X - V.x) * 0.22, near = smooth(5200, 7600, V.x);
       if (kx > -300 && kx < W + 300 && near > 0) {
@@ -2564,6 +2586,449 @@
   }
   SCN.world = { ground: '#0b1712', ownsCast: true, build() { return {}; }, back(ctx, t, S, G) { worldFrame(ctx, t, G); } };
 
+  /* ===================== KRONBY: the town at the foot of the town-tree
+     A second walkable strip, drawn with the same camera and the same scale as the forest:
+     the street is the ground line GY, people stand at HS, houses are two to three people tall. */
+  const TOWN = { GATE: 150, HALL0: 520, HALL1: 1300, DESK: 640, CHEST: 760, BOARD: 1010, STOVE: 1190, CAFE: 1640, WELL: 1880, TRUNK: 2200, ROD0: 2520, ROD1: 4250, MOS1: 5800 };
+  const TZONES = [
+    { id: 'porten', x0: -500, x1: 450, closed: 0, zoom: 0.96, name: 'Porten' },
+    { id: 'hallen', x0: 450, x1: 1360, closed: 0, zoom: 1, name: 'Ankomsthallen' },
+    { id: 'torvet', x0: 1360, x1: 2520, closed: 0, zoom: 0.92, name: 'Torvet' },
+    { id: 'rodbyen', x0: 2520, x1: 4250, closed: 0.75, zoom: 1, name: 'Rodbyen' },
+    { id: 'mosen', x0: 4250, x1: 6200, closed: 0.25, zoom: 0.98, name: 'Mosen' }
+  ];
+  function townZoneAt(wx) { for (const z of TZONES) if (wx < z.x1) return z; return TZONES[TZONES.length - 1]; }
+  function townZoneMix(wx, key) {
+    for (let i = 0; i < TZONES.length; i++) {
+      const z = TZONES[i], n = TZONES[i + 1];
+      if (wx < z.x1 - 140 || !n) return z[key];
+      if (wx < z.x1 + 140) return z[key] + (n[key] - z[key]) * smooth(z.x1 - 140, z.x1 + 140, wx);
+    }
+    return TZONES[TZONES.length - 1][key];
+  }
+  const townGround = wx => GY + 2.5 * Math.sin(wx * 0.006) + 1.5 * Math.sin(wx * 0.017 + 0.7);
+  // one map or the other, for whoever needs the ground, the zones or the zoom
+  function mapOf(G) { return G && G.scene === 'town' ? { groundAt: townGround, zoneAt: townZoneAt, zoneMix: townZoneMix } : { groundAt, zoneAt, zoneMix }; }
+
+  /* ---------- the hour, chosen by the story (not by where you stand) */
+  const _tp = {};
+  function palTod(tod, night) {
+    const key = night ? 'night' : (PAL[tod] ? tod : 'day');
+    if (_tp[key]) return _tp[key];
+    const P = Object.assign({}, PAL[key]), m = P.mist.replace(/[\d.]+\)$/, '1)');
+    P.midD = cmix(P.leafD, m, night ? 0.15 : 0.32); P.midM = cmix(P.leafM, m, night ? 0.15 : 0.3); P.midT = cmix(P.trunkD, m, night ? 0.12 : 0.35);
+    return (_tp[key] = P);
+  }
+  // building colours sink into the dark at night and warm up at dusk
+  const tint = (c, P, night) => night ? cmix(c, '#08140f', 0.74) : P.grade ? cmix(c, P.sky1, 0.12) : c;
+
+  /* ---------- the street's buildings, far side of the street. x = left edge, w, h = wall height */
+  const HOUSES = [
+    // inside the gate
+    { x: -330, w: 150, h: 170, col: '#c9b38a', roof: '#4a3a2c', wins: 2 },
+    { x: 260, w: 170, h: 190, col: '#9fb08a', roof: '#3e4a2e', wins: 2, sign: 'PORTVAGT' },
+    // around the square
+    { x: 1400, w: 150, h: 200, col: '#d8b47a', roof: '#5a3a24', wins: 2 },
+    { x: 1560, w: 180, h: 180, col: '#e7d7b2', roof: '#2f5a44', wins: 1, cafe: 1, sign: 'CAFÉ' },
+    { x: 2380, w: 150, h: 210, col: '#b98a6a', roof: '#4a2e20', wins: 2 },
+    // Rodbyen: the root town
+    { x: 2560, w: 170, h: 200, col: '#e2c48e', roof: '#5a3a24', wins: 2, sign: 'BAGER', no: 1 },
+    { x: 2750, w: 150, h: 220, col: '#a9c4b0', roof: '#2f4a3a', wins: 2, sign: 'APOTEK', no: 3 },
+    { x: 2930, w: 160, h: 190, col: '#d9a27a', roof: '#4a2e20', wins: 2, no: 5 },
+    { x: 3120, w: 180, h: 210, col: '#c6b6d8', roof: '#3a2e4a', wins: 3, sign: 'BOGHANDEL', no: 7 },
+    { x: 3330, w: 150, h: 190, col: '#e8dcc0', roof: '#5a4030', wins: 2, no: 9 },
+    { x: 3510, w: 170, h: 220, col: '#b7c99a', roof: '#3e4a2e', wins: 2, sign: 'BIBLIOTEK', no: 11 },
+    { x: 3710, w: 160, h: 200, col: '#e0b07a', roof: '#5a3a24', wins: 2, sign: 'SLAGTER', no: 13 },
+    { x: 3900, w: 170, h: 190, col: '#cfd8c0', roof: '#2f5a44', wins: 2, no: 15 },
+    // Mosen: the moss quarter
+    { x: 4330, w: 160, h: 180, col: '#9cb89a', roof: '#2a4a32', wins: 2, moss: 1, no: 1 },
+    { x: 4560, w: 170, h: 170, col: '#b8c8a0', roof: '#2f4a2a', wins: 2, moss: 1, sign: 'GRØNTHANDLER', no: 3 },
+    { x: 4800, w: 150, h: 190, col: '#a8b8c0', roof: '#2f3e4a', wins: 2, moss: 1, no: 5 },
+    { x: 5040, w: 170, h: 175, col: '#c0b090', roof: '#3a4a2a', wins: 2, moss: 1, no: 7 },
+    { x: 5300, w: 160, h: 185, col: '#b0c4a8', roof: '#2a4a32', wins: 2, moss: 1, no: 9 }
+  ];
+
+  /* ---------- a half-timbered house (bindingsværk) with a turf roof. Drawn from its bottom-left corner */
+  let BLK = 0;   // the blackout: 1 = every lamp and window in town is dark
+  function drawHouse(ctx, B, P, t, night, dusk) {
+    const w = B.w, h = B.h, R = rng(B.x | 0 + 7), beam = tint('#3a2a1e', P, night), wall = tint(B.col, P, night);
+    // the wall, with a little shade toward the ground
+    ctx.fillStyle = lg(ctx, 0, -h, 0, 0, [[0, wall], [1, cmix(wall, beam, 0.18)]]); ctx.fillRect(0, -h, w, h);
+    // the timber frame
+    ctx.fillStyle = beam;
+    const bays = Math.max(2, Math.round(w / 44)), bw = w / bays;
+    for (let k = 0; k <= bays; k++) ctx.fillRect(k * bw - 3, -h, 6, h);
+    ctx.fillRect(-4, -h - 4, w + 8, 8); ctx.fillRect(-2, -h * 0.52, w + 4, 6); ctx.fillRect(-4, -6, w + 8, 6);
+    ctx.lineWidth = 4; ctx.strokeStyle = beam; ctx.lineCap = 'butt';
+    for (let k = 0; k < bays; k++) if (k % 2 === 0 && !(B.cafe && k === 1)) { ctx.beginPath(); ctx.moveTo(k * bw + 3, -h * 0.52); ctx.lineTo((k + 1) * bw - 3, -h + 4); ctx.stroke(); }
+    // windows: warm light at night, the sky by day
+    const lit = (night ? 1 : dusk) * (1 - BLK);
+    const nw = B.wins || 2, wy = -h + 18;
+    for (let k = 0; k < nw; k++) {
+      const wx = (k + 0.5) * (w / nw) - 13;
+      ctx.fillStyle = beam; ctx.fillRect(wx - 3, wy - 3, 32, 32);
+      if (lit > 0.1 && (k + (B.x | 0)) % 3 !== 1) { ctx.save(); ctx.fillStyle = `rgba(255,${190 + 20 * Math.sin(t + k)},110,${0.55 + 0.45 * lit})`; ctx.shadowColor = '#ffc66b'; ctx.shadowBlur = 12 * lit; ctx.fillRect(wx, wy, 26, 26); ctx.restore(); }
+      else { ctx.fillStyle = lg(ctx, 0, wy, 0, wy + 26, [[0, cmix(P.sky1, '#ffffff', 0.35)], [1, cmix(P.sky2, beam, 0.25)]]); ctx.fillRect(wx, wy, 26, 26); }
+      ctx.fillStyle = beam; ctx.fillRect(wx + 12, wy, 2.4, 26); ctx.fillRect(wx, wy + 12, 26, 2.4);
+    }
+    // the door
+    R(); const dx = B.cafe ? w * 0.7 : w * 0.5, dwid = 30, dh = 64;
+    ctx.fillStyle = tint('#5a3a24', P, night); ctx.beginPath(); ctx.moveTo(dx - dwid / 2, 0); ctx.lineTo(dx - dwid / 2, -dh + 12); ctx.quadraticCurveTo(dx, -dh - 6, dx + dwid / 2, -dh + 12); ctx.lineTo(dx + dwid / 2, 0); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = beam; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = tint('#c9a24a', P, night); ctx.beginPath(); ctx.arc(dx + dwid / 2 - 6, -dh / 2, 2, 0, TAU); ctx.fill();
+    // the house number, on a little enamel plate by the door
+    if (B.no) { ctx.fillStyle = tint('#24433a', P, night); ctx.fillRect(dx + dwid / 2 + 5, -dh + 6, 17, 14); ctx.strokeStyle = tint('#e8dcc0', P, night); ctx.lineWidth = 1; ctx.strokeRect(dx + dwid / 2 + 6, -dh + 7, 15, 12);
+      ctx.fillStyle = night ? '#d9c8a0' : '#f3e6c4'; ctx.font = '700 9px "Space Grotesk", sans-serif'; ctx.textAlign = 'center'; ctx.fillText(String(B.no), dx + dwid / 2 + 13.5, -dh + 16.5); }
+    // the roof: steep, turf on top, moss hanging over the eave
+    const rh = h * 0.5, ov = 14, roof = tint(B.roof, P, night);
+    ctx.fillStyle = roof; ctx.beginPath(); ctx.moveTo(-ov, -h + 2); ctx.lineTo(w / 2, -h - rh); ctx.lineTo(w + ov, -h + 2); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = tint(B.moss ? '#5f8f4a' : '#4f7a3e', P, night);
+    ctx.beginPath(); ctx.moveTo(-ov, -h + 2); ctx.lineTo(w / 2, -h - rh); ctx.lineTo(w + ov, -h + 2); ctx.lineTo(w + ov - 6, -h + 8); ctx.lineTo(w / 2, -h - rh + 9); ctx.lineTo(-ov + 6, -h + 8); ctx.closePath(); ctx.fill();
+    for (let k = 0; k < 7 + (B.moss ? 6 : 0); k++) { const mx = -ov + R() * (w + ov * 2); ctx.beginPath(); ctx.ellipse(mx, -h + 4 + R() * 3, 6 + R() * 6, 3 + R() * 5, 0, 0, TAU); ctx.fill(); }
+    // a chimney with a breath of smoke
+    if ((B.x | 0) % 2 === 0) { const cx = w * 0.72; ctx.fillStyle = tint('#6a4a36', P, night); ctx.fillRect(cx, -h - rh * 0.62, 12, rh * 0.42);
+      ctx.fillStyle = night ? 'rgba(200,230,215,.08)' : 'rgba(255,255,250,.35)'; for (let k = 0; k < 3; k++) { const u = (t * 0.25 + k / 3) % 1; ctx.beginPath(); ctx.arc(cx + 6 + u * 14 + Math.sin(t + k) * 3, -h - rh * 0.62 - u * 40, 4 + u * 8, 0, TAU); ctx.fill(); } }
+    // glowing moss in the moss quarter
+    if (B.moss) { ctx.save(); ctx.globalCompositeOperation = night ? 'lighter' : 'source-over'; ctx.fillStyle = night ? 'rgba(130,255,190,.5)' : 'rgba(150,200,120,.85)'; for (let k = 0; k < 10; k++) { ctx.beginPath(); ctx.arc(R() * w, -R() * 18, 2 + R() * 3, 0, TAU); ctx.fill(); } ctx.restore(); }
+    // a shop sign on an iron arm
+    if (B.sign) drawShopSign(ctx, B.cafe ? w * 0.18 : w - 6, -h * 0.52 - 4, B.sign, P, night, t);
+  }
+  function drawShopSign(ctx, x, y, text, P, night, t) {
+    ctx.save(); ctx.translate(x, y);
+    ctx.strokeStyle = tint('#2a2420', P, night); ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(30, 0); ctx.moveTo(4, 0); ctx.quadraticCurveTo(4, 12, 16, 10); ctx.stroke();
+    ctx.font = '700 9.5px "Space Grotesk", sans-serif'; const tw = ctx.measureText(text).width + 12;
+    ctx.translate(30, 2); ctx.rotate(Math.sin(t * 1.3 + x) * 0.03);
+    ctx.strokeStyle = tint('#2a2420', P, night); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(-tw / 2 + 4, 0); ctx.lineTo(-tw / 2 + 4, 6); ctx.moveTo(tw / 2 - 4, 0); ctx.lineTo(tw / 2 - 4, 6); ctx.stroke();
+    ctx.fillStyle = tint('#24433a', P, night); ctx.fillRect(-tw / 2, 6, tw, 17);
+    ctx.strokeStyle = tint('#c9a24a', P, night); ctx.lineWidth = 1.2; ctx.strokeRect(-tw / 2 + 1.5, 7.5, tw - 3, 14);
+    ctx.fillStyle = night ? '#d9c8a0' : '#f3e6c4'; ctx.textAlign = 'center'; ctx.fillText(text, 0, 18);
+    ctx.restore();
+  }
+  // a street lamp: a post with a lantern; at dusk and night it pours light on the street
+  function drawLamp(ctx, x, y, P, t, night, dusk, s) {
+    s = s || 1; const lit = (night ? 1 : dusk) * (1 - BLK);
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    ctx.strokeStyle = tint('#2a2420', P, night); ctx.lineWidth = 3.4; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -128); ctx.quadraticCurveTo(0, -140, 12, -140); ctx.stroke();
+    ctx.fillStyle = tint('#2a2420', P, night); ctx.fillRect(-5, -4, 10, 6);
+    ctx.fillStyle = lit > 0.1 ? '#ffd38a' : tint('#e9e2c8', P, night); if (lit > 0.1) { ctx.shadowColor = '#ffc66b'; ctx.shadowBlur = 16 * lit; }
+    ctx.beginPath(); ctx.moveTo(8, -138); ctx.lineTo(16, -138); ctx.lineTo(18, -122); ctx.lineTo(6, -122); ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.fillStyle = tint('#2a2420', P, night); ctx.fillRect(5, -141, 14, 3); ctx.fillRect(4, -123, 16, 2.4);
+    if (lit > 0.1) { ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = rg(ctx, 12, -128, 4, 110, [[0, `rgba(255,196,120,${0.32 * lit})`], [1, 'rgba(0,0,0,0)']]); ctx.beginPath(); ctx.arc(12, -128, 110, 0, TAU); ctx.fill();
+      ctx.fillStyle = `rgba(255,200,130,${0.12 * lit})`; ctx.beginPath(); ctx.ellipse(12, 2, 60, 9, 0, 0, TAU); ctx.fill(); }
+    ctx.restore();
+  }
+
+  /* ---------- the town-tree itself: a trunk wider than a street, rising out of the picture */
+  function drawTrunkFar(ctx, x, y, s, P, t, night, dusk) {
+    const R = rng(404);
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    const bark = cmix(P.trunkD, P.mist.replace(/[\d.]+\)$/, '1)'), night ? 0.15 : 0.32), barkL = cmix(P.trunk, P.mist.replace(/[\d.]+\)$/, '1)'), night ? 0.12 : 0.3);
+    ctx.fillStyle = lg(ctx, -340, 0, 340, 0, [[0, bark], [0.45, barkL], [1, bark]]);
+    ctx.beginPath(); ctx.moveTo(-620, 10); ctx.bezierCurveTo(-420, -10, -300, -90, -280, -260); ctx.lineTo(-250, -1200); ctx.lineTo(250, -1200); ctx.lineTo(280, -260); ctx.bezierCurveTo(300, -90, 420, -10, 620, 10); ctx.closePath(); ctx.fill();
+    // grooves in the bark
+    ctx.strokeStyle = cmix(bark, '#000000', 0.25); ctx.lineWidth = 3;
+    for (let k = 0; k < 16; k++) { const gx = -240 + k * 32 + R() * 10; ctx.beginPath(); ctx.moveTo(gx, -1200); ctx.bezierCurveTo(gx + R() * 20 - 10, -700, gx + R() * 30 - 15, -400, gx * (1.2 + R() * 0.3), 0); ctx.stroke(); }
+    // windows carved into the trunk, and the lights that wind up it
+    const lit = (night ? 1 : 0.3 + 0.7 * dusk) * (1 - BLK);
+    for (let k = 0; k < 14; k++) { const wx = -200 + R() * 400, wy = -160 - R() * 900; ctx.fillStyle = `rgba(255,200,110,${(0.25 + 0.6 * lit) * (0.7 + 0.3 * Math.sin(t + k))})`; ctx.beginPath(); ctx.ellipse(wx, wy, 6, 8, 0, 0, TAU); ctx.fill(); }
+    for (let k = 0; k < 40; k++) { const u = k / 40, lx = Math.sin(u * 22 + t * 0.3) * 230, ly = -u * 1150; if (Math.cos(u * 22 + t * 0.3) < -0.2) continue; ctx.fillStyle = k % 2 ? '#ffc66b' : '#8affc8'; ctx.globalAlpha = (0.25 + 0.7 * lit) * (0.5 + 0.5 * Math.sin(t * 2 + k)); ctx.fillRect(lx - 2, ly - 2, 4, 4); }
+    ctx.globalAlpha = 1; ctx.restore();
+  }
+  // hazy roofs between the street and the trunk
+  function drawRoofline(ctx, V, z, P, night, t, dusk) {
+    const R = rng(77), col = cmix(P.far2, P.trunkD, night ? 0.4 : 0.25);
+    ctx.fillStyle = col;
+    for (let k = 0; k < 70; k++) {
+      const wx = -600 + k * 95 + R() * 40, x = W / 2 + (wx - V.x) * 0.5 * z; if (x < -80 || x > W + 80) continue;
+      const w = (60 + R() * 50) * z, h = (70 + R() * 70) * z, y = GY - 20;
+      ctx.fillRect(x - w / 2, y - h, w, h + 24); ctx.beginPath(); ctx.moveTo(x - w / 2 - 6, y - h); ctx.lineTo(x, y - h - w * 0.5); ctx.lineTo(x + w / 2 + 6, y - h); ctx.closePath(); ctx.fill();
+      const lit = (night ? 1 : dusk) * (1 - BLK); if (lit > 0.15 && R() > 0.4) { ctx.save(); ctx.fillStyle = `rgba(255,200,110,${0.5 * lit})`; ctx.fillRect(x - 5 * z, y - h * 0.6, 7 * z, 8 * z); ctx.restore(); ctx.fillStyle = col; }
+    }
+  }
+  // giant roots that arch over the streets of Rodbyen
+  function drawRootArch(ctx, x, y, s, P, night, front) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    const c = front ? cmix(P.trunkD, '#000000', night ? 0.4 : 0.15) : cmix(P.trunk, P.trunkD, 0.5);
+    ctx.fillStyle = c;
+    ctx.beginPath(); ctx.moveTo(-260, 20); ctx.bezierCurveTo(-240, -200, -120, -420, 120, -560); ctx.lineTo(220, -560); ctx.bezierCurveTo(-40, -400, -140, -200, -170, 20); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = cmix(c, '#000000', 0.3); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-220, 0); ctx.bezierCurveTo(-200, -200, -90, -400, 150, -540); ctx.stroke();
+    ctx.restore();
+  }
+
+  /* ---------- Ankomsthallen: a long timber hall. Outside: a facade. Inside (open): the front wall is cut away */
+  function drawHall(ctx, x0, x1, y, P, t, night, dusk, open, G) {
+    const w = x1 - x0, h = 228, beam = tint('#3a2a1e', P, night), wall = tint('#d8c49a', P, night), plank = tint('#a6845e', P, night);
+    ctx.save(); ctx.translate(x0, y);
+    // the roof first (it overhangs both ways)
+    const rh = 96, roof = tint('#4a3a2c', P, night);
+    ctx.fillStyle = roof; ctx.beginPath(); ctx.moveTo(-20, -h + 4); ctx.lineTo(40, -h - rh); ctx.lineTo(w - 40, -h - rh); ctx.lineTo(w + 20, -h + 4); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = tint('#4f7a3e', P, night); ctx.fillRect(40, -h - rh - 6, w - 80, 10);
+    const R = rng(55); for (let k = 0; k < 26; k++) { ctx.beginPath(); ctx.ellipse(40 + R() * (w - 80), -h - rh - 2, 8 + R() * 8, 4 + R() * 5, 0, 0, TAU); ctx.fill(); }
+    // the inside: back wall of planks, windows, bunks, the stove, the board, Holm's desk with the big book
+    if (open > 0) {
+      ctx.save(); ctx.globalAlpha = Math.min(1, open * 1.4);
+      ctx.fillStyle = lg(ctx, 0, -h, 0, 0, [[0, cmix(plank, beam, 0.35)], [1, plank]]); ctx.fillRect(0, -h, w, h);
+      ctx.strokeStyle = cmix(plank, beam, 0.4); ctx.lineWidth = 1; for (let yy = -h + 14; yy < 0; yy += 14) { ctx.beginPath(); ctx.moveTo(0, yy); ctx.lineTo(w, yy); ctx.stroke(); }
+      ctx.fillStyle = beam; for (let k = 0; k <= 8; k++) ctx.fillRect(k * w / 8 - 4, -h, 8, h); ctx.fillRect(0, -h, w, 10);
+      // high windows
+      for (let k = 0; k < 7; k++) { const wx = (k + 0.5) * w / 7 - 18; if (k === 3) continue;
+        ctx.fillStyle = night ? '#0d1d24' : lg(ctx, 0, -h + 24, 0, -h + 74, [[0, cmix(P.sky1, '#ffffff', 0.3)], [1, P.sky2]]); ctx.fillRect(wx, -h + 24, 36, 48);
+        if (night) { ctx.fillStyle = 'rgba(220,255,240,.7)'; for (let s2 = 0; s2 < 3; s2++) ctx.fillRect(wx + 6 + s2 * 11, -h + 30 + (s2 * 13) % 30, 1.2, 1.2); }
+        ctx.fillStyle = beam; ctx.fillRect(wx + 17, -h + 24, 2.4, 48); ctx.fillRect(wx, -h + 46, 36, 2.4); ctx.strokeStyle = beam; ctx.lineWidth = 3; ctx.strokeRect(wx, -h + 24, 36, 48);
+        if (!night && open > 0.5) { ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = lg(ctx, wx, -h + 72, wx + 40, 0, [[0, 'rgba(255,245,210,.35)'], [1, 'rgba(255,245,210,0)']]); ctx.beginPath(); ctx.moveTo(wx, -h + 72); ctx.lineTo(wx + 36, -h + 72); ctx.lineTo(wx + 90, 0); ctx.lineTo(wx + 40, 0); ctx.closePath(); ctx.fill(); ctx.restore(); }
+      }
+      // bunks along the back wall
+      [[150, 2], [300, 2], [460, 1]].forEach(([bx, n]) => { for (let k = 0; k < n; k++) { const by = -38 - k * 50;
+        ctx.fillStyle = tint('#6a4a32', P, night); ctx.fillRect(bx, by, 96, 8); ctx.fillStyle = tint('#c8b9a0', P, night); ctx.fillRect(bx + 4, by - 9, 88, 9); ctx.fillStyle = tint('#7a9a86', P, night); ctx.fillRect(bx + 40, by - 10, 52, 10); ctx.fillStyle = tint('#e8dcc0', P, night); ctx.fillRect(bx + 6, by - 13, 22, 7); }
+        ctx.fillStyle = tint('#5a3a24', P, night); ctx.fillRect(bx, -38 - n * 50, 5, 38 + n * 50); ctx.fillRect(bx + 91, -38 - n * 50, 5, 38 + n * 50); });
+      // the noticeboard with pinned notes
+      { const bx = TOWN.BOARD - x0 - 40; ctx.fillStyle = tint('#7a5236', P, night); ctx.fillRect(bx, -150, 80, 60); ctx.strokeStyle = beam; ctx.lineWidth = 3; ctx.strokeRect(bx, -150, 80, 60);
+        const RN = rng(9); for (let k = 0; k < 9; k++) { ctx.fillStyle = tint(['#f3e6c4', '#e8f0d8', '#f6d8b8'][k % 3], P, night); const nx = bx + 5 + RN() * 60, ny = -146 + RN() * 40; ctx.save(); ctx.translate(nx, ny); ctx.rotate((RN() - 0.5) * 0.3); ctx.fillRect(0, 0, 14, 14); ctx.fillStyle = '#b4602e'; ctx.fillRect(6, 1, 2, 2); ctx.restore(); } }
+      // the stove, with a fire
+      { const sx = TOWN.STOVE - x0 - 22; ctx.fillStyle = tint('#3a3a36', P, night); ctx.fillRect(sx, -70, 44, 70); ctx.fillRect(sx + 16, -h, 12, h - 70); ctx.fillStyle = '#ff9a4a'; ctx.shadowColor = '#ffb070'; ctx.shadowBlur = 16; ctx.fillRect(sx + 9, -48, 26, 18 + 3 * Math.sin(t * 9)); ctx.shadowBlur = 0;
+        if (night || dusk > 0.3) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = rg(ctx, sx + 22, -40, 4, 140, [[0, 'rgba(255,160,80,.22)'], [1, 'rgba(0,0,0,0)']]); ctx.beginPath(); ctx.arc(sx + 22, -40, 140, 0, TAU); ctx.fill(); ctx.restore(); } }
+      // hanging lamps
+      [0.2, 0.5, 0.8].forEach(u => { const lx = w * u; ctx.strokeStyle = beam; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(lx, -h + 10); ctx.lineTo(lx, -h + 46); ctx.stroke(); ctx.fillStyle = '#ffd38a'; ctx.shadowColor = '#ffc66b'; ctx.shadowBlur = 14; ctx.beginPath(); ctx.arc(lx, -h + 52, 6, 0, TAU); ctx.fill(); ctx.shadowBlur = 0;
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = rg(ctx, lx, -h + 52, 3, 120, [[0, `rgba(255,200,120,${night ? 0.22 : 0.1})`], [1, 'rgba(0,0,0,0)']]); ctx.beginPath(); ctx.arc(lx, -h + 52, 120, 0, TAU); ctx.fill(); ctx.restore(); });
+      ctx.restore();
+    }
+    // the outside: a facade with the big double door and the sign
+    if (open < 1) {
+      ctx.save(); ctx.globalAlpha = 1 - open;
+      ctx.fillStyle = lg(ctx, 0, -h, 0, 0, [[0, wall], [1, cmix(wall, beam, 0.2)]]); ctx.fillRect(0, -h, w, h);
+      ctx.fillStyle = beam; const bays = 14, bw = w / bays;
+      for (let k = 0; k <= bays; k++) ctx.fillRect(k * bw - 3, -h, 6, h);
+      ctx.fillRect(-4, -h - 4, w + 8, 8); ctx.fillRect(-2, -h * 0.5, w + 4, 6); ctx.fillRect(-4, -6, w + 8, 6);
+      ctx.lineWidth = 4; ctx.strokeStyle = beam; for (let k = 0; k < bays; k++) if (k % 3 === 0) { ctx.beginPath(); ctx.moveTo(k * bw + 3, -h * 0.5); ctx.lineTo((k + 1) * bw - 3, -h + 4); ctx.stroke(); }
+      const lit = (night ? 1 : dusk) * (1 - BLK);
+      for (let k = 0; k < bays; k++) { if (k === 6 || k === 7) continue; const wx = k * bw + bw / 2 - 11, wy = -h + 22;
+        if (lit > 0.1) { ctx.save(); ctx.fillStyle = `rgba(255,200,110,${0.5 + 0.5 * lit})`; ctx.shadowColor = '#ffc66b'; ctx.shadowBlur = 10 * lit; ctx.fillRect(wx, wy, 22, 28); ctx.restore(); } else { ctx.fillStyle = cmix(P.sky1, beam, 0.25); ctx.fillRect(wx, wy, 22, 28); }
+        ctx.fillStyle = beam; ctx.fillRect(wx + 10, wy, 2, 28); }
+      // the double door in the middle, under the sign
+      const dx = w / 2;
+      ctx.fillStyle = tint('#5a3a24', P, night); ctx.beginPath(); ctx.moveTo(dx - 34, 0); ctx.lineTo(dx - 34, -78); ctx.quadraticCurveTo(dx, -104, dx + 34, -78); ctx.lineTo(dx + 34, 0); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = beam; ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = beam; ctx.fillRect(dx - 1.5, -92, 3, 92);
+      ctx.font = '700 15px "Space Grotesk", sans-serif'; ctx.textAlign = 'center'; const tw = ctx.measureText('ANKOMSTHALLEN').width + 24;
+      ctx.fillStyle = tint('#24433a', P, night); ctx.fillRect(dx - tw / 2, -h * 0.5 - 34, tw, 26); ctx.strokeStyle = tint('#c9a24a', P, night); ctx.lineWidth = 2; ctx.strokeRect(dx - tw / 2 + 2, -h * 0.5 - 32, tw - 4, 22);
+      ctx.fillStyle = night ? '#e8d8b0' : '#f6ecd0'; ctx.fillText('ANKOMSTHALLEN', dx, -h * 0.5 - 16);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  // in front of whoever is inside: the cut ends of the walls and the floor's edge
+  function drawHallFront(ctx, x0, x1, y, P, night, open) {
+    if (open <= 0) return;
+    const w = x1 - x0, h = 228, beam = tint('#3a2a1e', P, night);
+    ctx.save(); ctx.translate(x0, y); ctx.globalAlpha = Math.min(1, open * 1.4);
+    ctx.fillStyle = beam; ctx.fillRect(-10, -h - 6, 20, h + 10); ctx.fillRect(w - 10, -h - 6, 20, h + 10);
+    ctx.fillStyle = tint('#6a4a32', P, night); ctx.fillRect(-10, -4, w + 20, 10);
+    ctx.fillStyle = cmix(beam, '#000000', 0.2); ctx.fillRect(-14, -h - 10, w + 28, 12);
+    ctx.restore();
+  }
+  // Holm's desk with Ankomstbogen, the big arrivals book; the chest of travel clothes
+  function drawHallThings(ctx, sx, y, P, t, night, G, SXf) {
+    // the desk
+    { const x = SXf(TOWN.DESK); ctx.save(); ctx.translate(x, y);
+      ctx.fillStyle = tint('#6a4a32', P, night); ctx.fillRect(-46, -58, 92, 8); ctx.fillRect(-42, -50, 8, 50); ctx.fillRect(34, -50, 8, 50); ctx.fillStyle = tint('#5a3a24', P, night); ctx.fillRect(-40, -50, 80, 26);
+      const op = G.bookOpen || 0; ctx.fillStyle = tint('#7a2e24', P, night); ctx.fillRect(-26, -66, 52, 8);
+      ctx.fillStyle = tint('#f3e6c4', P, night); ctx.beginPath(); ctx.moveTo(-24, -66); ctx.lineTo(-2, -68 - 4 * op); ctx.lineTo(-2, -66); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(24, -66); ctx.lineTo(2, -68 - 4 * op); ctx.lineTo(2, -66); ctx.closePath(); ctx.fill();
+      ctx.fillRect(-24, -70 - 2 * op, 22, 4); ctx.fillRect(2, -70 - 2 * op, 22, 4);
+      ctx.fillStyle = tint('#2a2420', P, night); ctx.fillRect(30, -74, 2, 12);   // a quill
+      ctx.restore(); }
+    // the chest
+    { const x = SXf(TOWN.CHEST); ctx.save(); ctx.translate(x, y);
+      const lid = G.chestOpen || 0; ctx.fillStyle = tint('#7a5236', P, night); ctx.fillRect(-30, -34, 60, 34); ctx.fillStyle = tint('#c9a24a', P, night); ctx.fillRect(-30, -24, 60, 3); ctx.fillRect(-3, -30, 6, 8);
+      ctx.save(); ctx.translate(-30, -34); ctx.rotate(-lid * 1.2); ctx.fillStyle = tint('#8a5e3e', P, night); ctx.fillRect(0, -8, 60, 8); ctx.restore();
+      if (lid > 0.3) { ctx.fillStyle = tint('#3e5a34', P, night); ctx.fillRect(-24, -38, 48, 6); }
+      ctx.restore(); }
+  }
+
+  /* ---------- the square: a well, market stalls, café tables */
+  function drawWell(ctx, P, night) {
+    const st = tint('#9a9284', P, night), stD = tint('#6e675c', P, night);
+    ctx.fillStyle = st; ctx.beginPath(); ctx.ellipse(0, -2, 44, 10, 0, 0, TAU); ctx.fill(); ctx.fillRect(-44, -36, 88, 34); ctx.fillStyle = stD; for (let k = 0; k < 6; k++) ctx.fillRect(-44 + k * 15, -36 + (k % 2) * 17, 14, 1.6);
+    ctx.fillStyle = tint('#5a8a9a', P, night); ctx.beginPath(); ctx.ellipse(0, -36, 40, 8, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = tint('#4a3426', P, night); ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(-36, -36); ctx.lineTo(-36, -96); ctx.lineTo(36, -96); ctx.lineTo(36, -36); ctx.stroke();
+    ctx.fillStyle = tint('#5a3a24', P, night); ctx.beginPath(); ctx.moveTo(-48, -96); ctx.lineTo(0, -124); ctx.lineTo(48, -96); ctx.closePath(); ctx.fill();
+  }
+  function drawStall(ctx, P, night, t, kind) {
+    const awn = kind === 'fish' ? ['#e7e1d0', '#3a6a8a'] : ['#e7e1d0', '#b4602e'];
+    ctx.fillStyle = tint('#6a4a32', P, night); ctx.fillRect(-50, -48, 100, 10); ctx.fillRect(-46, -38, 6, 38); ctx.fillRect(40, -38, 6, 38); ctx.fillRect(-48, -110, 4, 62); ctx.fillRect(44, -110, 4, 62);
+    for (let k = 0; k < 6; k++) { ctx.fillStyle = tint(awn[k % 2], P, night); ctx.beginPath(); ctx.moveTo(-56 + k * 19, -112); ctx.lineTo(-37 + k * 19, -112); ctx.lineTo(-37 + k * 19, -96); ctx.quadraticCurveTo(-46.5 + k * 19, -88, -56 + k * 19, -96); ctx.closePath(); ctx.fill(); }
+    const R = rng(kind === 'fish' ? 3 : 4);
+    for (let k = 0; k < 14; k++) { const x = -44 + R() * 88, y = -54 - R() * 8; ctx.fillStyle = tint(kind === 'fish' ? ['#a8c0c8', '#c8d0d0', '#8aa0aa'][k % 3] : ['#c84a32', '#e0b04a', '#6a9a3e', '#e07a32'][k % 4], P, night);
+      ctx.beginPath(); if (kind === 'fish') ctx.ellipse(x, y, 9, 3, 0.1, 0, TAU); else ctx.arc(x, y, 4.5, 0, TAU); ctx.fill(); }
+  }
+  function drawCafeTables(ctx, P, night) {
+    [[-60, 0], [10, 0]].forEach(([tx]) => {
+      ctx.fillStyle = tint('#4a3a2c', P, night); ctx.fillRect(tx - 2, -36, 4, 36); ctx.fillStyle = tint('#e7e1d0', P, night); ctx.beginPath(); ctx.ellipse(tx, -37, 20, 5, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = tint('#b4602e', P, night); ctx.beginPath(); ctx.ellipse(tx - 4, -42, 3.4, 4, 0, 0, TAU); ctx.fill();
+      ctx.strokeStyle = tint('#4a3a2c', P, night); ctx.lineWidth = 2; [[-26, 1], [26, -1]].forEach(([cx, d]) => { ctx.beginPath(); ctx.moveTo(tx + cx, 0); ctx.lineTo(tx + cx, -22); ctx.lineTo(tx + cx - 10 * d, -22); ctx.moveTo(tx + cx, -22); ctx.lineTo(tx + cx, -44); ctx.stroke(); });
+    });
+  }
+  // the lift at the foot of the trunk, up to Kronen
+  function drawTrunkBase(ctx, P, t, night, dusk) {
+    const bark = tint('#5a3e2a', P, night), barkD = tint('#3a2618', P, night);
+    ctx.fillStyle = lg(ctx, -260, 0, 260, 0, [[0, barkD], [0.5, bark], [1, barkD]]);
+    ctx.beginPath(); ctx.moveTo(-330, 4); ctx.bezierCurveTo(-240, -10, -190, -80, -180, -200); ctx.lineTo(-170, -700); ctx.lineTo(170, -700); ctx.lineTo(180, -200); ctx.bezierCurveTo(190, -80, 240, -10, 330, 4); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = barkD; ctx.lineWidth = 3; const R = rng(21); for (let k = 0; k < 12; k++) { const gx = -160 + k * 28 + R() * 8; ctx.beginPath(); ctx.moveTo(gx, -700); ctx.bezierCurveTo(gx + 6, -400, gx - 6, -150, gx * 1.5, 0); ctx.stroke(); }
+    // the lift's arched door and its rope
+    ctx.fillStyle = '#1e140c'; ctx.beginPath(); ctx.moveTo(-34, 0); ctx.lineTo(-34, -96); ctx.quadraticCurveTo(0, -128, 34, -96); ctx.lineTo(34, 0); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = tint('#c9a24a', P, night); ctx.lineWidth = 2.4; ctx.stroke();
+    const lit = (night ? 1 : 0.35 + 0.65 * dusk) * (1 - BLK); ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,200,120,${0.25 * lit})`; ctx.fillRect(-30, -96, 60, 96); ctx.restore();
+    ctx.strokeStyle = tint('#8a7a5a', P, night); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-10, -100); ctx.lineTo(-10, -700); ctx.moveTo(10, -100); ctx.lineTo(10, -700); ctx.stroke();
+    ctx.font = '700 9.5px "Space Grotesk", sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = tint('#24433a', P, night); ctx.fillRect(-40, -150, 80, 16); ctx.fillStyle = night ? '#d9c8a0' : '#f3e6c4'; ctx.fillText('ELEVATOREN', 0, -138.5);
+  }
+
+  /* ---------- the whole town, one frame */
+  let TSCN = null;
+  function buildTown() {
+    const R = rng(3131);
+    TSCN = {
+      lamps: [60, 470, 1370, 1760, 2050, 2470, 2860, 3260, 3640, 4050, 4460, 4920, 5400],
+      fore: Array.from({ length: 70 }, (_, i) => ({ x: -600 + i * 95 + R() * 60, k: R() < 0.35 ? 'barrel' : R() < 0.6 ? 'crate' : 'tuft', dy: R() * 30, s: 0.8 + R() * 0.5 })),
+      motes: Array.from({ length: 40 }, () => ({ x: R() * W, y: 80 + R() * (GY - 40), r: 1 + R() * 1.6, sp: 0.4 + R() * 0.8, ph: R() * 6 }))
+    };
+  }
+  // signposts with street names, and two things on the near pavement that houses can be 'opposite'
+  const SIGNS = [{ x: 2500, t: ['◀ TORVET', 'RODGADE ▶'] }, { x: 2742, t: ['BAGERSTRÆDE ▲'] }, { x: 4252, t: ['◀ RODGADE', 'MOSEVEJ ▶'] }];
+  const MARKS = [{ x: 3405, k: 'fountain' }, { x: 4875, k: 'stone' }];
+  function drawSignpost(ctx, S, P, night) {
+    const pc = tint('#2a2420', P, night);
+    ctx.strokeStyle = pc; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -150); ctx.stroke();
+    ctx.font = '700 9.5px "Space Grotesk", sans-serif'; ctx.textAlign = 'center';
+    S.t.forEach((txt, i) => { const y = -146 + i * 22, tw = ctx.measureText(txt).width + 14;
+      ctx.fillStyle = tint('#e8dcc0', P, night); ctx.fillRect(-tw / 2, y, tw, 16); ctx.strokeStyle = pc; ctx.lineWidth = 1.2; ctx.strokeRect(-tw / 2 + 1.5, y + 1.5, tw - 3, 13);
+      ctx.fillStyle = tint('#24433a', P, night); ctx.fillText(txt, 0, y + 12); });
+  }
+  function drawMark(ctx, M, P, t, night) {
+    if (M.k === 'fountain') {
+      const st = tint('#9a9484', P, night), stD = tint('#6a6456', P, night);
+      ctx.fillStyle = stD; ctx.beginPath(); ctx.ellipse(0, 0, 54, 12, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = st; ctx.fillRect(-52, -22, 104, 22); ctx.beginPath(); ctx.ellipse(0, -22, 52, 11, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = night ? '#1f4a52' : '#7fb8c4'; ctx.beginPath(); ctx.ellipse(0, -22, 44, 8, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = stD; ctx.fillRect(-5, -58, 10, 36); ctx.beginPath(); ctx.ellipse(0, -58, 16, 4, 0, 0, TAU); ctx.fill();
+      ctx.strokeStyle = night ? 'rgba(150,220,230,.45)' : 'rgba(230,250,255,.8)'; ctx.lineWidth = 1.6;
+      for (let k = -1; k <= 1; k += 2) { ctx.beginPath(); ctx.moveTo(0, -60); ctx.quadraticCurveTo(k * 18, -78 - Math.sin(t * 3) * 2, k * 30, -26); ctx.stroke(); }
+    } else {
+      const st = tint('#7a8a72', P, night);
+      ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.beginPath(); ctx.ellipse(0, 0, 40, 8, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = st; ctx.beginPath(); ctx.moveTo(-30, 0); ctx.quadraticCurveTo(-34, -40, -10, -60); ctx.quadraticCurveTo(14, -66, 26, -40); ctx.quadraticCurveTo(34, -16, 30, 0); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = tint('#5f8f4a', P, night); for (let k = 0; k < 7; k++) { ctx.beginPath(); ctx.ellipse(-18 + k * 7, -50 + Math.abs(k - 3) * 6, 9, 6, 0, 0, TAU); ctx.fill(); }
+      ctx.save(); ctx.globalCompositeOperation = night ? 'lighter' : 'source-over'; ctx.strokeStyle = night ? 'rgba(130,255,190,.6)' : 'rgba(40,90,60,.55)'; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(-6, -36); ctx.lineTo(0, -20); ctx.lineTo(6, -36); ctx.moveTo(0, -20); ctx.lineTo(0, -8); ctx.stroke(); ctx.restore();
+    }
+  }
+  function townFrame(ctx, t, G) {
+    if (!TSCN) buildTown();
+    BLK = G.blackout || 0;
+    const V = G.view || (G.view = { x: 0, z: 1 }), night = !!G.night, P = palTod(G.tod || 'day', night), z = V.z || 1;
+    const dusk = night ? 1 : (G.dusk || (G.tod === 'dusk' ? 0.8 : G.tod === 'golden' ? 0.3 : 0));
+    const SX = wx => (wx - V.x) * z + W / 2, SY = y => (y - GY) * z + GY, gy = wx => SY(townGround(wx));
+    const closed = townZoneMix(V.x, 'closed'), open = G.hallOpen || 0;
+    drawSkyBase(ctx, t, G, P, V, night);
+    // the trunk of the town-tree, far and enormous
+    { const x = W / 2 + (TOWN.TRUNK - V.x) * 0.3 * z; if (x > -900 && x < W + 900) drawTrunkFar(ctx, x, SY(GY - 30), 0.9 * z, P, t, night, dusk); }
+    drawRoofline(ctx, V, z, P, night, t, dusk);
+    ctx.fillStyle = lg(ctx, 0, GY - 240, 0, GY + 10, [[0, 'rgba(0,0,0,0)'], [1, P.mist]]); ctx.globalAlpha = 0.7; ctx.fillRect(0, GY - 240, W, 250); ctx.globalAlpha = 1;
+    // roots behind the houses in Rodbyen
+    for (let rx = TOWN.ROD0 + 120; rx < TOWN.ROD1; rx += 520) { const x = W / 2 + (rx - V.x) * 0.8 * z; if (x > -400 && x < W + 400) drawRootArch(ctx, x, SY(GY - 10), 0.75 * z, P, night, false); }
+    const xL = V.x - (W / 2) / z - 60, xR = V.x + (W / 2) / z + 60;
+    // the street: packed earth and cobbles, then a kerb and the near bank
+    ctx.beginPath(); ctx.moveTo(SX(xL), H + 400); for (let wx = xL; wx <= xR; wx += 12) ctx.lineTo(SX(wx), gy(wx) - 14 * z); ctx.lineTo(SX(xR), H + 400); ctx.closePath();
+    ctx.fillStyle = lg(ctx, 0, GY - 20, 0, GY + 200, [[0, tint('#8a7e6a', P, night)], [1, tint('#5a5040', P, night)]]); ctx.fill();
+    { const R = rng(12), c1 = tint('#9a8e78', P, night), c2 = tint('#7a6e5c', P, night);
+      for (let k = 0; k < 420; k++) { const wx = Math.floor(xL / 600) * 600 + R() * 1400; if (wx < xL || wx > xR) continue; const x = SX(wx), y = gy(wx) - 10 * z + R() * 90 * z; ctx.fillStyle = k % 2 ? c1 : c2; ctx.beginPath(); ctx.ellipse(x, y, (7 + R() * 5) * z, (2.6 + R() * 1.6) * z, 0, 0, TAU); ctx.fill(); } }
+    ctx.fillStyle = tint('#6a5e4c', P, night); ctx.beginPath(); ctx.moveTo(-20, H + 400); for (let x = -20; x <= W + 20; x += 16) ctx.lineTo(x, SY(GY + 110 + 4 * Math.sin((V.x + x) * 0.01))); ctx.lineTo(W + 20, H + 400); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = tint('#3e4a30', P, night); ctx.beginPath(); ctx.moveTo(-20, H + 400); for (let x = -20; x <= W + 20; x += 16) { const wx = V.x + (x - W / 2) * 1.12; ctx.lineTo(x, SY(GY + 124 + 6 * Math.sin(wx * 0.008))); } ctx.lineTo(W + 20, H + 400); ctx.closePath(); ctx.fill();
+
+    // ---- far side of the street: the palisade inside the gate, houses, the hall, the square
+    ctx.save();
+    // the inside of the palisade, with the gate
+    if (xL < 520) { const gx = SX(TOWN.GATE), y0 = gy(TOWN.GATE) - 18 * z; ctx.save(); ctx.translate(gx, y0); ctx.scale(z, z);
+      const R = rng(9), log = tint('#6a4a32', P, night), logD = tint('#4a3222', P, night);
+      for (let k = -24; k <= 12; k++) { if (k >= -2 && k <= 2) continue; const lx = k * 24, h = 132 + R() * 20; ctx.fillStyle = k % 2 ? log : logD; ctx.beginPath(); ctx.moveTo(lx - 12, 4); ctx.lineTo(lx - 12, -h); ctx.lineTo(lx, -h - 12); ctx.lineTo(lx + 12, -h); ctx.lineTo(lx + 12, 4); ctx.closePath(); ctx.fill(); }
+      ctx.fillStyle = tint('#3a2618', P, night); ctx.fillRect(-600, -64, 540, 8); ctx.fillRect(60, -64, 240, 8);
+      ctx.fillStyle = tint('#5a3a24', P, night); const go = G.gateOpen || 0; ctx.fillRect(-58, -124, 58 * (1 - go * 0.85), 128); ctx.fillRect(58 * go * 0.85, -124, 58 * (1 - go * 0.85), 128);
+      ctx.strokeStyle = tint('#c9a24a', P, night); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-60, 4); ctx.lineTo(-60, -126); ctx.quadraticCurveTo(0, -190, 60, -126); ctx.lineTo(60, 4); ctx.stroke();
+      if (go > 0) { ctx.fillStyle = night ? '#0b1a14' : cmix(P.sky2, P.ground, 0.4); ctx.fillRect(-58 + 58 * (1 - go * 0.85), -124, 116 * go * 0.85, 128); }
+      ctx.restore(); }
+    HOUSES.forEach(B => { const x = SX(B.x); if (x > W + 40 || x + (B.w + 40) * z < -40) return; ctx.save(); ctx.translate(x, gy(B.x + B.w / 2) - 12 * z); ctx.scale(z, z); drawHouse(ctx, B, P, t, night, dusk); ctx.restore(); });
+    if (xR > TOWN.HALL0 - 40 && xL < TOWN.HALL1 + 40) { ctx.save(); ctx.translate(SX(TOWN.HALL0), gy(900) - 10 * z); ctx.scale(z, z); drawHall(ctx, 0, TOWN.HALL1 - TOWN.HALL0, 0, P, t, night, dusk, open, G); ctx.restore(); }
+    if (open > 0.3) { ctx.save(); ctx.translate(0, 0); drawHallThings(ctx, 0, gy(TOWN.DESK) - 8 * z, P, t, night, G, wx => SX(wx)); ctx.restore(); }
+    if (Math.abs(V.x - TOWN.TRUNK) < 700) { ctx.save(); ctx.translate(SX(TOWN.TRUNK), gy(TOWN.TRUNK) - 10 * z); ctx.scale(z, z); drawTrunkBase(ctx, P, t, night, dusk); ctx.restore(); }
+    if (Math.abs(V.x - TOWN.WELL) < 500) { ctx.save(); ctx.translate(SX(TOWN.WELL), gy(TOWN.WELL) - 6 * z); ctx.scale(z, z); drawWell(ctx, P, night); ctx.restore(); }
+    [[1470, 'veg'], [2420, 'fish']].forEach(([sx, k]) => { if (Math.abs(V.x - sx) > 520) return; ctx.save(); ctx.translate(SX(sx), gy(sx) + 4 * z); ctx.scale(z, z); drawStall(ctx, P, night, t, k); ctx.restore(); });
+    if (Math.abs(V.x - TOWN.CAFE) < 500) { ctx.save(); ctx.translate(SX(TOWN.CAFE + 20), gy(TOWN.CAFE) + 6 * z); ctx.scale(z, z); drawCafeTables(ctx, P, night); ctx.restore(); }
+    SIGNS.forEach(S => { const x = SX(S.x); if (x < -80 || x > W + 80) return; ctx.save(); ctx.translate(x, gy(S.x) - 4 * z); ctx.scale(z, z); drawSignpost(ctx, S, P, night); ctx.restore(); });
+    TSCN.lamps.forEach(lx => { const x = SX(lx); if (x < -140 || x > W + 140) return; drawLamp(ctx, x, gy(lx) - 4 * z, P, t, night, dusk, z); });
+    ctx.restore();
+
+    // ---- people
+    (G.lights || []).forEach(L => {
+      if (L.got && t - L.got > 1.2) return;
+      const x = SX(L.x), y = SY(townGround(L.x) - L.h) + Math.sin(t * 2 + L.x) * 5; if (x < -40 || x > W + 40) return;
+      const a = L.got ? Math.max(0, 1 - (t - L.got) / 1.2) : 1;
+      ctx.save(); ctx.globalAlpha = a; ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = rg(ctx, x, y, 2, 26, [[0, 'rgba(220,255,240,.9)'], [0.4, 'rgba(120,255,200,.35)'], [1, 'rgba(0,0,0,0)']]); ctx.beginPath(); ctx.arc(x, y, 26, 0, TAU); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = '#f8fff4'; ctx.font = `600 ${13 * z}px "Space Grotesk", sans-serif`; ctx.textAlign = 'center'; ctx.shadowColor = '#2fd9a8'; ctx.shadowBlur = 8; ctx.fillText(L.word, x, y - 16 - (L.got ? (t - L.got) * 30 : 0)); ctx.restore();
+    });
+    const cast = (G.cast || []).filter(a => !a.hidden).sort((a, b) => (a.z || 0) - (b.z || 0));
+    cast.forEach(a => {
+      if (a.wx == null) return;
+      const base = a.k === 'skib' ? 0.42 : a.k === 'deer' ? 1.25 : HS;
+      a.x = SX(a.wx); a.y = SY(townGround(a.wx) + (a.wy || 0)); a.s = (a.sc || 1) * base * z;
+      if (a.x < -120 || a.x > W + 120) return;
+      if (night && a.k === 'hero' && (G.glow == null ? 1 : G.glow) > 0.2) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = rg(ctx, a.x, a.y, 4, 90 * z, [[0, `rgba(150,255,170,${0.28 * (G.glow == null ? 1 : G.glow)})`], [1, 'rgba(0,0,0,0)']]); ctx.beginPath(); ctx.ellipse(a.x, a.y, 90 * z, 22 * z, 0, 0, TAU); ctx.fill(); ctx.restore(); }
+      drawActor(ctx, a, t);
+    });
+    if (xR > TOWN.HALL0 - 40 && xL < TOWN.HALL1 + 40) drawHallFront(ctx, SX(TOWN.HALL0), SX(TOWN.HALL1), gy(900) - 10 * z, P, night, open);
+    if (G.drone) { const D = G.drone; drone(ctx, t, night, 0, Object.assign({}, D, { x: SX(D.wx), y: SY(D.y) })); }
+    (G.drones || []).forEach(D => { const x = SX(D.wx); if (x < -300 || x > W + 300) return; drone(ctx, t, night, 0, Object.assign({}, D, { x, y: SY(D.y) })); });
+    // a hint: a soft arrow over the door you are looking for
+    if (G.pin) { const x = SX(G.pin.x), y = gy(G.pin.x) - (92 + Math.sin(t * 4) * 6) * z; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = 'rgba(140,255,215,.85)'; ctx.shadowColor = '#2fd9a8'; ctx.shadowBlur = 12; ctx.beginPath(); ctx.moveTo(x - 9 * z, y - 12 * z); ctx.lineTo(x + 9 * z, y - 12 * z); ctx.lineTo(x, y); ctx.closePath(); ctx.fill(); ctx.restore(); }
+    MARKS.forEach(M => { const x = SX(M.x); if (x < -80 || x > W + 80) return; ctx.save(); ctx.translate(x, SY(GY + 78)); ctx.scale(z, z); drawMark(ctx, M, P, t, night); ctx.restore(); });
+
+    // ---- the near side: barrels, crates and moss, close to the eye
+    TSCN.fore.forEach(f => { const x = W / 2 + (f.x - V.x) * 1.35 * z; if (x < -60 || x > W + 60) return; if (MARKS.some(M => Math.abs(f.x - M.x) < 120)) return; if (f.x > TOWN.HALL0 - 60 && f.x < TOWN.HALL1 + 60 && open > 0.3) return;
+      const y = SY(GY + 150 + f.dy), s = f.s * z;
+      ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+      if (f.k === 'barrel') { const bc = tint('#7a5236', P, night), hoop = tint('#3a2a1e', P, night);
+        ctx.fillStyle = bc; ctx.beginPath(); ctx.moveTo(-13, 0); ctx.quadraticCurveTo(-19, -22, -13, -44); ctx.lineTo(13, -44); ctx.quadraticCurveTo(19, -22, 13, 0); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = cmix(bc, hoop, 0.4); ctx.lineWidth = 1; for (let j = -1; j <= 1; j++) { ctx.beginPath(); ctx.moveTo(j * 7, -1); ctx.quadraticCurveTo(j * 10, -22, j * 7, -43); ctx.stroke(); }
+        ctx.fillStyle = hoop; ctx.fillRect(-16, -36, 32, 3); ctx.fillRect(-16, -9, 32, 3); ctx.fillStyle = cmix(bc, '#000000', 0.25); ctx.beginPath(); ctx.ellipse(0, -44, 13, 3.4, 0, 0, TAU); ctx.fill(); }
+      else if (f.k === 'crate') { ctx.fillStyle = tint('#8a6a46', P, night); ctx.fillRect(-18, -30, 36, 30); ctx.strokeStyle = tint('#5a3a24', P, night); ctx.lineWidth = 2.4; ctx.strokeRect(-18, -30, 36, 30); ctx.beginPath(); ctx.moveTo(-18, -30); ctx.lineTo(18, 0); ctx.stroke(); }
+      else grassTuft(ctx, 0, 0, 26, Math.sin(t + f.x) * 3, tint('#4f6a3a', P, night), 6, null);
+      ctx.restore(); });
+    // roots overhead in Rodbyen
+    if (closed > 0.05) {
+      ctx.save(); ctx.globalAlpha = Math.min(1, closed * 1.3);
+      const rc = cmix(P.trunkD, '#000000', night ? 0.45 : 0.2), top = SY(GY - 330);
+      ctx.fillStyle = rc; ctx.fillRect(-20, -400, W + 40, top + 400 - 30 * z);
+      for (let rx = TOWN.ROD0 - 300; rx < TOWN.ROD1 + 400; rx += 210) { const x = W / 2 + (rx - V.x) * 1.08 * z; if (x < -260 || x > W + 260) continue;
+        const k = ((rx / 210) | 0) % 3, dip = (40 + k * 26) * z, w = (150 + k * 40) * z;
+        ctx.beginPath(); ctx.moveTo(x - w, top - 40 * z); ctx.bezierCurveTo(x - w * 0.5, top + dip, x + w * 0.5, top + dip, x + w, top - 40 * z); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = cmix(rc, P.trunk, 0.35); ctx.lineWidth = 2 * z; ctx.beginPath(); ctx.moveTo(x - w * 0.8, top - 30 * z); ctx.bezierCurveTo(x - w * 0.4, top + dip * 0.8, x + w * 0.4, top + dip * 0.8, x + w * 0.8, top - 30 * z); ctx.stroke();
+        // little lights hanging from the roots
+        ctx.save(); ctx.fillStyle = night ? '#ffd38a' : '#f3e6c4'; ctx.shadowColor = '#ffc66b'; ctx.shadowBlur = night ? 10 * (1 - BLK) : 0; ctx.globalAlpha *= 0.85 * (1 - 0.9 * BLK);
+        for (let j = 0; j < 3; j++) { const lx = x - w * 0.4 + j * w * 0.4, ly = top + dip * 0.7 + (12 + (j * 17) % 22) * z; ctx.strokeStyle = rc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(lx, top + dip * 0.6); ctx.lineTo(lx, ly); ctx.stroke(); ctx.beginPath(); ctx.arc(lx, ly + 3 * z, 2.6 * z, 0, TAU); ctx.fill(); }
+        ctx.restore(); }
+      ctx.restore();
+      ctx.save(); ctx.fillStyle = rg(ctx, W / 2, GY - 120, 200, 620, [[0, 'rgba(0,0,0,0)'], [1, `rgba(0,0,0,${0.3 * closed * (night ? 1 : 0.6)})`]]); ctx.fillRect(0, -300, W, H + 600); ctx.restore();
+    }
+    // lantern-flies at night, dust in the light by day
+    drawMotes(ctx, TSCN.motes, t, night ? 'rgba(255,220,160,.9)' : 'rgba(255,250,220,.6)', night ? 2.6 : 1.4, [4, -6], night ? 'lighter' : 'source-over');
+    // rain: grey light and long thin drops
+    if (G.rain > 0) {
+      const r = G.rain, R = rng(77); ctx.save();
+      ctx.fillStyle = `rgba(60,78,88,${0.22 * r})`; ctx.fillRect(0, -300, W, H + 600);
+      ctx.strokeStyle = `rgba(210,228,236,${0.38 * r})`; ctx.lineWidth = 1.1;
+      for (let k = 0; k < 170 * r; k++) { const sp = 560 + R() * 260, x = ((R() * (W + 80) + t * 70) % (W + 80)) - 40, y = ((R() * (H + 120) + t * sp) % (H + 120)) - 60; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 4, y + 15); ctx.stroke(); }
+      ctx.restore();
+    }
+    if (P.grade) { ctx.save(); ctx.fillStyle = P.grade; ctx.fillRect(0, -300, W, H + 600); ctx.restore(); }
+  }
+  SCN.town = { ground: '#0b1712', ownsCast: true, build() { return {}; }, back(ctx, t, S, G) { townFrame(ctx, t, G); } };
+
   /* ===================== ROOMS: side-view cutaways at the same scale as the world.
      The bedroom on Earth and the Kurator ship. Floor at GY; x in room units; the camera is G.view. */
   function drawPeople(ctx, t, G, SX, SY, z, night) {
@@ -2700,5 +3165,5 @@
     }
   };
 
-  window.Art = { W, H, DPR, SCN, render, makeStage, drawActor, handOf, heroLook, nightify, NPC, DEER_DAY, DEER_NIGHT, OUTFIT, ROTATION, scene, lerp, GY, HS, groundAt, zoneAt, zoneMix, palAt, smooth, WX: { LAKE_X, RAV0, RAV1, PYLON_X, WRECK_X, GATE_X, STONES_X } };
+  window.Art = { W, H, DPR, SCN, render, makeStage, drawActor, handOf, heroLook, nightify, NPC, DEER_DAY, DEER_NIGHT, OUTFIT, ROTATION, scene, lerp, GY, HS, groundAt, zoneAt, zoneMix, palAt, smooth, WX: { LAKE_X, RAV0, RAV1, PYLON_X, WRECK_X, GATE_X, STONES_X }, TOWN, TZONES, townGround, townZoneAt, mapOf, palTod };
 })();

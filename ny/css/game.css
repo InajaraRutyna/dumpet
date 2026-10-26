@@ -170,6 +170,8 @@ textarea.write { min-height: 7.5em; resize: vertical; line-height: 1.4; }
 #pad button { pointer-events: auto; width: 4.4em; height: 4.4em; border-radius: 50%; border: 1.5px solid var(--line); background: rgba(6, 20, 16, .55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 1.05em; color: var(--ink); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 #pad button.down { background: rgba(60, 220, 180, .35); border-color: var(--teal); }
 #pad #pJ { margin-left: auto; }
+#here { position: absolute; bottom: calc(max(1.3em, env(safe-area-inset-bottom)) + 6.1em); white-space: nowrap; left: 50%; transform: translateX(-50%); z-index: 6; padding: .7em 1.3em; animation: popc .35s ease-out; }
+@keyframes popc { from { opacity: 0; transform: translate(-50%, .4em); } }
 #goal { position: absolute; bottom: calc(max(1.3em, env(safe-area-inset-bottom)) + 6.4em); left: 50%; transform: translateX(-50%); max-width: 86%; padding: .45em .9em; border-radius: 2em; background: rgba(6, 20, 16, .62); border: 1px solid rgba(140, 255, 215, .35); font-size: .82em; color: var(--ink2); text-align: center; pointer-events: none; }
 #wordpop { position: absolute; top: 34%; left: 50%; transform: translate(-50%, -50%); padding: .6em 1.1em; border-radius: .6em; background: rgba(8, 30, 24, .85); border: 1px solid var(--teal); text-align: center; pointer-events: none; z-index: 6; box-shadow: 0 0 24px rgba(122, 255, 207, .35); }
 #wordpop b { display: block; font-size: 1.5em; color: #eafff6; text-shadow: 0 0 12px rgba(122, 255, 207, .7); }
@@ -193,3 +195,26 @@ button.rec { border-color: #ff8a7a !important; color: #ffd6cf !important; box-sh
 .heard { text-align: center; margin: .55em 0 .2em; line-height: 1.45; color: #e8f6ee; }
 .heard .k { color: var(--amber); font-size: .74em; letter-spacing: .06em; text-transform: uppercase; margin-right: .35em; }
 .heard .sub { font-size: .86em; opacity: .8; }
+
+/* where does the little word go? */
+.place { font-size: 1.2em; text-align: center; line-height: 2.1; margin: .5em 0; }
+.place .pw { margin: 0 .05em; }
+.place .pg { display: inline-block; width: 1.5em; height: 1.6em; line-height: 1; vertical-align: middle; border: 1px dashed rgba(255, 211, 138, .55); background: rgba(255, 211, 138, .08); color: var(--amber); border-radius: .35em; padding: 0; font-size: .8em; margin: 0 .12em; }
+.chipw { display: inline-block; border: 1px solid var(--amber); color: var(--amber); border-radius: .35em; padding: 0 .4em; }
+/* which word carries the stress? */
+.stress { display: flex; flex-wrap: wrap; justify-content: center; gap: .4em; margin: .6em 0; }
+.stress button { border: 1px solid var(--line); background: rgba(16, 46, 40, .75); border-radius: .4em; padding: .45em .65em; font-size: 1.1em; min-height: 2.6em; }
+b.str { color: var(--amber); text-decoration: underline; text-underline-offset: .2em; }
+/* the hero's notebook */
+.note { background: #f1e6c8; color: #2a2016; border-radius: .4em; padding: .6em .8em; margin: .3em 0 .6em; font-family: "Fraunces", Georgia, serif; box-shadow: inset 0 0 0 1px rgba(90, 60, 30, .25); }
+.note .nt { font-style: italic; margin: 0 0 .3em; color: #6a4a2a; }
+.note .nr { display: flex; justify-content: space-between; gap: .8em; padding: .25em 0; border-bottom: 1px dashed rgba(90, 60, 30, .25); font-size: .92em; }
+.note .nr b { font-family: "Space Grotesk", sans-serif; font-weight: 600; color: #1e5a46; text-align: right; }
+.note .nr:not(.on) b { color: rgba(90, 60, 30, .45); }
+.note [data-w] { border-bottom-color: rgba(90, 60, 30, .4); }
+.note [data-w].new { color: #1e5a46; }
+/* the crystal meter */
+.cmeter { text-align: center; }
+.mbar { height: .9em; border-radius: .5em; background: rgba(140, 255, 215, .12); overflow: hidden; margin: .6em 0; box-shadow: inset 0 0 0 1px rgba(140, 255, 215, .35); }
+.mbar i { display: block; height: 100%; background: linear-gradient(90deg, #2fd9a8, #bff7e4); box-shadow: 0 0 12px #2fd9a8; transition: width .35s; }
+.mnum { font-size: 2em; font-weight: 600; color: var(--teal); margin: .2em 0; text-shadow: 0 0 14px rgba(122, 255, 207, .6); }
